@@ -111,35 +111,6 @@ compara(V1,<,V):-V1<V.
 compara(V1,>=,V):-V1>=V.
 compara(V1,=<,V):-V1=<V.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-retirar_facto(K) :-
-	retract(facto(K,_)),
-	findall(K1,(justifica(K1,_,L),member(K,L)),LK1),retirar_lista_factos(LK1).
-
-retirar_lista_factos([ ]).
-
-retirar_lista_factos([K1|LK1]):-
-	retract(justifica(K1,_,_)),retirar_facto(K1),retirar_lista_factos(LK1)
-
-
-
-gera_metaconhecimento([tipo(_,passageiros),tipo(_,mercadorias),
-tipo(_,misto),lotacao(_,_), peso(_,_),
-classe(_, ligeiro),classe(_, pesado)]).
-
-:-dynamic facto_dispara_regras/2.
-gera_metaconhecimento([ ]).
-
-gera_metaconhecimento([F|LF]):-
-	gera_metaconhecimento1(F),
-	gera_metaconhecimento(LF).
-
-gera_metaconhecimento1(F):-
-	findall(ID,(regra ID se LHS entao _, facto_esta_numa_condicao(F,LHS)),LID),
-	((LID==[ ],!);assertz(facto_dispara_regras(F,LID))).
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Visualiza��o da base de factos
@@ -194,16 +165,16 @@ whynot(Facto):-
 whynot(Facto,_):-
 	facto(_, Facto),
 	!,
-	write('O facto '),write(Facto),write(' n�o � falso!'),nl.
+	write('O facto '),write(Facto),write(' nao e falso!'),nl.
 whynot(Facto,Nivel):-
 	encontra_regras_whynot(Facto,LLPF),
 	whynot1(LLPF,Nivel).
 whynot(nao Facto,Nivel):-
 	formata(Nivel),write('Porque:'),write(' O facto '),write(Facto),
-	write(' � verdadeiro'),nl.
+	write(' E verdadeiro'),nl.
 whynot(Facto,Nivel):-
 	formata(Nivel),write('Porque:'),write(' O facto '),write(Facto),
-	write(' n�o est� definido na base de conhecimento'),nl.
+	write(' nao esta definido na base de conhecimento'),nl.
 
 %  As explica��es do whynot(Facto) devem considerar todas as regras que poderiam dar origem a conclus�o relativa ao facto Facto
 
