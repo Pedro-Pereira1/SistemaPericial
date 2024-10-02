@@ -1,0 +1,26 @@
+.dual-button-container .button-left {
+    border: 0;
+    border-right: 1px solid gray;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.dual-button-container .button-right {
+    border: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.dual-button-container button {
+    background-color: bisque;
+    width: 50%;
+}
+
+.dual-button-container button:hover {
+    background-color: rgba(255, 228, 196, 0.671);
+    transition: 0.2s;
+}
+
+.dual-button-container {
+    font-size: 10px;
+}
