@@ -95,7 +95,7 @@ cria_facto(F,ID,LFactos):-
 	asserta(ultimo_facto(N)),
 	assertz(justifica(N,ID,LFactos)),
 	assertz(facto(N,F)),
-	write('Foi conclu�do o facto n� '),write(N),write(' -> '),write(F),get0(_),!.
+	write('Foi concluido o facto numero '),write(N),write(' -> '),write(F),get0(_),!.
 
 
 
@@ -111,35 +111,6 @@ compara(V1,<,V):-V1<V.
 compara(V1,>=,V):-V1>=V.
 compara(V1,=<,V):-V1=<V.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-retirar_facto(K) :-
-	retract(facto(K,_)),
-	findall(K1,(justifica(K1,_,L),member(K,L)),LK1),retirar_lista_factos(LK1).
-
-retirar_lista_factos([ ]).
-
-retirar_lista_factos([K1|LK1]):-
-	retract(justifica(K1,_,_)),retirar_facto(K1),retirar_lista_factos(LK1)
-
-
-
-gera_metaconhecimento([tipo(_,passageiros),tipo(_,mercadorias),
-tipo(_,misto),lotacao(_,_), peso(_,_),
-classe(_, ligeiro),classe(_, pesado)]).
-
-:-dynamic facto_dispara_regras/2.
-gera_metaconhecimento([ ]).
-
-gera_metaconhecimento([F|LF]):-
-	gera_metaconhecimento1(F),
-	gera_metaconhecimento(LF).
-
-gera_metaconhecimento1(F):-
-	findall(ID,(regra ID se LHS entao _, facto_esta_numa_condicao(F,LHS)),LID),
-	((LID==[ ],!);assertz(facto_dispara_regras(F,LID))).
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Visualiza��o da base de factos
@@ -153,26 +124,26 @@ mostra_factos:-
 % Gera��o de explica��es do tipo "Como"
 
 como(N):-ultimo_facto(Last),Last<N,!,
-	write('Essa conclus�o n�o foi tirada'),nl,nl.
+	write('Essa conclusao nao foi tirada'),nl,nl.
 como(N):-justifica(N,ID,LFactos),!,
 	facto(N,F),
-	write('Conclui o facto n� '),write(N),write(' -> '),write(F),nl,
+	write('Conclui o facto numero '),write(N),write(' -> '),write(F),nl,
 	write('pela regra '),write(ID),nl,
 	write('por se ter verificado que:'),nl,
 	escreve_factos(LFactos),
 	write('********************************************************'),nl,
 	explica(LFactos).
 como(N):-facto(N,F),
-	write('O facto n� '),write(N),write(' -> '),write(F),nl,
+	write('O facto numero '),write(N),write(' -> '),write(F),nl,
 	write('foi conhecido inicialmente'),nl,
 	write('********************************************************'),nl.
 
 
 escreve_factos([I|R]):-facto(I,F), !,
-	write('O facto n� '),write(I),write(' -> '),write(F),write(' � verdadeiro'),nl,
+	write('O facto numero '),write(I),write(' -> '),write(F),write(' e verdadeiro'),nl,
 	escreve_factos(R).
 escreve_factos([I|R]):-
-	write('A condi��o '),write(I),write(' � verdadeira'),nl,
+	write('A condicaoo '),write(I),write(' e verdadeira'),nl,
 	escreve_factos(R).
 escreve_factos([]).
 
@@ -194,16 +165,16 @@ whynot(Facto):-
 whynot(Facto,_):-
 	facto(_, Facto),
 	!,
-	write('O facto '),write(Facto),write(' n�o � falso!'),nl.
+	write('O facto '),write(Facto),write(' nao e falso!'),nl.
 whynot(Facto,Nivel):-
 	encontra_regras_whynot(Facto,LLPF),
 	whynot1(LLPF,Nivel).
 whynot(nao Facto,Nivel):-
 	formata(Nivel),write('Porque:'),write(' O facto '),write(Facto),
-	write(' � verdadeiro'),nl.
+	write(' E verdadeiro'),nl.
 whynot(Facto,Nivel):-
 	formata(Nivel),write('Porque:'),write(' O facto '),write(Facto),
-	write(' n�o est� definido na base de conhecimento'),nl.
+	write(' nao esta definido na base de conhecimento'),nl.
 
 %  As explica��es do whynot(Facto) devem considerar todas as regras que poderiam dar origem a conclus�o relativa ao facto Facto
 
@@ -251,14 +222,14 @@ encontra_premissas_falsas([]).
 explica_porque_nao([],_).
 explica_porque_nao([nao avalia(X)|LPF],Nivel):-
 	!,
-	formata(Nivel),write('A condi��o nao '),write(X),write(' � falsa'),nl,
+	formata(Nivel),write('A condicao nao '),write(X),write(' e falsa'),nl,
 	explica_porque_nao(LPF,Nivel).
 explica_porque_nao([avalia(X)|LPF],Nivel):-
 	!,
-	formata(Nivel),write('A condi��o '),write(X),write(' � falsa'),nl,
+	formata(Nivel),write('A condicao '),write(X),write(' e falsa'),nl,
 	explica_porque_nao(LPF,Nivel).
 explica_porque_nao([P|LPF],Nivel):-
-	formata(Nivel),write('A premissa '),write(P),write(' � falsa'),nl,
+	formata(Nivel),write('A premissa '),write(P),write(' e falsa'),nl,
 	Nivel1 is Nivel+1,
 	whynot(P,Nivel1),
 	explica_porque_nao(LPF,Nivel).
