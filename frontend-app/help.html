@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo-details">
+        <i class='bx bx-shield-alt-2'></i>
+        <span class="logo_name">CodingLab</span>
+      </div>
+      <ul class="nav-links">
+        <li>
+          <a href="#">
+            <i class='bx bx-home'></i>
+            <span class="link_name">Dashboard</span>
+          </a>
+        </li>
+
+        <li>
+          <div class = "iocn-link">
+            <a href="#">
+              <i class='bx bx-alarm-exclamation'></i>
+              <span class="link_name">Alerts</span>
+            </a>
+            <i class='bx bxs-chevron-down arrow'></i>
+          </div>
+          <ul class="sub-menu">            
+            <li><a href="#">Category</a></li>
+            <li><a href="#">Category</a></li>
+            </ul>
+        </li>
+
+        <li>
+          <a href="#">
+            <i class='bx bx-history' ></i>
+            <span class="link_name">History</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#">
+            <i class='bx bx-cog' ></i>
+            <span class="link_name">Settings</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#">
+            <i class='bx bx-user' ></i>
+            <span class="link_name">Profile</span>
+          </a>
+        </li>
+
+        <li>
+      </ul>
+    </div>
+
+
+    <div class="home-section">
+      <div class="home-content">
+        <i class='bx bx-menu'></i>
+        <span class="text">Home</span>
+      </div>
+    </div>
+
+    <script>
+
+      let arrow = document.querySelectorAll(".arrow");
+      for (var i = 0; i < arrow.length; i++) {
+        arrow[i].addEventListener("click", (e)=>{
+          let arrowParent = e.target.parentElement.parentElement;
+          arrowParent.classList.toggle("showMenu");
+        });
+      }
+
+      let sidebar = document.querySelector(".sidebar");
+      let sidebarBtn = document.querySelector(".bx-menu");
+      sidebarBtn.addEventListener("click", ()=>{
+        sidebar.classList.toggle("close");
+      });
+
+    </script>
+  </body>
+</html>
