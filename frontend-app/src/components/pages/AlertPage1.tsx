@@ -46,7 +46,9 @@ const AlertPage1: React.FC = () => {
     setErrorMessage(null);
     // If current question is multiple-choice, validate the input
     if (currentQuestion?.type === 'multiple-choice' && currentQuestion.possibleAnswers) {
-      if (!currentQuestion.possibleAnswers.includes(message)) {
+      // COMPAE ALL ANSWERS TO LOWER CASE
+      currentQuestion.possibleAnswers = currentQuestion.possibleAnswers.map((answer) => answer.toLowerCase());
+      if (!currentQuestion.possibleAnswers.includes(message.toLowerCase())) {
         // If input is invalid, show an error and do not proceed
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
