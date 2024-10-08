@@ -10,7 +10,8 @@
 :-op(600,xfy,e).
 
 :-dynamic justifica/3.
-
+:-dynamic facto/2.
+:-dynamic ultimo_facto/1.
 
 carrega_bc:-
 		write('NOME DA BASE DE CONHECIMENTO (terminar com .)-> '),
@@ -26,12 +27,10 @@ facto_dispara_regras1(Facto, LRegras):-
 	facto_dispara_regras(Facto, LRegras),
 	!.
 facto_dispara_regras1(_, []).
-% Caso em que o facto n�o origina o disparo de qualquer regra.
 
 dispara_regras(N, Facto, [ID|LRegras]):-
 	regra ID se LHS entao RHS,
 	facto_esta_numa_condicao(Facto,LHS),
-	% Instancia Facto em LHS
 	verifica_condicoes(LHS, LFactos),
 	member(N,LFactos),
 	concluir(RHS,ID,LFactos),
@@ -94,8 +93,8 @@ cria_facto(F,ID,LFactos):-
 	N is N1+1,
 	asserta(ultimo_facto(N)),
 	assertz(justifica(N,ID,LFactos)),
-	assertz(facto(N,F)),
-	write('Foi concluido o facto numero '),write(N),write(' -> '),write(F),get0(_),!.
+	assertz(facto(N,F)).
+	%write('Foi concluido o facto numero '),write(N),write(' -> '),write(F),get0(_),!.
 
 
 
@@ -236,3 +235,15 @@ explica_porque_nao([P|LPF],Nivel):-
 
 formata(Nivel):-
 	Esp is (Nivel-1)*5, tab(Esp).
+
+
+% Made 8/10/2024
+create_dynamic_fact(Fact, N):-
+	findall(N, facto(N, _), LFactos),
+	length(LFactos, NFactos),
+	N1 is NFactos+1,
+	(ultimo_facto(N);assertz(ultimo_facto(0))),
+	retract(ultimo_facto(N)),
+	assertz(facto(N1,Fact)),
+	assertz(ultimo_facto(N1)).
+
