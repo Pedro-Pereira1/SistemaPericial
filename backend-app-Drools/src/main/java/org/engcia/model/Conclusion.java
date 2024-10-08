@@ -1,7 +1,10 @@
 package org.engcia.model;
 
 public class Conclusion {
-    public static final String UNKNOWN = "Look for the the doctor!";
+    public static final String UNKNOWN = "Unknown";
+    public static final String CLASSIFY_FP = "Classify as False Positive";
+    public static final String DISABLE_ACCOUNT = "Disable account created";
+    public static final String REVOKE_ACCESS = "Revoke creator's access";
 
     private String description;
 

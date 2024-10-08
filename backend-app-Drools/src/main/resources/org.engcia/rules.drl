@@ -12,14 +12,14 @@ rule "Creator known and responded"
     when
         $evidence : Evidences(creatorKnown == true, creatorResponded == true)
     then
-        insert(new Conclusion("Classify as False Positive"));
+        insert(new Conclusion(Conclusion.CLASSIFY_FP));
 end
 
 rule "Creator known but did not respond"
     when
         $evidence : Evidences(creatorKnown == true, creatorResponded == false)
     then
-        insert(new Conclusion("Disable account created"));
+        insert(new Conclusion(Conclusion.DISABLE_ACCOUNT));
 end
 
 // Rule for unknown creator
@@ -27,7 +27,7 @@ rule "Creator unknown"
     when
         $evidence : Evidences(creatorKnown == false)
     then
-        insert(new Conclusion("Revoke creator's access"));
+        insert(new Conclusion(Conclusion.REVOKE_ACCESS));
 end
 
 rule "unknown"

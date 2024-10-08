@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const AlertService = {
-    processAlert: async (alertContext) => {
+    processAlert: async (alertContext: any) => {
         try {
             const response = await axios.post('http://localhost:8080/api/alerts/process', alertContext);
             return response.data;

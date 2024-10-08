@@ -1,0 +1,39 @@
+# Ignore Maven's target directory (where compiled code goes)
+target/
+
+
+# Ignore IDE-specific files (example for IntelliJ IDEA, Eclipse, NetBeans)
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Drools-specific
+**/*.drl~
+**/*.rf~
+**/*.ruleflow
+*.rfm
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# Maven dependencies (optional if managed by the local system)
+.m2/
+
+# Ignore other OS specific files
+.DS_Store
+Thumbs.db
