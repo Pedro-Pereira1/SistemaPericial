@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService2";
+import AlertService from "../../services/AlertService_SLA";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {
@@ -47,7 +47,6 @@ const AlertPage1: React.FC = () => {
     setErrorMessage(null);
     // If current question is multiple-choice, validate the input
     if (currentQuestion?.type === 'multiple-choice' && currentQuestion.possibleAnswers) {
-      // COMPAE ALL ANSWERS TO LOWER CASE
       currentQuestion.possibleAnswers = currentQuestion.possibleAnswers.map((answer) => answer.toLowerCase());
       if (!currentQuestion.possibleAnswers.includes(message.toLowerCase())) {
         // If input is invalid, show an error and do not proceed
@@ -95,7 +94,7 @@ const AlertPage1: React.FC = () => {
   const fetchNextQuestionOrConclusion = async (userResponse: string, expertSystemOverride?: string) => {
     const systemToUse = expertSystemOverride || expertSystem; // Use the override if available, otherwise use state
     const alertContext = {
-      alertId: "SAC",
+      alertId: "SLA",
       expertSystem: systemToUse!,
       userResponse,
       questionState,
@@ -153,7 +152,7 @@ const AlertPage1: React.FC = () => {
 
   return (
     <div>
-      <h1>Suspicious Account Creation</h1>
+      <h1>Simultaneous Login Activity</h1>
       <div style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}>
         {messages.map((message, index) => (
           <div key={index} style={{ textAlign: message.sender === 'user' ? 'right' : 'left' }}>

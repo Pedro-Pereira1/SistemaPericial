@@ -7,6 +7,7 @@ import Dashboard from './components/pages/Dashboard';
 import AlertPage1 from './components/pages/AlertPage1';
 import AlertPage2 from './components/pages/AlertPage2';
 import AlertPage3 from './components/pages/AlertPage3';
+import AlertPage4 from './components/pages/AlertPage4';
 import History from './components/pages/History';
 import Settings from './components/pages/Settings';
 import Profile from './components/pages/Profile';
@@ -32,9 +33,10 @@ const App: React.FC = () => {
 
   // List of alert categories
   const alertCategories = [
-    { name: 'Category 1', path: '/alerts/category1' },
+    { name: 'Suspicious Account Creation', path: '/alerts/category1' },
     { name: 'Category 2', path: '/alerts/category2' },
     { name: 'Category 3', path: '/alerts/category3' },
+    { name: 'Simultaneous Login Activity', path: '/alerts/category4' },
   ];
 
   // Filter alert categories based on the search term
@@ -132,6 +134,7 @@ const App: React.FC = () => {
               <Route path="/alerts/category1" element={<AlertPage1 />} />
               <Route path="/alerts/category2" element={<AlertPage2 />} />
               <Route path="/alerts/category3" element={<AlertPage3 />} />
+              <Route path="/alerts/category4" element={<AlertPage4 />} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
