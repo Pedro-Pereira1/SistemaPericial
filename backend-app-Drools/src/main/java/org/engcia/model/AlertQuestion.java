@@ -4,7 +4,7 @@ import org.engcia.Utils.Question;
 
 import java.util.Objects;
 
-public class AlertResponse {
+public class AlertQuestion {
     private String alertId;
     private String currentStep; // "question" or "conclusion"
     private Question question;
@@ -12,7 +12,7 @@ public class AlertResponse {
     private int step; // To keep track of the question step in the flow
     private String userResponse;
 
-    public AlertResponse(String alertId, String currentStep, Question question, Conclusion conclusion, int step, String userResponse) {
+    public AlertQuestion(String alertId, String currentStep, Question question, Conclusion conclusion, int step, String userResponse) {
         this.alertId = alertId;
         this.currentStep = currentStep;
         this.question = question;
