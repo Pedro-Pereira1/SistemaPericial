@@ -135,10 +135,16 @@
     white-space: nowrap;
     opacity: 0.6;
     transition: all 0.3s ease;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 180px;
 }
 
 .sidebar .nav-links li .sub-menu a:hover {
     opacity: 1;
+    overflow: visible;
+    white-space: normal;
 }
 
 .sidebar.close .nav-links li .sub-menu {

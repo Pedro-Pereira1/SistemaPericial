@@ -88,7 +88,7 @@ const App: React.FC = () => {
                 {filteredCategories.length > 0 ? (
                   filteredCategories.map((category, index) => (
                     <li key={index}>
-                      <Link to={category.path}>{category.name}</Link>
+                      <Link to={category.path} title={category.name}>{category.name}</Link>
                     </li>
                   ))
                 ) : (
