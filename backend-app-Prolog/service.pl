@@ -43,14 +43,30 @@ test(Request) :-
 handle_question(Request):-
     http_read_json_dict(Request, JSONDict),
     create_fact_from_json(JSONDict, Fact),
-    create_dynamic_fact(Fact, N),
-    arranca_motor,
-    facto(N,questao(Question, Type, PossibleResponses)),
-    DictOut = _{
-        question: Question,
-        type: Type,
-        possible_responses: PossibleResponses
-    },
+    create_dynamic_fact(Fact, _),
+    !,
+    (
+        arranca_motor,
+        ultimo_facto(N1),
+        facto(N1,_)
+        ;
+        ultimo_facto(N1),
+        facto(N1,_)
+    ),
+    (
+        facto(N1,questao(Question, Type, PossibleResponses)),
+        DictOut = _{
+            question: Question,
+            type: Type,
+            possible_responses: PossibleResponses
+        }
+        ;
+        facto(N1,conclusao(Conlcusao)),
+        DictOut = _{
+            conclusion: Conlcusao
+        }
+    )
+    ,
     reply_json(DictOut).
 
 

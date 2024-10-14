@@ -1,17 +1,23 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Metaconhecimento
 
-facto_dispara_regras(criador("conhecido"), [1, 2]).
-facto_dispara_regras(respodeu(sim), [2]).
+facto_dispara_regras(alert(1, "null", "null", "null"), [1]).
+facto_dispara_regras(alert(1, "Yes", "null", "null"), [2]).
+facto_dispara_regras(alert(1, "Yes", "Yes", "null"), [3]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 regra 1
-	se [criador("conhecido")]
-	entao [cria_facto(questao("O criador respondeu?", "multiple-choice", ["Sim", "Nao"]))].
+	se [alert(1, "null", "null", "null")]
+	entao [cria_facto(questao("Existe um início de sessão simultâneo a partir de vários IPs?", "multiple-choice", ["Yes", "No"]))].
 
 regra 2
-	se [criador("conhecido") e respondeu(sim)]
-	entao [cria_facto(falso_positivo(verdade))].
+	se [alert(1, "Yes", "null", "null")]
+	entao [cria_facto(questao("Pode ser explicado?", "multiple-choice", ["Yes", "No"]))].
+
+regra 3
+	se [alert(1, "Yes", "Yes", "null")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
 
 
