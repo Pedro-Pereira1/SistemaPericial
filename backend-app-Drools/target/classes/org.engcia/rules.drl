@@ -1,39 +1,151 @@
 package org.engcia;
 
-import org.engcia.model.Evidences;
+import org.engcia.model.AlertResponse
+import org.engcia.model.AlertQuestion
+import org.engcia.Utils.Question
+import java.util.Arrays
 import org.engcia.model.Conclusion;
 
-query "Conclusions"
-	$conclusion : Conclusion()
+query "AlertResponse"
+    $response : AlertResponse()
 end
 
-// Rule for known creator who responded
-rule "Creator known and responded"
-    when
-        $evidence : Evidences(creatorKnown == true, creatorResponded == true)
-    then
-        insert(new Conclusion("Classify as False Positive"));
+//================================================================================================
+// Suspicious Account Creation
+rule "Start Conversation for suspicious Account Creation"
+when
+    $input: AlertQuestion(alertId == "SAC", step == 0)
+then
+    AlertResponse output = new AlertResponse("SAC",
+                                            "question",
+                                            new Question("multiple-choice",
+                                            "Is the creator known?",
+                                            Arrays.asList("Yes", "No")),
+                                            null,
+                                            1,
+                                            null);
+    insert(output);
 end
 
-rule "Creator known but did not respond"
-    when
-        $evidence : Evidences(creatorKnown == true, creatorResponded == false)
-    then
-        insert(new Conclusion("Disable account created"));
+
+rule "Step 1: Check if the creator is known"
+when
+    $input: AlertQuestion(alertId == "SAC", step == 1, userResponse == "Yes")
+then
+    AlertResponse output = new AlertResponse("SAC",
+                                             "question",
+                                             new Question("multiple-choice",
+                                                          "Has the creator responded?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             2,
+                                             null);
+    insert(output);
 end
 
-// Rule for unknown creator
-rule "Creator unknown"
-    when
-        $evidence : Evidences(creatorKnown == false)
-    then
-        insert(new Conclusion("Revoke creator's access"));
+rule "Step 1: Creator is not known, revoke access"
+when
+    $input: AlertQuestion(alertId == "SAC", step == 1, userResponse == "No")
+then
+    AlertResponse output = new AlertResponse("SAC",
+                                             "conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.REVOKE_ACCESS),
+                                             2,
+                                             null);
+    insert(output);
 end
 
-rule "unknown"
-	when
-		not Conclusion()
-	then
-		Conclusion c = new Conclusion(Conclusion.UNKNOWN);
-		insert(c);
+rule "Step 2: Creator has responded, classify as false positive"
+when
+    $input: AlertQuestion(alertId == "SAC", step == 2, userResponse == "Yes")
+then
+    AlertResponse output = new AlertResponse("SAC",
+                                             "conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             3,
+                                             null);
+    insert(output);
+end
+
+rule "Step 2: Creator has not responded, disable account"
+when
+    $input: AlertQuestion(alertId == "SAC", step == 2, userResponse == "No")
+then
+    AlertResponse output = new AlertResponse("SAC",
+                                             "conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.DISABLE_ACCOUNT),
+                                             3,
+                                             null);
+    insert(output);
+end
+//================================================================================================
+
+//================================================================================================
+// Simultaneous Login Activity
+rule "Start Conversation for Simultaneous Login Activity"
+when
+    $input: AlertQuestion(alertId == "SLA", step == 0)
+then
+    AlertResponse output = new AlertResponse("SLA",
+                                            "question",
+                                            new Question("multiple-choice",
+                                            "Is there a simultaneous login activity from multiple location/ips?",
+                                            Arrays.asList("Yes", "No")),
+                                            null,
+                                            1,
+                                            null);
+    insert(output);
+end
+
+rule "Step 1: Simultaneous login activity from multiple location/ips"
+when
+    $input: AlertQuestion(alertId == "SLA", step == 1, userResponse == "Yes")
+then
+    AlertResponse output = new AlertResponse("SAC",
+                                                 "conclusion",
+                                                 null,
+                                                 new Conclusion(Conclusion.DISABLE_ACCOUNT),
+                                                 3,
+                                                 null);
+    insert(output);
+end
+
+
+rule "Step 1: No simultaneous login activity from multiple location/ips"
+when
+    $input: AlertQuestion(alertId == "SLA", step == 1, userResponse == "No")
+then
+    AlertResponse output = new AlertResponse("SLA",
+                                             "conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             2,
+                                             null);
+    insert(output);
+end
+
+
+
+
+
+
+
+
+
+//================================================================================================
+
+rule "Default: Unknown response or invalid step"
+when
+    not AlertResponse()
+then
+    AlertResponse output = new AlertResponse("SLA",
+                                             "conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.UNKNOWN),
+                                             10,
+                                             null);
+    insert(output);
 end
