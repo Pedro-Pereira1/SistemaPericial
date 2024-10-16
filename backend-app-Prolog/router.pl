@@ -14,7 +14,7 @@
 
 startServer(Port):-
     http_server(http_dispatch, [port(Port)]),	
-	consult("regras.txt"),
+	consult("regras2.txt"),
     asserta(port(Port)).
 
 stopServer:-
