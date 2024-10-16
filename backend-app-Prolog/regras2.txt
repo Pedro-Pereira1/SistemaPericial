@@ -32,18 +32,17 @@ facto_dispara_regras(alert(1, "No", "null", "No", "null", "null", "No", "null", 
 facto_dispara_regras(alert(1, "No", "null", "No", "null", "null", "No", "null", "null", "No"), [29]). % Regra 29
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 regra 1
 	se [alert(1, "null", "null", "null", "null", "null", "null", "null", "null", "null")]
-	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_1"))].
 
 regra 2
 	se [alert(1, "Yes", "null", "null", "null", "null", "null", "null", "null", "null")]
-	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"], "was_the_user_1"))].
 
 regra 3
 	se [alert(1, "Yes", "Yes", "null", "null", "null", "null", "null", "null", "null")]
-	entao [cria_facto("Falso Positivo")].
+	entao [cria_facto(conclusao("Falso Positivo"))].
 
 regra 4
 	se [alert(1, "Yes", "No", "null", "null", "null", "null", "null", "null", "null")]
@@ -51,23 +50,23 @@ regra 4
 
 regra 5
 	se [alert(1, "No", "null", "null", "null", "null", "null", "null", "null", "null")]
-	entao [cria_facto(questao("São múltiplos IPs?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("São múltiplos IPs?", "multiple-choice", ["Yes", "No"], "are_there_multiple_ips"))].
 
 regra 6
 	se [alert(1, "No", "null", "Yes", "null", "null", "null", "null", "null", "null")]
-	entao [cria_facto(questao("A quantidade de IPs faz sentido?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("A quantidade de IPs faz sentido?", "multiple-choice", ["Yes", "No"], "does_the_number_of_ips_make_sense"))].
 
 regra 7
 	se [alert(1, "No", "null", "Yes", "Yes", "null", "null", "null", "null", "null")]
-	entao [cria_facto(questao("A recorrência é justificável?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("A recorrência é justificável?", "multiple-choice", ["Yes", "No"], "is_the_reccurence_just"))].
 
 regra 8
 	se [alert(1, "No", "null", "Yes", "Yes", "Yes", "null", "null", "null", "null")]
-	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_2"))].
 
 regra 9
 	se [alert(1, "No", "null", "Yes", "Yes", "Yes", "Yes", "null", "Yes", "null")]
-	entao [cria_facto(questao("A origem dos IPs é justificável?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("A origem dos IPs é justificável?", "multiple-choice", ["Yes", "No"], "origins_just"))].
 
 regra 10
 	se [alert(1, "No", "null", "Yes", "Yes", "Yes", "Yes", "null", "Yes", "null")]
@@ -83,11 +82,11 @@ regra 12
 
 regra 13
 	se [alert(1, "No", "null", "Yes", "Yes", "No", "null", "null", "null", "null")]
-	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_2"))].
 
 regra 14
 	se [alert(1, "No", "null", "Yes", "Yes", "No", "Yes", "null", "null", "null")]
-	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"], "was_the_user_2"))].
 
 regra 15
 	se [alert(1, "No", "null", "Yes", "Yes", "No", "Yes", "Yes", "null", "null")]
@@ -103,11 +102,11 @@ regra 17
 
 regra 18
 	se [alert(1, "No", "null", "Yes", "No", "null", "null", "null", "null", "null")]
-	entao [cria_facto(questao("Abrir caso\nIdentificar o utilizador\nO utilizador é conhecido?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("Abrir caso\nIdentificar o utilizador\nO utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_2"))].
 
 regra 19
 	se [alert(1, "No", "null", "Yes", "No", "null", "Yes", "null", "null", "null")]
-	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"], "was_the_user_2"))].
 
 regra 20
 	se [alert(1, "No", "null", "Yes", "No", "null", "Yes", "Yes", "null", "null")]
@@ -123,15 +122,15 @@ regra 22
 
 regra 23
 	se [alert(1, "No", "null", "No", "null", "null", "null", "null", "null", "null")]
-	entao [cria_facto(questao("O IP é nacional?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("O IP é nacional?", "multiple-choice", ["Yes", "No"], "national_ip"))].
 
 regra 24
 	se [alert(1, "No", "null", "No", "null", "null", "null", "null", "null", "Yes")]
-	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_2"))].
 
 regra 25
 	se [alert(1, "No", "null", "No", "null", "null", "Yes", "null", "null", "Yes")]
-	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"]))].
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"], "was_the_user_2"))].
 
 regra 26
 	se [alert(1, "No", "null", "No", "null", "null", "Yes", "Yes", "null", "Yes")]
