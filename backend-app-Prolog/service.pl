@@ -39,7 +39,14 @@ test(Request) :-
     },
     reply_json(DictOut).
 
-:- http_handler('/api/prolog/handler', handle_question, [method(post)]).
+:- http_handler('/api/prolog/handler', handle_question, []).
+handle_question(Request):-
+    option(method(options), Request),
+    !,
+    cors_enable(Request,[methods([post])]),
+    format('Content-type: application/json\r\n'),
+    format('~n'). 
+
 handle_question(Request):-
     cors_enable,
     http_read_json_dict(Request, JSONDict),

@@ -17,20 +17,18 @@ const AlertService = {
   processAlertProlog: async (alertContext: any) => {
     try {
       const myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Content-Type", "application/json");
 
-const requestOptions = {
-  method: "POST",
-  headers: myHeaders,
-  body: alertContext,
-  redirect: "follow" as RequestRedirect
-};
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(alertContext),
+      };
 
-fetch("http://localhost:5000/api/prolog/handler", requestOptions)
-  .then((response) => response.json())
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error));
-
+      const response = await fetch("http://localhost:5000/api/prolog/handler", requestOptions);
+      const result = await response.json();
+      
+      return result;
     } catch (error) {
       console.error("Error processing alert:", error);
       throw error;
