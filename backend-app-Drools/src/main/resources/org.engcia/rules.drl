@@ -3,6 +3,7 @@ package org.engcia;
 import org.engcia.model.AlertResponse
 import org.engcia.model.AlertQuestion
 import org.engcia.Utils.Question
+import org.engcia.model.EvidencesSAC
 import java.util.Arrays
 import org.engcia.model.Conclusion;
 
@@ -12,7 +13,7 @@ end
 
 //================================================================================================
 // Suspicious Account Creation
-rule "Start Conversation for suspicious Account Creation"
+/*rule "Start Conversation for suspicious Account Creation"
 when
     $input: AlertQuestion(alertId == "SAC", step == 0)
 then
@@ -80,55 +81,158 @@ then
                                              3,
                                              null);
     insert(output);
-end
+end*/
 //================================================================================================
 
 //================================================================================================
-// Simultaneous Login Activity
-rule "Start Conversation for Simultaneous Login Activity"
+// Simultaneous Logins Activity
+rule "Start Analysis for Multiple Simultaneous Logins"
 when
-    $input: AlertQuestion(alertId == "SLA", step == 0)
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "null",legitimateBehavior == "null", abnormalPattern == "null", mfaEnabled == "null", userContacted == "null")
 then
-    AlertResponse output = new AlertResponse("SLA",
-                                            "question",
-                                            new Question("multiple-choice",
-                                            "Is there a simultaneous login activity from multiple location/ips?",
-                                            Arrays.asList("Yes", "No")),
-                                            null,
-                                            1,
-                                            null);
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Is there a simultaneous login from multiple locations/IPs (>3)?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "multipleLocations");
     insert(output);
 end
 
-rule "Step 1: Simultaneous login activity from multiple location/ips"
+rule "Step 1: Check if there are logins from multiple locations"
 when
-    $input: AlertQuestion(alertId == "SLA", step == 1, userResponse == "Yes")
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "yes",legitimateBehavior == "null", abnormalPattern == "null", mfaEnabled == "null", userContacted == "null")
 then
-    AlertResponse output = new AlertResponse("SAC",
-                                                 "conclusion",
-                                                 null,
-                                                 new Conclusion(Conclusion.DISABLE_ACCOUNT),
-                                                 3,
-                                                 null);
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Can the login be explained by legitimate user behavior (VPN, travel, etc.)?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "legitimateBehavior");
+    insert(output);
+end
+
+rule "Step 1: No simultaneous logins, check for anomalies"
+when
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "no",legitimateBehavior == "null", abnormalPattern == "null", mfaEnabled == "null", userContacted == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Is there another abnormal pattern?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "abnormalPattern");
     insert(output);
 end
 
 
-rule "Step 1: No simultaneous login activity from multiple location/ips"
+rule "Step 2: Multiple IP locations, classify as false positive"
 when
-    $input: AlertQuestion(alertId == "SLA", step == 1, userResponse == "No")
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "yes",legitimateBehavior == "yes", abnormalPattern == "null", mfaEnabled == "null", userContacted == "null")
 then
-    AlertResponse output = new AlertResponse("SLA",
-                                             "conclusion",
+    AlertResponse output = new AlertResponse("conclusion",
                                              null,
                                              new Conclusion(Conclusion.CLASSIFY_FP),
-                                             2,
-                                             null);
+                                             $input,
+                                             "conclusion");
     insert(output);
 end
 
 
+rule "Step 2: Abnormal pattern detected, notify support team"
+when
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "no",legitimateBehavior == "null", abnormalPattern == "yes", mfaEnabled == "null", userContacted == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.NOTIFY_SUPPORT_TEAM),
+                                             $input,
+                                             "conclusion");
+    insert(output);
+end
 
+rule "Step 2: No multiple IP locations, false positive"
+when
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "no",legitimateBehavior == "null", abnormalPattern == "no", mfaEnabled == "null", userContacted == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion");
+    insert(output);
+end
+
+rule "Step 3: Simultaneous logins explained by legitimate behavior"
+when
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "yes",legitimateBehavior == "no", abnormalPattern == "null", mfaEnabled == "null", userContacted == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Temporarily suspend the account\n" +
+                                                          "Does the user have MFA activated?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "mfaEnabled");
+    insert(output);
+end
+
+rule "Step 4: Does the user have MFA enabled?"
+when
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "yes",legitimateBehavior == "no", abnormalPattern == "null", mfaEnabled == "yes", userContacted == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Can login be immediately validated by contacting the user?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "userContacted");
+    insert(output);
+end
+
+rule "Step 4.2: Does the user have MFA enabled?"
+when
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "yes",legitimateBehavior == "no", abnormalPattern == "null", mfaEnabled == "no", userContacted == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Enforce MFA\n" +
+                                                          "Can login be immediately validated by contacting the user?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "userContacted");
+    insert(output);
+end
+
+rule "Step 5: User contacted, validate login"
+when
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "yes",legitimateBehavior == "no", abnormalPattern == "null", mfaEnabled == "yes", userContacted == "yes")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.REVERSE_TRANSACTION),
+                                             $input,
+                                             "conclusion");
+    insert(output);
+end
+
+rule "Step 5.2: User contacted, validate login"
+when
+    $input: EvidencesSAC(alertId == "SLA", multipleLocations == "yes",legitimateBehavior == "no", abnormalPattern == "null", mfaEnabled == "yes", userContacted == "no")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.RESET_PASSWORD_REVOKE_TOKENS),
+                                             $input,
+                                             "conclusion");
+    insert(output);
+end
 
 
 
@@ -139,13 +243,12 @@ end
 
 rule "Default: Unknown response or invalid step"
 when
-    not AlertResponse()
+    not EvidencesSAC()
 then
-    AlertResponse output = new AlertResponse("SLA",
-                                             "conclusion",
+    AlertResponse output = new AlertResponse("conclusion",
                                              null,
                                              new Conclusion(Conclusion.UNKNOWN),
-                                             10,
-                                             null);
+                                             null,
+                                             "conclusion");
     insert(output);
 end

@@ -1,10 +1,12 @@
 package org.engcia.controllers;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.engcia.AlertProcessor;
 import org.engcia.model.AlertQuestion;
 import org.engcia.model.AlertResponse;
 import org.engcia.model.Evidences;
+import org.engcia.model.EvidencesSAC;
 import org.engcia.services.AlertServiceSAC;
 import org.engcia.services.AlertServiceSLA;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,18 +37,19 @@ public class AlertController {
     // POST endpoint to fetch the next question
     @PostMapping("/process-alert")
     public ResponseEntity<AlertResponse> processAlert(@RequestBody Map<String, Object> alertContext) {
+        ObjectMapper mapper = new ObjectMapper();
+        //System.out.println("Received data :) : " + alertContext);
         String alertId = (String) alertContext.get("alertId");
-        String expertSystem = (String) alertContext.get("expertSystem");
-        String userResponse = (String) alertContext.get("userResponse");
-        Integer step = (Integer) alertContext.get("questionState");
-        AlertQuestion input = new AlertQuestion(alertId, expertSystem, null, null, step, userResponse);
+
+
         AlertResponse response = null;
 
         switch (alertId){
             case "SAC":
-                response = alertService.runEngine(input);
+                //response = alertService.runEngine(input);
                 break;
             case "SLA":
+                EvidencesSAC input = mapper.convertValue(alertContext.get("input"), EvidencesSAC.class);
                 response = alertServiceSLA.runEngine(input);
                 break;
 

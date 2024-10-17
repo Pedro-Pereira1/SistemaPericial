@@ -2,34 +2,26 @@ package org.engcia.model;
 
 import org.engcia.Utils.Question;
 
+import java.util.LinkedList;
 import java.util.Objects;
 
 public class AlertResponse {
-    private String alertId;
     private String currentStep; // "question" or "conclusion"
     private Question question;
     private Conclusion conclusion;
-    private int step; // To keep track of the question step in the flow
-    private String userResponse;
+    private EvidencesSAC EvidencesSAC;
+    private String parameterNumber;
 
-    public AlertResponse(String alertId, String currentStep, Question question, Conclusion conclusion, int step, String userResponse) {
-        this.alertId = alertId;
+
+    public AlertResponse() {
+    }
+
+    public AlertResponse(String currentStep, Question question, Conclusion conclusion, EvidencesSAC evidencesSAC, String parameterNumber) {
         this.currentStep = currentStep;
         this.question = question;
         this.conclusion = conclusion;
-        this.step = step;
-        this.userResponse = userResponse;
-    }
-
-
-
-
-    public String getAlertId() {
-        return alertId;
-    }
-
-    public void setAlertId(String alertId) {
-        this.alertId = alertId;
+        this.EvidencesSAC = evidencesSAC;
+        this.parameterNumber = parameterNumber;
     }
 
     public String getCurrentStep() {
@@ -56,32 +48,30 @@ public class AlertResponse {
         this.conclusion = conclusion;
     }
 
-    public int getStep() {
-        return step;
+    public org.engcia.model.EvidencesSAC getEvidencesSAC() {
+        return EvidencesSAC;
     }
 
-    public void setStep(int step) {
-        this.step = step;
+    public void setEvidencesSAC(org.engcia.model.EvidencesSAC evidencesSAC) {
+        EvidencesSAC = evidencesSAC;
     }
 
-    public String getUserResponse() {
-        return userResponse;
+    public String getParameterNumber() {
+        return parameterNumber;
     }
 
-    public void setUserResponse(String userResponse) {
-        this.userResponse = userResponse;
+    public void setParameterNumber(String parameterNumber) {
+        this.parameterNumber = parameterNumber;
     }
 
     @Override
     public String toString() {
         return "AlertResponse{" +
-                "alertId='" + alertId + '\'' +
-                ", currentStep='" + currentStep + '\'' +
+                "currentStep='" + currentStep + '\'' +
                 ", question=" + question +
                 ", conclusion=" + conclusion +
-                ", step=" + step +
-                ", userResponse='" + userResponse + '\'' +
+                ", EvidencesSAC=" + EvidencesSAC +
+                ", parameterNumber=" + parameterNumber +
                 '}';
     }
-
 }

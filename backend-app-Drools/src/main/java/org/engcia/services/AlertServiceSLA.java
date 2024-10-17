@@ -2,6 +2,7 @@ package org.engcia.services;
 
 import org.engcia.model.AlertQuestion;
 import org.engcia.model.AlertResponse;
+import org.engcia.model.EvidencesSAC;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -16,9 +17,11 @@ import org.slf4j.LoggerFactory;
 public class AlertServiceSLA {
     static final Logger LOG = LoggerFactory.getLogger(AlertServiceSLA.class);
 
-    public AlertResponse runEngine(AlertQuestion input) {
-        System.out.println("Inside SLA");
+    public AlertResponse runEngine(EvidencesSAC input) {
+        //System.out.println("Inside SLA");
         System.out.println(input.toString());
+
+
         final AlertResponse[] output = {null};
         try {
             // load up the knowledge base
@@ -51,7 +54,7 @@ public class AlertServiceSLA {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        System.out.println("Output: " + output[0].toString());
+        //System.out.println("Output: " + output[0].toString());
         return output[0];
     }
 }

@@ -3,8 +3,10 @@ package org.engcia.model;
 public class Conclusion {
     public static final String UNKNOWN = "Unknown";
     public static final String CLASSIFY_FP = "Classify as False Positive";
-    public static final String DISABLE_ACCOUNT = "Disable account created";
-    public static final String REVOKE_ACCESS = "Revoke creator's access";
+    public static final String RESET_PASSWORD_REVOKE_TOKENS = "Reset password and revoke tokens\n Inform user and educated on preventing future incidents";
+    public static final String REVERSE_TRANSACTION = "Classify as False Positive\n Reverse account suspension";
+    public static final String NOTIFY_SUPPORT_TEAM = "Notify support team";
+
 
     private String description;
 
