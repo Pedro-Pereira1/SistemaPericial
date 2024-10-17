@@ -7,7 +7,7 @@ import Dashboard from './components/pages/Dashboard';
 import AlertPage1 from './components/pages/AlertPage1';
 import AlertPage2 from './components/pages/AlertPage2';
 import AlertPage3 from './components/pages/AlertPage3';
-import AlertPage4 from './components/pages/AlertPage4';
+import AlertPage4 from './components/pages/AlertPage_SLA';
 import History from './components/pages/History';
 import Settings from './components/pages/Settings';
 import Profile from './components/pages/Profile';

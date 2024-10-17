@@ -12,12 +12,21 @@ interface Conclusion {
   summary: string;
 }
 
-interface AlertResponse {
+interface EvidencesSAC {
   alertId: string;
+  multipleLocations: string | null;
+  legitimateBehavior: string | null;
+  abnormalPattern: string | null;
+  mfaEnabled: string | null;
+  userContacted: string | null;
+}
+
+interface AlertResponse {
   currentStep: 'question' | 'conclusion';
   question?: Question;
   conclusion?: Conclusion;
-  questionState: Number;
+  evidencesSAC?: EvidencesSAC;  // <-- New field
+  parameterNumber: String;
 }
 
 interface Message {
@@ -25,20 +34,27 @@ interface Message {
   text: string;
 }
 
-const AlertPage1: React.FC = () => {
+const AlertPage_SLA: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>(""); // User input field
   const [expertSystem, setExpertSystem] = useState<string | null>(null); // Selected expert system
-  const [questionState, setQuestionState] = useState<Number | null>(null); // Track current question state
   const [isProcessComplete, setIsProcessComplete] = useState<boolean>(false); // Track when process is complete
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Track the current question
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error message for invalid input
+  const [alertResponse, setAlertResponse] = useState<AlertResponse | null>(null); // Track the alert response
+  const [evidencesSAC, setEvidencesSAC] = useState<EvidencesSAC>({
+    alertId: "SLA",
+    multipleLocations: "null",
+    legitimateBehavior: "null",
+    abnormalPattern: "null",
+    mfaEnabled: "null",
+    userContacted: "null"
+  });
 
   // Initialize the chat with the first question
   useEffect(() => {
     const initialQuestion = "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')";
     setMessages([{ sender: 'bot', text: initialQuestion }]);
-    setQuestionState(0);
   }, []);
 
   // Function to handle sending a message
@@ -53,7 +69,14 @@ const AlertPage1: React.FC = () => {
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
+      console.log("1." + evidencesSAC.multipleLocations);
+      console.log("2." + alertResponse?.parameterNumber);
+      console.log("3." + message.toLowerCase());
+      update(alertResponse?.parameterNumber as keyof EvidencesSAC, message.toLowerCase());      
+      console.log("4." + evidencesSAC.multipleLocations);
     }
+    
+    
 
 
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
@@ -68,6 +91,10 @@ const AlertPage1: React.FC = () => {
 
     // Clear input after sending
     setUserInput("");
+  };
+
+  const update = (param: keyof EvidencesSAC, value: string) => {
+    evidencesSAC[param] = value;
   };
 
   /// Handle expert system selection
@@ -97,7 +124,7 @@ const AlertPage1: React.FC = () => {
       alertId: "SLA",
       expertSystem: systemToUse!,
       userResponse,
-      questionState,
+      input: evidencesSAC
     };
 
     try {
@@ -116,12 +143,14 @@ const AlertPage1: React.FC = () => {
           { sender: 'bot', text: `Next Question: ${result.question?.text}` }
         ]);
         setCurrentQuestion(result.question || null); // Update current question
-        setQuestionState(result.step); // Update question state
+        setAlertResponse(result); // Update alert response
+        setEvidencesSAC(result.evidencesSAC);
       } else if (result.currentStep === 'conclusion') {
         setMessages(prevMessages => [
           ...prevMessages,
           { sender: 'bot', text: `Conclusion: ${result.conclusion?.description}` }
         ]);
+        
         setIsProcessComplete(true); // Mark process as complete
       }
     } catch (error) {
@@ -145,9 +174,16 @@ const AlertPage1: React.FC = () => {
     setMessages([{ sender: 'bot', text: "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')" }]);
     setUserInput("");
     setExpertSystem(null);
-    setQuestionState(0);
     setCurrentQuestion(null);
     setIsProcessComplete(false);
+    setEvidencesSAC({
+      alertId: "SLA",
+      multipleLocations: "null",
+      legitimateBehavior: "null",
+      abnormalPattern: "null",
+      mfaEnabled: "null",
+      userContacted: "null"
+    });
   };
 
   return (
@@ -187,4 +223,4 @@ const AlertPage1: React.FC = () => {
   );
 };
 
-export default AlertPage1;
+export default AlertPage_SLA;
