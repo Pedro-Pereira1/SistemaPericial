@@ -7,7 +7,6 @@
 :- use_module(library(http/json_convert)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/json)).
-:- use_module(library(http/http_cors)).
 :- use_module(library(http/http_open)).
 :- [prolog].
 :- dynamic criador/1.
@@ -17,6 +16,7 @@
 :-http_handler('/api/prolog/hello_world', hello_world, [method(get)]).
 hello_world(Request):-
     http_parameters(Request,[]),
+    cors_enable,
     Response = _{message:"Hello World"},
     atom_json_dict(JSON, Response, []),
     reply_json(JSON).
@@ -39,18 +39,43 @@ test(Request) :-
     },
     reply_json(DictOut).
 
-:- http_handler('/api/prolog/handler', handle_question, [method(post)]).
+:- http_handler('/api/prolog/handler', handle_question, []).
 handle_question(Request):-
+    option(method(options), Request),
+    !,
+    cors_enable(Request,[methods([post])]),
+    format('Content-type: application/json\r\n'),
+    format('~n'). 
+
+handle_question(Request):-
+    cors_enable,
     http_read_json_dict(Request, JSONDict),
     create_fact_from_json(JSONDict, Fact),
-    create_dynamic_fact(Fact, N),
-    arranca_motor,
-    facto(N,questao(Question, Type, PossibleResponses)),
-    DictOut = _{
-        question: Question,
-        type: Type,
-        possible_responses: PossibleResponses
-    },
+    create_dynamic_fact(Fact, _),
+    !,
+    (
+        arranca_motor,
+        ultimo_facto(N1),
+        facto(N1,_)
+        ;
+        ultimo_facto(N1),
+        facto(N1,_)
+    ),
+    (
+        facto(N1,questao(Question, Type, PossibleResponses, ParameterNumber)),
+        DictOut = _{
+            question: Question,
+            type: Type,
+            possible_responses: PossibleResponses,
+            parameter_number: ParameterNumber
+        }
+        ;
+        facto(N1,conclusao(Conlcusao)),
+        DictOut = _{
+            conclusion: Conlcusao
+        }
+    )
+    ,
     reply_json(DictOut).
 
 

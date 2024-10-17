@@ -1,22 +1,149 @@
-:-dynamic facto/2,ultimo_facto/1.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Metaconhecimento
 
-facto_dispara_regras(criador(conhecido), [1, 2]).
-facto_dispara_regras(respodeu(sim), [2]).
-
+facto_dispara_regras(alert(1, "null", "null", "null", "null", "null", "null", "null", "null", "null"), [1]). % Regra 1
+facto_dispara_regras(alert(1, "Yes", "null", "null", "null", "null", "null", "null", "null", "null"), [2]). % Regra 2
+facto_dispara_regras(alert(1, "Yes", "Yes", "null", "null", "null", "null", "null", "null", "null"), [3]). % Regra 3
+facto_dispara_regras(alert(1, "Yes", "No", "null", "null", "null", "null", "null", "null", "null"), [4]). % Regra 4
+facto_dispara_regras(alert(1, "No", "null", "null", "null", "null", "null", "null", "null", "null"), [5]). % Regra 5
+facto_dispara_regras(alert(1, "No", "null", "Yes", "null", "null", "null", "null", "null", "null"), [6]). % Regra 6
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "null", "null", "null", "null", "null"), [7]). % Regra 7
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "Yes", "null", "null", "null", "null"), [8]). % Regra 8
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "Yes", "Yes", "null", "Yes", "null"), [9]). % Regra 9
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "Yes", "Yes", "null", "Yes", "null"), [10]). % Regra 10
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "Yes", "Yes", "null", "No", "null"), [11]). % Regra 11
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "Yes", "No", "null", "null", "null"), [12]). % Regra 12
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "No", "null", "null", "null", "null"), [13]). % Regra 13
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "No", "Yes", "null", "null", "null"), [14]). % Regra 14
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "No", "Yes", "Yes", "null", "null"), [15]). % Regra 15
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "No", "Yes", "No", "null", "null"), [16]). % Regra 16
+facto_dispara_regras(alert(1, "No", "null", "Yes", "Yes", "No", "No", "null", "null", "null"), [17]). % Regra 17
+facto_dispara_regras(alert(1, "No", "null", "Yes", "No", "null", "null", "null", "null", "null"), [18]). % Regra 18
+facto_dispara_regras(alert(1, "No", "null", "Yes", "No", "null", "Yes", "null", "null", "null"), [19]). % Regra 19
+facto_dispara_regras(alert(1, "No", "null", "Yes", "No", "null", "Yes", "Yes", "null", "null"), [20]). % Regra 20
+facto_dispara_regras(alert(1, "No", "null", "Yes", "No", "null", "Yes", "No", "null", "null"), [21]). % Regra 21
+facto_dispara_regras(alert(1, "No", "null", "Yes", "No", "null", "No", "null", "null", "null"), [22]). % Regra 22
+facto_dispara_regras(alert(1, "No", "null", "No", "null", "null", "null", "null", "null", "null"), [23]). % Regra 23
+facto_dispara_regras(alert(1, "No", "null", "No", "null", "null", "null", "null", "null", "Yes"), [24]). % Regra 24
+facto_dispara_regras(alert(1, "No", "null", "No", "null", "null", "Yes", "null", "null", "Yes"), [25]). % Regra 25
+facto_dispara_regras(alert(1, "No", "null", "No", "null", "null", "Yes", "Yes", "null", "Yes"), [26]). % Regra 26
+facto_dispara_regras(alert(1, "No", "null", "No", "null", "null", "Yes", "No", "null", "Yes"), [27]). % Regra 27
+facto_dispara_regras(alert(1, "No", "null", "No", "null", "null", "No", "null", "null", "Yes"), [28]). % Regra 28
+facto_dispara_regras(alert(1, "No", "null", "No", "null", "null", "No", "null", "null", "No"), [29]). % Regra 29
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-ultimo_facto(0).
-
-
 regra 1
-	se [criador(conhecido)]
-	entao [cria_facto(questao(sim, nao, "Respondeu?"))].
+	se [alert(1, "null", "null", "null", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_1"))].
 
 regra 2
-	se [criador(conhecido) e respondeu(sim)]
-	entao [cria_facto(falso_positivo(verdade))].
+	se [alert(1, "Yes", "null", "null", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"], "was_the_user_1"))].
 
+regra 3
+	se [alert(1, "Yes", "Yes", "null", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
 
+regra 4
+	se [alert(1, "Yes", "No", "null", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
+
+regra 5
+	se [alert(1, "No", "null", "null", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("São múltiplos IPs?", "multiple-choice", ["Yes", "No"], "are_there_multiple_ips"))].
+
+regra 6
+	se [alert(1, "No", "null", "Yes", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("A quantidade de IPs faz sentido?", "multiple-choice", ["Yes", "No"], "does_the_number_of_ips_make_sense"))].
+
+regra 7
+	se [alert(1, "No", "null", "Yes", "Yes", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("A recorrência é justificável?", "multiple-choice", ["Yes", "No"], "is_the_reccurence_just"))].
+
+regra 8
+	se [alert(1, "No", "null", "Yes", "Yes", "Yes", "null", "null", "null", "null")]
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_2"))].
+
+regra 9
+	se [alert(1, "No", "null", "Yes", "Yes", "Yes", "Yes", "null", "Yes", "null")]
+	entao [cria_facto(questao("A origem dos IPs é justificável?", "multiple-choice", ["Yes", "No"], "origins_just"))].
+
+regra 10
+	se [alert(1, "No", "null", "Yes", "Yes", "Yes", "Yes", "null", "Yes", "null")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
+
+regra 11
+	se [alert(1, "No", "null", "Yes", "Yes", "Yes", "Yes", "null", "No", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
+
+regra 12
+	se [alert(1, "No", "null", "Yes", "Yes", "Yes", "No", "null", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta.", "multiple-choice", ["Yes", "No"]))].
+
+regra 13
+	se [alert(1, "No", "null", "Yes", "Yes", "No", "null", "null", "null", "null")]
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_2"))].
+
+regra 14
+	se [alert(1, "No", "null", "Yes", "Yes", "No", "Yes", "null", "null", "null")]
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"], "was_the_user_2"))].
+
+regra 15
+	se [alert(1, "No", "null", "Yes", "Yes", "No", "Yes", "Yes", "null", "null")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
+
+regra 16
+	se [alert(1, "No", "null", "Yes", "Yes", "No", "Yes", "No", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
+
+regra 17
+	se [alert(1, "No", "null", "Yes", "Yes", "No", "No", "null", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta."))].
+
+regra 18
+	se [alert(1, "No", "null", "Yes", "No", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("Abrir caso\nIdentificar o utilizador\nO utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_2"))].
+
+regra 19
+	se [alert(1, "No", "null", "Yes", "No", "null", "Yes", "null", "null", "null")]
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"], "was_the_user_2"))].
+
+regra 20
+	se [alert(1, "No", "null", "Yes", "No", "null", "Yes", "Yes", "null", "null")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
+
+regra 21
+	se [alert(1, "No", "null", "Yes", "No", "null", "Yes", "No", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
+
+regra 22
+	se [alert(1, "No", "null", "Yes", "No", "null", "No", "null", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta definitivamente."))].
+
+regra 23
+	se [alert(1, "No", "null", "No", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("O IP é nacional?", "multiple-choice", ["Yes", "No"], "national_ip"))].
+
+regra 24
+	se [alert(1, "No", "null", "No", "null", "null", "null", "null", "null", "Yes")]
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["Yes", "No"], "user_known_2"))].
+
+regra 25
+	se [alert(1, "No", "null", "No", "null", "null", "Yes", "null", "null", "Yes")]
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["Yes", "No"], "was_the_user_2"))].
+
+regra 26
+	se [alert(1, "No", "null", "No", "null", "null", "Yes", "Yes", "null", "Yes")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
+
+regra 27
+	se [alert(1, "No", "null", "No", "null", "null", "Yes", "No", "null", "Yes")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
+
+regra 28
+	se [alert(1, "No", "null", "No", "null", "null", "No", "null", "null", "Yes")]
+	entao [cria_facto(conclusao("Bloquear a conta"))].
+
+regra 29
+	se [alert(1, "No", "null", "No", "null", "null", "No", "null", "null", "No")]
+	entao [cria_facto(conclusao("Abrir caso\nBloquear o IP."))].
