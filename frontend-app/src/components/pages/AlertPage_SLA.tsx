@@ -12,7 +12,7 @@ interface Conclusion {
   summary: string;
 }
 
-interface EvidencesSAC {
+interface Evidences {
   alertId: string;
   multipleLocations: string | null;
   legitimateBehavior: string | null;
@@ -25,7 +25,7 @@ interface AlertResponse {
   currentStep: 'question' | 'conclusion';
   question?: Question;
   conclusion?: Conclusion;
-  evidencesSAC?: EvidencesSAC;  // <-- New field
+  evidences?: Evidences;  // <-- New field
   parameterNumber: String;
 }
 
@@ -42,7 +42,7 @@ const AlertPage_SLA: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Track the current question
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error message for invalid input
   const [alertResponse, setAlertResponse] = useState<AlertResponse | null>(null); // Track the alert response
-  const [evidencesSAC, setEvidencesSAC] = useState<EvidencesSAC>({
+  const [evidences, setEvidences] = useState<Evidences>({
     alertId: "SLA",
     multipleLocations: "null",
     legitimateBehavior: "null",
@@ -69,11 +69,12 @@ const AlertPage_SLA: React.FC = () => {
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
-      console.log("1." + evidencesSAC.multipleLocations);
+      console.log("0." + evidences);
+      console.log("1." + evidences.multipleLocations);
       console.log("2." + alertResponse?.parameterNumber);
       console.log("3." + message.toLowerCase());
-      update(alertResponse?.parameterNumber as keyof EvidencesSAC, message.toLowerCase());      
-      console.log("4." + evidencesSAC.multipleLocations);
+      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
+      console.log("4." + evidences.multipleLocations);
     }
     
     
@@ -93,8 +94,8 @@ const AlertPage_SLA: React.FC = () => {
     setUserInput("");
   };
 
-  const update = (param: keyof EvidencesSAC, value: string) => {
-    evidencesSAC[param] = value;
+  const update = (param: keyof Evidences, value: string) => {
+    evidences[param] = value;
   };
 
   /// Handle expert system selection
@@ -124,7 +125,7 @@ const AlertPage_SLA: React.FC = () => {
       alertId: "SLA",
       expertSystem: systemToUse!,
       userResponse,
-      input: evidencesSAC
+      input: evidences
     };
 
     try {
@@ -144,7 +145,7 @@ const AlertPage_SLA: React.FC = () => {
         ]);
         setCurrentQuestion(result.question || null); // Update current question
         setAlertResponse(result); // Update alert response
-        setEvidencesSAC(result.evidencesSAC);
+        setEvidences(result.evidences);
       } else if (result.currentStep === 'conclusion') {
         setMessages(prevMessages => [
           ...prevMessages,
@@ -176,7 +177,7 @@ const AlertPage_SLA: React.FC = () => {
     setExpertSystem(null);
     setCurrentQuestion(null);
     setIsProcessComplete(false);
-    setEvidencesSAC({
+    setEvidences({
       alertId: "SLA",
       multipleLocations: "null",
       legitimateBehavior: "null",
@@ -184,6 +185,23 @@ const AlertPage_SLA: React.FC = () => {
       mfaEnabled: "null",
       userContacted: "null"
     });
+  };
+
+  const fetchWhyExplanation = async () => {
+    const alertContext = {
+      alertId: "SLA",
+      input: evidences
+    };
+
+    if (expertSystem === 'expertsystem1' && currentQuestion) {
+      try {
+        const explanation = await AlertService.getWhyExplanationDrools(alertContext);
+        alert(`Why this question? ${explanation}`); // Use window alert to show the reason
+      } catch (error) {
+        console.error("Error fetching why explanation:", error);
+        alert("Unable to fetch the reason for this question.");
+      }
+    }
   };
 
   return (
@@ -215,6 +233,9 @@ const AlertPage_SLA: React.FC = () => {
             style={{ flex: 1, padding: '10px' }}
           />
           <button type="submit" style={{ padding: '10px' }}>Send</button>
+          {expertSystem === 'expertsystem1' && currentQuestion && (
+            <button title= "Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px'}} onClick={fetchWhyExplanation}>Why?</button>
+          )}
         </form>
       ) : (
         <button onClick={handleRestart} style={{ padding: '10px', marginTop: '10px' }}>Restart</button>
