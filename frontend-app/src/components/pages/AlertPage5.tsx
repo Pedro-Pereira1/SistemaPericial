@@ -12,8 +12,22 @@ interface Conclusion {
   summary: string;
 }
 
-interface Evidences {
+interface AlertResponse {
   alertId: string;
+  currentStep: 'question' | 'conclusion';
+  question?: Question;
+  conclusion?: Conclusion;
+  data?:MultipleLoginFailuresForAUserAccount;
+  questionState: Number;
+}
+
+interface Message {
+  sender: 'bot' | 'user';
+  text: string;
+}
+
+
+interface MultipleLoginFailuresForAUserAccount {
     user_known_1: string | null;
     was_the_user_1: string | null;
     are_there_multiple_ips: string | null;
@@ -25,46 +39,42 @@ interface Evidences {
     national_ip: string | null;
 }
 
-interface AlertResponse {
-  currentStep: 'question' | 'conclusion';
-  question?: Question;
-  conclusion?: Conclusion;
-  evidences?: Evidences;  // <-- New field
-  parameterNumber: String;
-}
+const initialState: MultipleLoginFailuresForAUserAccount = {
+    user_known_1: null,
+    was_the_user_1: null,
+    are_there_multiple_ips: null,
+    does_the_number_of_ips_make_sense: null,
+    is_the_reccurence_just: null,
+    user_known_2: null,
+    was_the_user_2: null,
+    origins_just: null,
+    national_ip: null,
+};
 
-interface Message {
-  sender: 'bot' | 'user';
-  text: string;
-}
-const base:Evidences = {
-  alertId:"1",
-  user_known_1: "null",
-  was_the_user_1: "null",
-  are_there_multiple_ips: "null",
-  does_the_number_of_ips_make_sense: "null",
-  is_the_reccurence_just: "null",
-  user_known_2: "null",
-  was_the_user_2: "null",
-  origins_just: "null",
-  national_ip: "null"
-}
-
-const AlertPage_SLA: React.FC = () => {
+const AlertPage2: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>(""); // User input field
   const [expertSystem, setExpertSystem] = useState<string | null>(null); // Selected expert system
+  const [questionState, setQuestionState] = useState<Number | null>(null); // Track current question state
   const [isProcessComplete, setIsProcessComplete] = useState<boolean>(false); // Track when process is complete
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Track the current question
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error message for invalid input
-  const [alertResponse, setAlertResponse] = useState<AlertResponse | null>(null); // Track the alert response
-  const [evidences, setEvidences] = useState<Evidences>(base);
+  const [data, setData] = useState<MultipleLoginFailuresForAUserAccount>(initialState);
 
-  // Initialize the chat with the first question
+
   useEffect(() => {
     const initialQuestion = "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')";
     setMessages([{ sender: 'bot', text: initialQuestion }]);
+    setQuestionState(0);
   }, []);
+
+    // Function to update a specific parameter
+    const updateValue = (parameterName: keyof MultipleLoginFailuresForAUserAccount, value: string | null) => {
+        setData(prevState => ({
+            ...prevState,
+            [parameterName]: value,
+        }));
+    };
 
   // Function to handle sending a message
   const sendMessage = async (message: string) => {
@@ -78,13 +88,7 @@ const AlertPage_SLA: React.FC = () => {
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
-      console.log("0." + evidences);
-      console.log("2." + alertResponse?.parameterNumber);
-      console.log("3." + message.toLowerCase());
-      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
     }
-    
-    
 
 
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
@@ -99,10 +103,6 @@ const AlertPage_SLA: React.FC = () => {
 
     // Clear input after sending
     setUserInput("");
-  };
-
-  const update = (param: keyof Evidences, value: string) => {
-    evidences[param] = value;
   };
 
   /// Handle expert system selection
@@ -124,7 +124,8 @@ const AlertPage_SLA: React.FC = () => {
       ]);
     }
   };
-  const convertToJsonFormat = (data: Evidences): { fact_name: string; variables: (number | string)[] } => {
+
+  const convertToJsonFormat = (data: MultipleLoginFailuresForAUserAccount): { fact_name: string; variables: (number | string)[] } => {
     return {
         fact_name: "alert",
         variables: [
@@ -140,15 +141,15 @@ const AlertPage_SLA: React.FC = () => {
             data.national_ip ?? "null",
         ]
     };
-  }
+};
   // Fetch the next question or conclusion from the backend
   const fetchNextQuestionOrConclusion = async (userResponse: string, expertSystemOverride?: string) => {
     const systemToUse = expertSystemOverride || expertSystem; // Use the override if available, otherwise use state
     const alertContext = {
-      alertId: "1",
+      alertId: "SLA",
       expertSystem: systemToUse!,
       userResponse,
-      input: evidences
+      questionState,
     };
 
     try {
@@ -158,8 +159,9 @@ const AlertPage_SLA: React.FC = () => {
       if (alertContext.expertSystem === 'expertsystem1') {
         result = await AlertService.processAlertDrools(alertContext);
       } else if (alertContext.expertSystem === 'expertsystem2') {
-        const x = convertToJsonFormat(alertContext.input);
-        result = await AlertService.processAlertProlog(x);
+        const json = convertToJsonFormat(data)
+        result = await AlertService.processAlertProlog(json);
+        console.log(result.question)
       }
 
       if (result.currentStep === 'question') {
@@ -168,14 +170,12 @@ const AlertPage_SLA: React.FC = () => {
           { sender: 'bot', text: `Next Question: ${result.question?.text}` }
         ]);
         setCurrentQuestion(result.question || null); // Update current question
-        setAlertResponse(result); // Update alert response
-        //setEvidences(result.evidences);
+        setQuestionState(result.step); // Update question state
       } else if (result.currentStep === 'conclusion') {
         setMessages(prevMessages => [
           ...prevMessages,
           { sender: 'bot', text: `Conclusion: ${result.conclusion?.description}` }
         ]);
-        
         setIsProcessComplete(true); // Mark process as complete
       }
     } catch (error) {
@@ -195,32 +195,13 @@ const AlertPage_SLA: React.FC = () => {
   };
 
   // Restart the process by resetting the state
-  const handleRestart = async () => {
+  const handleRestart = () => {
     setMessages([{ sender: 'bot', text: "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')" }]);
     setUserInput("");
     setExpertSystem(null);
+    setQuestionState(0);
     setCurrentQuestion(null);
     setIsProcessComplete(false);
-    setEvidences({
-      alertId:"1",
-      user_known_1: "null",
-      was_the_user_1: "null",
-      are_there_multiple_ips: "null",
-      does_the_number_of_ips_make_sense: "null",
-      is_the_reccurence_just: "null",
-      user_known_2: "null",
-      was_the_user_2: "null",
-      origins_just: "null",
-      national_ip: "null"
-    });
-    await AlertService.reset_prolog();
-  };
-
-  const fetchWhyExplanation = async () => {
-    const alertContext = {
-      alertId: "1",
-      input: evidences
-    };
   };
 
   return (
@@ -252,9 +233,6 @@ const AlertPage_SLA: React.FC = () => {
             style={{ flex: 1, padding: '10px' }}
           />
           <button type="submit" style={{ padding: '10px' }}>Send</button>
-          {expertSystem === 'expertsystem1' && currentQuestion && (
-            <button title= "Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px'}} onClick={fetchWhyExplanation}>Why?</button>
-          )}
         </form>
       ) : (
         <button onClick={handleRestart} style={{ padding: '10px', marginTop: '10px' }}>Restart</button>
@@ -263,4 +241,4 @@ const AlertPage_SLA: React.FC = () => {
   );
 };
 
-export default AlertPage_SLA;
+export default AlertPage2;
