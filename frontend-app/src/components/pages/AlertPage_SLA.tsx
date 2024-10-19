@@ -27,6 +27,7 @@ interface AlertResponse {
   conclusion?: Conclusion;
   evidences?: Evidences;  // <-- New field
   parameterNumber: String;
+  relevance: String;
 }
 
 interface Message {
@@ -145,7 +146,7 @@ const AlertPage_SLA: React.FC = () => {
         ]);
         setCurrentQuestion(result.question || null); // Update current question
         setAlertResponse(result); // Update alert response
-        setEvidences(result.evidences);
+        //setEvidences(result.evidences);
       } else if (result.currentStep === 'conclusion') {
         setMessages(prevMessages => [
           ...prevMessages,
@@ -204,6 +205,19 @@ const AlertPage_SLA: React.FC = () => {
     }
   };
 
+  const fetchRelevanceExplanation = async () => {
+    if (expertSystem === 'expertsystem1' && currentQuestion) {
+      try {
+        //const explanation = await AlertService.getWhyExplanationDrools(alertContext);
+        const explanation = alertResponse?.relevance;
+        alert(`Why this question? ${explanation}`); // Use window alert to show the reason
+      } catch (error) {
+        console.error("Error fetching why explanation:", error);
+        alert("Unable to fetch the reason for this question.");
+      }
+    }
+  };
+
   return (
     <div>
       <h1>Simultaneous Login Activity</h1>
@@ -223,7 +237,16 @@ const AlertPage_SLA: React.FC = () => {
         </div>
       )}
 
-      {!isProcessComplete ? (
+{isProcessComplete ? (
+        <div style={{ display: 'flex', marginTop: '10px' }}>
+          <button onClick={handleRestart} style={{ padding: '10px' }}>Restart</button>
+          {expertSystem === 'expertsystem1' && (
+            <button title="Why was this conclusion made?" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchWhyExplanation}>
+              Why
+            </button>
+          )}
+        </div>
+      ) : (
         <form onSubmit={handleSubmitForm} style={{ display: 'flex', marginTop: '10px' }}>
           <input
             type="text"
@@ -234,11 +257,11 @@ const AlertPage_SLA: React.FC = () => {
           />
           <button type="submit" style={{ padding: '10px' }}>Send</button>
           {expertSystem === 'expertsystem1' && currentQuestion && (
-            <button title= "Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px'}} onClick={fetchWhyExplanation}>Why?</button>
+            <button title="Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchRelevanceExplanation}>
+              Relevance
+            </button>
           )}
         </form>
-      ) : (
-        <button onClick={handleRestart} style={{ padding: '10px', marginTop: '10px' }}>Restart</button>
       )}
     </div>
   );

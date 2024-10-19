@@ -4,7 +4,7 @@ import 'boxicons/css/boxicons.min.css'; // Import Boxicons for the icons.
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'; // Importing react-router-dom
 
 import Dashboard from './components/pages/Dashboard';
-import AlertPage1 from './components/pages/AlertPage1';
+import AlertPage1 from './components/pages/AlertPage_Phishing';
 import AlertPage2 from './components/pages/AlertPage2';
 import AlertPage3 from './components/pages/AlertPage3';
 import AlertPage4 from './components/pages/AlertPage_SLA';
@@ -33,7 +33,7 @@ const App: React.FC = () => {
 
   // List of alert categories
   const alertCategories = [
-    { name: 'Suspicious Account Creation', path: '/alerts/category1' },
+    { name: 'Phishing Alert', path: '/alerts/category1' },
     { name: 'Category 2', path: '/alerts/category2' },
     { name: 'Category 3', path: '/alerts/category3' },
     { name: 'Simultaneous Login Activity', path: '/alerts/category4' },
