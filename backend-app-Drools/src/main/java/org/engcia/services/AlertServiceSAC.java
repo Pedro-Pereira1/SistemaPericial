@@ -1,7 +1,8 @@
 package org.engcia.services;
 
-import org.engcia.model.AlertQuestion;
+import org.engcia.Listener.CustomAgendaEventListener;
 import org.engcia.model.AlertResponse;
+import org.engcia.model.EvidencesSAC;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -12,19 +13,28 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class AlertServiceSAC {
     static final Logger LOG = LoggerFactory.getLogger(AlertServiceSLA.class);
+    private final CustomAgendaEventListener agendaEventListener = new CustomAgendaEventListener();
 
-    public AlertResponse runEngine(AlertQuestion input) {
-        System.out.println("Inside SAC");
+    public AlertResponse runEngine(EvidencesSAC input) {
+        //System.out.println("Inside SAC");
         System.out.println(input.toString());
+
+
         final AlertResponse[] output = {null};
         try {
             // load up the knowledge base
             KieServices ks = KieServices.Factory.get();
             KieContainer kContainer = ks.getKieClasspathContainer();
             final KieSession kSession = kContainer.newKieSession("ksession-rules");
+            kSession.addEventListener(agendaEventListener);
 
             // Query listener
             ViewChangedEventListener listener = new ViewChangedEventListener() {
@@ -51,7 +61,25 @@ public class AlertServiceSAC {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        System.out.println("Output: " + output[0].toString());
+        //System.out.println("Output: " + output[0].toString());
         return output[0];
     }
+
+    public String why() {
+        List<String> firedRules = agendaEventListener.getFiredRules();
+        if (firedRules.isEmpty()) {
+            return "No rules were fired for the provided AlertResponse.";
+        }
+
+        StringBuilder explanation = new StringBuilder();
+        explanation.append("The following rules were triggered during the decision process:\n");
+        for (String rule : firedRules) {
+            explanation.append("- ").append(rule).append("\n");
+        }
+
+        explanation.append("\nThe decision was made based on these rules and the provided input.");
+        firedRules.clear();
+        return explanation.toString();
+    }
+
 }

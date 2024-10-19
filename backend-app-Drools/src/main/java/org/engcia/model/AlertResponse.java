@@ -2,26 +2,25 @@ package org.engcia.model;
 
 import org.engcia.Utils.Question;
 
-import java.util.LinkedList;
-import java.util.Objects;
-
 public class AlertResponse {
     private String currentStep; // "question" or "conclusion"
     private Question question;
     private Conclusion conclusion;
-    private EvidencesSAC EvidencesSAC;
+    private Evidences evidences;
     private String parameterNumber;
+    private String relevance;
 
 
     public AlertResponse() {
     }
 
-    public AlertResponse(String currentStep, Question question, Conclusion conclusion, EvidencesSAC evidencesSAC, String parameterNumber) {
+    public AlertResponse(String currentStep, Question question, Conclusion conclusion, Evidences evidences, String parameterNumber, String relevance) {
         this.currentStep = currentStep;
         this.question = question;
         this.conclusion = conclusion;
-        this.EvidencesSAC = evidencesSAC;
+        this.evidences = evidences;
         this.parameterNumber = parameterNumber;
+        this.relevance = relevance;
     }
 
     public String getCurrentStep() {
@@ -48,12 +47,12 @@ public class AlertResponse {
         this.conclusion = conclusion;
     }
 
-    public org.engcia.model.EvidencesSAC getEvidencesSAC() {
-        return EvidencesSAC;
+    public Evidences getEvidences() {
+        return evidences;
     }
 
-    public void setEvidencesSAC(org.engcia.model.EvidencesSAC evidencesSAC) {
-        EvidencesSAC = evidencesSAC;
+    public void setEvidences(Evidences evidences) {
+        evidences = evidences;
     }
 
     public String getParameterNumber() {
@@ -64,14 +63,23 @@ public class AlertResponse {
         this.parameterNumber = parameterNumber;
     }
 
+    public String getRelevance() {
+        return relevance;
+    }
+
+    public void setRelevance(String relevance) {
+        this.relevance = relevance;
+    }
+
     @Override
     public String toString() {
         return "AlertResponse{" +
                 "currentStep='" + currentStep + '\'' +
                 ", question=" + question +
                 ", conclusion=" + conclusion +
-                ", EvidencesSAC=" + EvidencesSAC +
+                ", EvidencesSAC=" + evidences +
                 ", parameterNumber=" + parameterNumber +
+                ", relevance='" + relevance +
                 '}';
     }
 }
