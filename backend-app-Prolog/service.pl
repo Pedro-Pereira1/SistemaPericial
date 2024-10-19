@@ -64,15 +64,21 @@ handle_question(Request):-
     (
         facto(N1,questao(Question, Type, PossibleResponses, ParameterNumber)),
         DictOut = _{
-            question: Question,
-            type: Type,
-            possible_responses: PossibleResponses,
-            parameter_number: ParameterNumber
+            question: _{
+                text: Question,
+                type: Type,
+                possibleAnswers: PossibleResponses
+            },
+            parameterNumber: ParameterNumber,
+            currentStep: "question"
         }
         ;
         facto(N1,conclusao(Conlcusao)),
         DictOut = _{
-            conclusion: Conlcusao
+            conclusion: _{
+                description: Conlcusao
+            },
+            currentStep: "conclusion"
         }
     )
     ,
@@ -92,3 +98,18 @@ test_post_request(Question, Type, PossibleResponses):-
     trace,
     arranca_motor,
     facto(N,questao(Question, Type, PossibleResponses)).
+
+:- http_handler('/api/prolog/reset', handle_reset, []).
+handle_reset(Request):-
+    option(method(options), Request),
+    !,
+    cors_enable(Request,[methods([get])]),
+    format('Content-type: application/json\r\n'),
+    format('~n'). 
+handle_reset(_Request) :-
+    cors_enable,
+    retractall(facto(_, _)),
+    reply_json(_{status: 'success', message: 'Database reset.'}).
+
+
+

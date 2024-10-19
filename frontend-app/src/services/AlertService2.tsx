@@ -33,6 +33,26 @@ const AlertService = {
       console.error("Error processing alert:", error);
       throw error;
     }
+  },
+  
+  reset_prolog: async () => {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+      };
+
+      const response = await fetch("http://localhost:5000/api/prolog/reset", requestOptions);
+      const result = await response.json();
+
+      return result;
+    } catch (error) {
+      console.error("Error processing alert:", error);
+      throw error;
+    }
   }
 };
 
