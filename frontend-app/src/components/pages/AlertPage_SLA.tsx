@@ -54,6 +54,7 @@ const AlertPage_SLA: React.FC = () => {
 
   // Initialize the chat with the first question
   useEffect(() => {
+    AlertService.clearDrools(); // Clear the Drools session before starting
     const initialQuestion = "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')";
     setMessages([{ sender: 'bot', text: initialQuestion }]);
   }, []);
@@ -188,24 +189,32 @@ const AlertPage_SLA: React.FC = () => {
     });
   };
 
-  const fetchWhyExplanation = async () => {
+  const fetchHowExplanation = async () => {
     const alertContext = {
-      alertId: "SLA",
+      alertId: "Phishing",
       input: evidences
     };
-
+  
     if (expertSystem === 'expertsystem1' && currentQuestion) {
       try {
-        const explanation = await AlertService.getWhyExplanationDrools(alertContext);
-        alert(`Why this question? ${explanation}`); // Use window alert to show the reason
+        const explanationList = await AlertService.getHowExplanationDrools(alertContext);
+        
+        // Check if explanationList is indeed an array
+        if (Array.isArray(explanationList)) {
+          const formattedExplanation = explanationList.join('\n'); // Join the list into a single string, separated by newlines
+          alert(`How we reach this conclusion?\n${formattedExplanation}`);
+        } else {
+          alert("Explanation is not in the expected format.");
+        }
+        
       } catch (error) {
-        console.error("Error fetching why explanation:", error);
+        console.error("Error fetching how explanation:", error);
         alert("Unable to fetch the reason for this question.");
       }
     }
   };
 
-  const fetchRelevanceExplanation = async () => {
+  const fetchWhyExplanation = async () => {
     if (expertSystem === 'expertsystem1' && currentQuestion) {
       try {
         //const explanation = await AlertService.getWhyExplanationDrools(alertContext);
@@ -241,9 +250,9 @@ const AlertPage_SLA: React.FC = () => {
         <div style={{ display: 'flex', marginTop: '10px' }}>
           <button onClick={handleRestart} style={{ padding: '10px' }}>Restart</button>
           {expertSystem === 'expertsystem1' && (
-            <button title="Why was this conclusion made?" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchWhyExplanation}>
-              Why
-            </button>
+            <button title="Why was this conclusion made?" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchHowExplanation}>
+            How?
+          </button>
           )}
         </div>
       ) : (
@@ -257,7 +266,7 @@ const AlertPage_SLA: React.FC = () => {
           />
           <button type="submit" style={{ padding: '10px' }}>Send</button>
           {expertSystem === 'expertsystem1' && currentQuestion && (
-            <button title="Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchRelevanceExplanation}>
+            <button title="Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchWhyExplanation}>
               Relevance
             </button>
           )}
