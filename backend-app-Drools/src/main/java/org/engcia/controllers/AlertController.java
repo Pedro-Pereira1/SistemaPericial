@@ -2,35 +2,26 @@ package org.engcia.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.engcia.AlertProcessor;
 import org.engcia.model.*;
-import org.engcia.services.AlertServicePhishing;
-import org.engcia.services.AlertServiceSAC;
-import org.engcia.services.AlertServiceSLA;
+import org.engcia.services.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/alerts")
 public class AlertController {
-
     @Autowired
-    private AlertServiceSAC alertServiceSAC;
-    @Autowired
-    private AlertServiceSLA alertServiceSLA;
-    @Autowired
-    private AlertServicePhishing alertServicePhishing;
+    private AlertService alertService;
 
     // POST endpoint to fetch the next question
     @PostMapping("/process-alert")
     public ResponseEntity<AlertResponse> processAlert(@RequestBody Map<String, Object> alertContext) {
         ObjectMapper mapper = new ObjectMapper();
-        //System.out.println("Received data :) : " + alertContext);
         String alertId = (String) alertContext.get("alertId");
 
         AlertResponse response = null;
@@ -41,11 +32,11 @@ public class AlertController {
                 break;
             case "SLA":
                 EvidencesSLA input = mapper.convertValue(alertContext.get("input"), EvidencesSLA.class);
-                response = alertServiceSLA.runEngine(input);
+                response = alertService.runEngine(input);
                 break;
             case "Phishing":
                 EvidencesPhishing inputPhishing = mapper.convertValue(alertContext.get("input"), EvidencesPhishing.class);
-                response = alertServicePhishing.runEngine(inputPhishing);
+                response = alertService.runEngine(inputPhishing);
                 break;
 
         }
@@ -56,25 +47,31 @@ public class AlertController {
     }
 
     @PostMapping("/process-alert-why")
-    public ResponseEntity<String> processAlertWhy(@RequestBody Map<String, Object> alertContext) {
-        System.out.println("process-alert-why");
+    public ResponseEntity<List<String>> processAlertWhy(@RequestBody Map<String, Object> alertContext) {
         String alertId = (String) alertContext.get("alertId");
-        String why = null;
+        List<String> how = null;
 
         switch (alertId){
             case "SAC":
                 //response = alertService.runEngine(input);
                 break;
             case "SLA":
-                why = alertServiceSLA.why();
+                how = alertService.how();
                 break;
             case "Phishing":
-                why = alertServicePhishing.why();
+                how = alertService.how();
                 break;
         }
 
         // Get next step based on user input
 
-        return ResponseEntity.ok(why);
+        return ResponseEntity.ok(how);
     }
+
+    @PostMapping("/clear")
+    public void clear() {
+        alertService.clear();
+    }
+
+
 }
