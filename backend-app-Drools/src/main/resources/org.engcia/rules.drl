@@ -1,7 +1,6 @@
 package org.engcia;
 
 import org.engcia.model.AlertResponse
-import org.engcia.model.AlertQuestion
 import org.engcia.Utils.Question
 import org.engcia.model.EvidencesSLA
 import org.engcia.model.EvidencesPhishing
@@ -356,6 +355,22 @@ then
                                              "If the user can't validate the login, reset the password and revoke tokens to protect the account.");
     insert(output);
 end
+//================================================================================================
+//Multiple login failures for a single account
+
+
+//================================================================================================
+//Changes made to the firewall
+
+
+//================================================================================================
+//New user account
+
+
+//================================================================================================
+//User data has been changed
+
+
 //================================================================================================
 
 rule "Default: Unknown response or invalid step"
