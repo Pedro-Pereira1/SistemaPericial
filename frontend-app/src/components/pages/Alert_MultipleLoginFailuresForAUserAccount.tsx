@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService2";
+import AlertService from "../../services/AlertService_Alert_MultipleLoginFailuresForAUserAccount";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {
@@ -12,7 +12,7 @@ interface Conclusion {
   summary: string;
 }
 
-interface Evidences {
+interface MultipleLoginFailuresForAUserAccount {
   alertId: string;
     user_known_1: string | null;
     was_the_user_1: string | null;
@@ -29,7 +29,7 @@ interface AlertResponse {
   currentStep: 'question' | 'conclusion';
   question?: Question;
   conclusion?: Conclusion;
-  evidences?: Evidences;  // <-- New field
+  evidences?: MultipleLoginFailuresForAUserAccount;  // <-- New field
   parameterNumber: String;
 }
 
@@ -37,7 +37,7 @@ interface Message {
   sender: 'bot' | 'user';
   text: string;
 }
-const base:Evidences = {
+const base:MultipleLoginFailuresForAUserAccount = {
   alertId:"1",
   user_known_1: "null",
   was_the_user_1: "null",
@@ -50,7 +50,7 @@ const base:Evidences = {
   national_ip: "null"
 }
 
-const AlertPage_SLA: React.FC = () => {
+const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>(""); // User input field
   const [expertSystem, setExpertSystem] = useState<string | null>(null); // Selected expert system
@@ -58,7 +58,7 @@ const AlertPage_SLA: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Track the current question
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error message for invalid input
   const [alertResponse, setAlertResponse] = useState<AlertResponse | null>(null); // Track the alert response
-  const [evidences, setEvidences] = useState<Evidences>(base);
+  const [evidences, setMultipleLoginFailuresForAUserAccount] = useState<MultipleLoginFailuresForAUserAccount>(base);
 
   // Initialize the chat with the first question
   useEffect(() => {
@@ -78,10 +78,7 @@ const AlertPage_SLA: React.FC = () => {
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
-      console.log("0." + evidences);
-      console.log("2." + alertResponse?.parameterNumber);
-      console.log("3." + message.toLowerCase());
-      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
+      update(alertResponse?.parameterNumber as keyof MultipleLoginFailuresForAUserAccount, message.toLowerCase());      
     }
     
     
@@ -101,7 +98,7 @@ const AlertPage_SLA: React.FC = () => {
     setUserInput("");
   };
 
-  const update = (param: keyof Evidences, value: string) => {
+  const update = (param: keyof MultipleLoginFailuresForAUserAccount, value: string) => {
     evidences[param] = value;
   };
 
@@ -124,7 +121,7 @@ const AlertPage_SLA: React.FC = () => {
       ]);
     }
   };
-  const convertToJsonFormat = (data: Evidences): { fact_name: string; variables: (number | string)[] } => {
+  const convertToJsonFormat = (data: MultipleLoginFailuresForAUserAccount): { fact_name: string; variables: (number | string)[] } => {
     return {
         fact_name: "alert",
         variables: [
@@ -169,7 +166,7 @@ const AlertPage_SLA: React.FC = () => {
         ]);
         setCurrentQuestion(result.question || null); // Update current question
         setAlertResponse(result); // Update alert response
-        //setEvidences(result.evidences);
+        //setMultipleLoginFailuresForAUserAccount(result.evidences);
       } else if (result.currentStep === 'conclusion') {
         setMessages(prevMessages => [
           ...prevMessages,
@@ -201,7 +198,7 @@ const AlertPage_SLA: React.FC = () => {
     setExpertSystem(null);
     setCurrentQuestion(null);
     setIsProcessComplete(false);
-    setEvidences({
+    setMultipleLoginFailuresForAUserAccount({
       alertId:"1",
       user_known_1: "null",
       was_the_user_1: "null",
@@ -214,13 +211,6 @@ const AlertPage_SLA: React.FC = () => {
       national_ip: "null"
     });
     await AlertService.reset_prolog();
-  };
-
-  const fetchWhyExplanation = async () => {
-    const alertContext = {
-      alertId: "1",
-      input: evidences
-    };
   };
 
   return (
@@ -253,7 +243,7 @@ const AlertPage_SLA: React.FC = () => {
           />
           <button type="submit" style={{ padding: '10px' }}>Send</button>
           {expertSystem === 'expertsystem1' && currentQuestion && (
-            <button title= "Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px'}} onClick={fetchWhyExplanation}>Why?</button>
+            <button title= "Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px'}}>Why?</button>
           )}
         </form>
       ) : (
@@ -263,4 +253,4 @@ const AlertPage_SLA: React.FC = () => {
   );
 };
 
-export default AlertPage_SLA;
+export default Alert_MultipleLoginFailuresForAUserAccount;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService2";
+import AlertService from "../../services/AlertService_Alert_MultipleLoginFailuresForAUserAccount";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {

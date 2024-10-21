@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 import Dashboard from './components/pages/Dashboard';
 import AlertPage1 from './components/pages/AlertPage_Phishing';
-import AlertPage2 from './components/pages/AlertPage2';
+import AlertPage_MultipleLoginFailuresForAUserAccount from './components/pages/Alert_MultipleLoginFailuresForAUserAccount';
 import AlertPage3 from './components/pages/AlertPage3';
 import AlertPage4 from './components/pages/AlertPage_SLA';
 import History from './components/pages/History';
@@ -34,7 +34,7 @@ const App: React.FC = () => {
   // List of alert categories
   const alertCategories = [
     { name: 'Phishing Alert', path: '/alerts/category1' },
-    { name: 'Category 2', path: '/alerts/category2' },
+    { name: 'Multiple Login Failures Alert', path: '/alerts/multiple-login-failures' },
     { name: 'Category 3', path: '/alerts/category3' },
     { name: 'Simultaneous Login Activity', path: '/alerts/category4' },
   ];
@@ -132,7 +132,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/alerts/category1" element={<AlertPage1 />} />
-              <Route path="/alerts/category2" element={<AlertPage2 />} />
+              <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount/>} />
               <Route path="/alerts/category3" element={<AlertPage3 />} />
               <Route path="/alerts/category4" element={<AlertPage4 />} />
               <Route path="/history" element={<History />} />
