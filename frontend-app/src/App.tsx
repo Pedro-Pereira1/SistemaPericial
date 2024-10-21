@@ -12,11 +12,13 @@ import History from './components/pages/History';
 import Settings from './components/pages/Settings';
 import Profile from './components/pages/Profile';
 import NotFoundPage from './components/pages/NotFoundPage';
+import DualButton from './components/dual_button/DualButton';
 
 const App: React.FC = () => {
   const [isSidebarClosed, setSidebarClosed] = useState(false); // Sidebar toggle
   const [isSubMenuOpen, setSubMenuOpen] = useState(false); // Submenu toggle
   const [searchTerm, setSearchTerm] = useState(''); // Search term state for filtering submenu
+  const [expertSystemState, setExpertSystemState] = useState(''); // Add state for the expertise systems
 
   const toggleSidebar = () => {
     setSidebarClosed(!isSidebarClosed);
@@ -52,7 +54,8 @@ const App: React.FC = () => {
           <div className="logo-details">
             <i className='bx bx-shield-alt-2'></i>
             <span className="logo_name">Shield AI</span>
-          </div>
+          </div>    
+    
           <ul className="nav-links">
             <li>
               <Link to="/">
@@ -71,7 +74,10 @@ const App: React.FC = () => {
               </div>
 
               {/* Search bar for filtering alerts */}
-              {isSubMenuOpen && (
+              {isSubMenuOpen && 
+              (
+                <>
+                <DualButton left_button_text='Drools' right_button_text='Prolog' setState={setExpertSystemState}/>
                 <div className="search-container">
                   <input
                     type="text"
@@ -81,6 +87,7 @@ const App: React.FC = () => {
                     onChange={handleSearchChange}
                   />
                 </div>
+                </>
               )}
 
               {/* Submenu */}
@@ -132,7 +139,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/alerts/phishing-alert" element={<AlertPage_Phishing />} />
-              <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount/>} />
+              <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystemState}/>} />
               <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF />} />
               <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA />} />
               <Route path="/history" element={<History />} />
