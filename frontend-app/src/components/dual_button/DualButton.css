@@ -24,3 +24,19 @@
 .dual-button-container {
     font-size: 10px;
 }
+
+/* Active state for the left and right buttons */
+.dual-button-container .button-left.active, .dual-button-container .button-right.active {
+    background-color: rgba(255, 228, 196, 0.671); /* Darker shade for active state */
+    color: white; /* Optional: change text color for better contrast */
+}
+
+/* Optional: if you want a transition when activating */
+.dual-button-container .button-left.active, .dual-button-container .button-right.active {
+    transition: background-color 0.2s ease; /* Smooth transition for active state */
+}
+
+/* Container styling */
+.dual-button-container {
+    font-size: 10px;
+}
