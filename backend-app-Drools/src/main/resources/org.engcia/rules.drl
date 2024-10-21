@@ -541,7 +541,7 @@ then
     insert(output);
 end
 
-rule "Step 8 - Deactivate account"
+rule "Step 8 - So account"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "null")
 then
