@@ -31,6 +31,7 @@ interface AlertResponse {
   conclusion?: Conclusion;
   evidences?: MultipleLoginFailuresForAUserAccount;  // <-- New field
   parameterNumber: String;
+  relevance: String;
 }
 
 interface Message {
@@ -64,6 +65,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
   useEffect(() => {
     const initialQuestion = "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')";
     setMessages([{ sender: 'bot', text: initialQuestion }]);
+    AlertService.clearDrools(); // Clear Drools session on component mount
   }, []);
 
   // Function to handle sending a message
@@ -211,6 +213,45 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
       national_ip: "null"
     });
     await AlertService.reset_prolog();
+    AlertService.clearDrools(); // Clear Drools session on component mount
+  };
+
+  const fetchHowExplanation = async () => {
+    const alertContext = {
+      alertId: "Phishing",
+      input: evidences
+    };
+  
+    if (expertSystem === 'expertsystem1' && currentQuestion) {
+      try {
+        const explanationList = await AlertService.getHowExplanationDrools(alertContext);
+        
+        // Check if explanationList is indeed an array
+        if (Array.isArray(explanationList)) {
+          const formattedExplanation = explanationList.join('\n'); // Join the list into a single string, separated by newlines
+          alert(`How we reach this conclusion?\n${formattedExplanation}`);
+        } else {
+          alert("Explanation is not in the expected format.");
+        }
+        
+      } catch (error) {
+        console.error("Error fetching how explanation:", error);
+        alert("Unable to fetch the reason for this question.");
+      }
+    }
+  };
+
+  const fetchWhyExplanation = async () => {
+    if (expertSystem === 'expertsystem1' && currentQuestion) {
+      try {
+        //const explanation = await AlertService.getWhyExplanationDrools(alertContext);
+        const explanation = alertResponse?.relevance;
+        alert(`Why this question? ${explanation}`); // Use window alert to show the reason
+      } catch (error) {
+        console.error("Error fetching why explanation:", error);
+        alert("Unable to fetch the reason for this question.");
+      }
+    }
   };
 
   return (
@@ -232,7 +273,16 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
         </div>
       )}
 
-      {!isProcessComplete ? (
+{isProcessComplete ? (
+        <div style={{ display: 'flex', marginTop: '10px' }}>
+          <button onClick={handleRestart} style={{ padding: '10px' }}>Restart</button>
+          {expertSystem === 'expertsystem1' && (
+            <button title="Why was this conclusion made?" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchHowExplanation}>
+              How?
+            </button>
+          )}
+        </div>
+      ) : (
         <form onSubmit={handleSubmitForm} style={{ display: 'flex', marginTop: '10px' }}>
           <input
             type="text"
@@ -243,11 +293,11 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
           />
           <button type="submit" style={{ padding: '10px' }}>Send</button>
           {expertSystem === 'expertsystem1' && currentQuestion && (
-            <button title= "Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px'}}>Why?</button>
+            <button title="Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchWhyExplanation}>
+              Why?
+            </button>
           )}
         </form>
-      ) : (
-        <button onClick={handleRestart} style={{ padding: '10px', marginTop: '10px' }}>Restart</button>
       )}
     </div>
   );
