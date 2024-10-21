@@ -256,7 +256,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
 
   return (
     <div>
-      <h1>Simultaneous Login Activity</h1>
+      <h1>Multiple Login Failures Alert</h1>
       <div style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}>
         {messages.map((message, index) => (
           <div key={index} style={{ textAlign: message.sender === 'user' ? 'right' : 'left' }}>

@@ -4,10 +4,10 @@ import 'boxicons/css/boxicons.min.css'; // Import Boxicons for the icons.
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'; // Importing react-router-dom
 
 import Dashboard from './components/pages/Dashboard';
-import AlertPage1 from './components/pages/AlertPage_Phishing';
+import AlertPage_Phishing from './components/pages/AlertPage_Phishing';
 import AlertPage_MultipleLoginFailuresForAUserAccount from './components/pages/Alert_MultipleLoginFailuresForAUserAccount';
-import AlertPage3 from './components/pages/AlertPage3';
-import AlertPage4 from './components/pages/AlertPage_SLA';
+import AlertPage_CMF from './components/pages/AlertPage_CMF';
+import AlertPage_SLA from './components/pages/AlertPage_SLA';
 import History from './components/pages/History';
 import Settings from './components/pages/Settings';
 import Profile from './components/pages/Profile';
@@ -33,10 +33,10 @@ const App: React.FC = () => {
 
   // List of alert categories
   const alertCategories = [
-    { name: 'Phishing Alert', path: '/alerts/category1' },
+    { name: 'Phishing Alert', path: '/alerts/phishing-alert' },
     { name: 'Multiple Login Failures Alert', path: '/alerts/multiple-login-failures' },
-    { name: 'Category 3', path: '/alerts/category3' },
-    { name: 'Simultaneous Login Activity', path: '/alerts/category4' },
+    { name: 'Changes made to the firewall', path: '/alerts/changes-made-to-the-firewall' },
+    { name: 'Simultaneous Login Activity', path: '/alerts/simultaneous-login-activity' },
   ];
 
   // Filter alert categories based on the search term
@@ -131,10 +131,10 @@ const App: React.FC = () => {
           <div className="main-content">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/alerts/category1" element={<AlertPage1 />} />
+              <Route path="/alerts/phishing-alert" element={<AlertPage_Phishing />} />
               <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount/>} />
-              <Route path="/alerts/category3" element={<AlertPage3 />} />
-              <Route path="/alerts/category4" element={<AlertPage4 />} />
+              <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF />} />
+              <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA />} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
