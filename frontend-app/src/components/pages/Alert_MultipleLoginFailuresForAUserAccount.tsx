@@ -39,7 +39,7 @@ interface Message {
   text: string;
 }
 const base:MultipleLoginFailuresForAUserAccount = {
-  alertId:"1",
+  alertId:"MLF",
   user_known_1: "null",
   was_the_user_1: "null",
   are_there_multiple_ips: "null",
@@ -117,7 +117,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
   // Fetch the next question or conclusion from the backend
   const fetchNextQuestionOrConclusion = async (userResponse: string) => {
     const alertContext = {
-      alertId: "1",
+      alertId: "MLF",
       expertSystem: props.expert_system!,
       userResponse,
       input: evidences
@@ -174,7 +174,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
     setCurrentQuestion(null);
     setIsProcessComplete(false);
     setMultipleLoginFailuresForAUserAccount({
-      alertId:"1",
+      alertId:"MLF",
       user_known_1: "null",
       was_the_user_1: "null",
       are_there_multiple_ips: "null",
@@ -191,7 +191,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
 
   const fetchHowExplanation = async () => {
     const alertContext = {
-      alertId: "1",
+      alertId: "MLF",
       input: evidences
     };
   

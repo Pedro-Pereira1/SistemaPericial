@@ -2,8 +2,10 @@ package org.engcia;
 
 import org.engcia.model.AlertResponse
 import org.engcia.Utils.Question
+import org.engcia.model.EvidencesNUA
 import org.engcia.model.EvidencesSLA
 import org.engcia.model.EvidencesPhishing
+import org.engcia.model.EvidencesMLF
 import java.util.Arrays
 import org.engcia.model.Conclusion
 import java.util.ArrayList
@@ -357,7 +359,76 @@ then
 end
 //================================================================================================
 //Multiple login failures for a single account
+rule "MLF.1. Is the user known"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="null", was_the_user_1=="null", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Is the user known?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $inputMLF,
+                                             "user_known_1",
+                                             "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+    insert(output);
+end
 
+rule "MLF.2. Is the user known"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1 == "yes", was_the_user_1=="null", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Foi o utilizador?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $inputMLF,
+                                             "user_known_1",
+                                             "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+    insert(output);
+end
+
+rule "MLF.3. First False Positive"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="yes", was_the_user_1=="yes", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.REVERSE_TRANSACTION),
+                                             $inputMLF,
+                                             "conclusion",
+                                             "The user confirmed the login, so the previous security actions (e.g., suspension) can be reversed.");
+    insert(output);
+end
+
+rule "MLF.4. First False Positive"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="yes", was_the_user_1=="no", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.REVERSE_TRANSACTION),
+                                             $inputMLF,
+                                             "conclusion",
+                                             "Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes");
+    insert(output);
+end
+
+rule "MLF.5. First False Positive"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                                 new Question("multiple-choice",
+                                                              "São múltiplos IPs?",
+                                                              Arrays.asList("Yes", "No")),
+                                                 null,
+                                                 $inputMLF,
+                                                 "are_there_multiple_ips",
+                                                 "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+        insert(output);
+end
 
 //================================================================================================
 //Changes made to the firewall
@@ -365,7 +436,155 @@ end
 
 //================================================================================================
 //New user account
+rule "Step 1 - Start Analysis for New user account"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "null", userContacted == "null", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Is the Username in permitted access list?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "permittedUser",
+                                             "???"
+                                             );
+    insert(output);
+end
 
+rule "Step 2 - Username in permitted access list"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "yes", userContacted == "null", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Is the Username in permitted access list?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "userContacted",
+                                             "???"
+                                             );
+    insert(output);
+end
+
+rule "Step 3 - Contact User"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "yes", userContacted == "yes", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "The new user account was created according policies and the user was contacted with success, thus it can be classified as a false positive.");
+    insert(output);
+end
+
+
+rule "Step 4 - Created according policies"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Is the Username in permitted access list?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "accordingPolicy",
+                                             "???"
+                                             );
+    insert(output);
+end
+
+rule "Step 5 - Created according policies"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "yes", userResponse == "null", userProblemResolved == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "The new user account was not in permitted list but it was created according policies and the user was contacted with success, thus it can be classified as a false positive.");
+    insert(output);
+end
+
+rule "Step 6 - Created according policies"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "null", userProblemResolved == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Revoke access Privileges\n" +
+                                                           "Contact customer, is the problem resolved?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "userResponse",
+                                             "???"
+                                             );
+    insert(output);
+end
+
+rule "Step 7 - Contact customer"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "yes", userProblemResolved == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "Warn customer to avoid future cases.");
+    insert(output);
+end
+
+rule "Step 8 - Deactivate account"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Deactivate account\n" +
+                                                           "Contact customer, is the problem resolved?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "userProblemResolved",
+                                             "???"
+                                             );
+    insert(output);
+end
+
+rule "Step 8 - Deactivate account"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "yes")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "Verify and modify new user account policies as necessary to prevent new cases.");
+    insert(output);
+end
+
+
+rule "Step 8 - Eliminate account"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "no")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "Eliminate Account completely. " +
+                                              "\nVerify and modify new user account policies as necessary to prevent new cases.");
+    insert(output);
+end
 
 //================================================================================================
 //User data has been changed

@@ -29,8 +29,9 @@ public class AlertController {
         switch (alertId){
             //Multiple login failures for a single account
             case "MLF":
-                //EvidencesMLF input = mapper.convertValue(alertContext.get("input"), EvidencesMLF.class);
-                //response = alertService.runEngine(input);
+                EvidencesMLF inputMLF = mapper.convertValue(alertContext.get("input"), EvidencesMLF.class);
+                System.out.println(inputMLF);
+                response = alertService.runEngine(inputMLF);
                 break;
             //Simultaneous logins activity
             case "SLA":
@@ -44,8 +45,8 @@ public class AlertController {
                 break;
             //New user account
             case "NUA":
-                //EvidencesNUA input = mapper.convertValue(alertContext.get("input"), EvidencesNUA.class);
-                //response = alertService.runEngine(input);
+                EvidencesNUA inputNUA = mapper.convertValue(alertContext.get("input"), EvidencesNUA.class);
+                response = alertService.runEngine(inputNUA);
                 break;
             //User data has been changed
             case "UDC":
