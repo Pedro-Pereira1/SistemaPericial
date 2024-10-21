@@ -39,8 +39,8 @@ public class AlertController {
                 break;
             //Changes made to the firewall
             case "CMF":
-                //EvidencesCMF input = mapper.convertValue(alertContext.get("input"), EvidencesCMF.class);
-                //response = alertService.runEngine(input);
+                EvidencesCMF inputCMF = mapper.convertValue(alertContext.get("input"), EvidencesCMF.class);
+                response = alertService.runEngine(inputCMF);
                 break;
             //New user account
             case "NUA":
