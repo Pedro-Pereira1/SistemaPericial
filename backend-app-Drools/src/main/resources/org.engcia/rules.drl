@@ -5,11 +5,8 @@ import org.engcia.Utils.Question
 import org.engcia.model.EvidencesNUA
 import org.engcia.model.EvidencesSLA
 import org.engcia.model.EvidencesPhishing
-<<<<<<< Updated upstream
 import org.engcia.model.EvidencesMLF
-=======
 import org.engcia.model.EvidencesCMF
->>>>>>> Stashed changes
 import java.util.Arrays
 import org.engcia.model.Conclusion
 import java.util.ArrayList

@@ -13,12 +13,19 @@ public class EvidencesCMF extends Evidences{
     }
 
     public EvidencesCMF(String alertId,String changesFirewall, String suspActivity, String activityType, String vulnerabExploited) {
+        this.alertId = alertId;
         this.changesFirewall = changesFirewall;
         this.suspActivity = suspActivity;
         this.activityType = activityType;
         this.vulnerabExploited = vulnerabExploited;
     }
+    public String getAlertId() {
+        return alertId;
+    }
 
+    public void setAlertId(String alert_id) {
+        this.alertId = alert_id;
+    }
 
     public String getChangesFirewall() {
         return changesFirewall;
