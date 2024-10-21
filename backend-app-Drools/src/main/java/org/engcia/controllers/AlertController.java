@@ -44,8 +44,8 @@ public class AlertController {
                 break;
             //New user account
             case "NUA":
-                //EvidencesNUA input = mapper.convertValue(alertContext.get("input"), EvidencesNUA.class);
-                //response = alertService.runEngine(input);
+                EvidencesNUA inputNUA = mapper.convertValue(alertContext.get("input"), EvidencesNUA.class);
+                response = alertService.runEngine(inputNUA);
                 break;
             //User data has been changed
             case "UDC":
