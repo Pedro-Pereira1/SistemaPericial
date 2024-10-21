@@ -5,12 +5,17 @@ import org.engcia.Utils.Question
 import org.engcia.model.EvidencesNUA
 import org.engcia.model.EvidencesSLA
 import org.engcia.model.EvidencesPhishing
+<<<<<<< Updated upstream
 import org.engcia.model.EvidencesMLF
+=======
+import org.engcia.model.EvidencesCMF
+>>>>>>> Stashed changes
 import java.util.Arrays
 import org.engcia.model.Conclusion
 import java.util.ArrayList
 import org.engcia.model.Evidences;
 import java.util.Map
+import javax.validation.constraints.Null
 global java.util.Map explanationMap;
 
 query "AlertResponse"
@@ -432,6 +437,157 @@ end
 
 //================================================================================================
 //Changes made to the firewall
+rule "Start Analysis for Changes made to the Firewall Alert"
+when
+    $input: EvidencesCMF(alertId == "CMF", changesFirewall == "null", suspActivity == "null", activityType == "null" , vulnerabExploited == "null")
+then
+    AlertResponse output = new AlertResponse("question",new Question("multiple-choice",
+                                             "Changes made to the firewall ?",Arrays.asList("Yes","No"))
+                                             ,null
+                                             ,$input
+                                             ,"changesFirewall",
+                                             "Determining if changes have been made to the firewall");
+    insert(output);
+    end
+
+rule "1.Changes not made to the firewall"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="no",suspActivity=="null",activityType=="null",vulnerabExploited=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion"
+                                             ,null
+                                             ,new Conclusion(Conclusion.ALTERATION_NOT_DETECTED)
+                                             ,$input
+                                             ,"changesFirewall"
+                                             ,"Determining if changes have been made to the firewall");
+    insert(output);
+    end
+rule"1.1 Changes made to the firewall"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="null",activityType=="null",vulnerabExploited=="null")
+then
+    AlertResponse output = new AlertResponse("question"
+                                             ,new Question("multiple-choice","Is the activity suspicious?"
+                                             ,Arrays.asList("Yes","No"))
+                                             ,null
+                                             ,$input
+                                             ,"changesFirewall"
+                                             ,"Changes made to the firewall, analyze logs for suspicious activity");
+    insert(output);
+    end
+rule"2. Suspicious activity detected?"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="null",activityType=="null",vulnerabExploited=="null")
+then
+    AlertResponse output = new AlertResponse("question"
+                                             ,new Question("multiple-choice","Suspicious activity detected?"
+                                             ,Arrays.asList("Yes","No"))
+                                             ,null
+                                             ,$input
+                                             ,"suspActivity"
+                                             ,"Look for suspicious activity in the logs");
+    insert(output);
+    end
+rule "2.1 Suspicious activity detected"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="null",vulnerabExploited=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion"
+                                             ,null
+                                             ,null
+                                             ,$input
+                                             ,"suspActivity"
+                                             ,"Suspicious activity detected, open case for further investigation");
+    insert(output);
+    end
+rule"2.2 No suspicious activity detected"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="no",activityType=="null",vulnerabExploited=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion"
+                                             ,null
+                                             ,new Conclusion(Conclusion.LEGIT_ALTERATION)
+                                             ,$input
+                                             ,"suspActivity"
+                                             ,"Legitimate alteration detected, no suspicious activity");
+    insert(output);
+    end
+
+rule"3. Type of activity detected"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="null",vulnerabExploited=="null")
+then
+    AlertResponse output = new AlertResponse("question"
+                                             ,new Question("multiple-choice","Type of activity detected?"
+                                             ,Arrays.asList("Malicious activity","Security incident", "Misconfiguration"))
+                                             ,null
+                                             ,$input
+                                             ,"activityType"
+                                             ,"Type of activity detected");
+    insert(output);
+    end
+rule "3.1 Malicious activity detected"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="Malicious activity",vulnerabExploited=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion"
+                                             ,null
+                                             ,new Conclusion(Conclusion.PREVENTIVE_MEASURES)
+                                             ,$input
+                                             ,"activityType"
+                                             ,"Malicious activity detected,  apply security recommendations");
+    insert(output);
+    end
+rule "3.2 Security incident detected"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="Security incident",vulnerabExploited=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion"
+                                             ,null
+                                             ,new Conclusion(Conclusion.PREVENTIVE_MEASURES)
+                                             ,$input
+                                             ,"activityType"
+                                             ,"Security incident detected ");
+    insert(output);
+    end
+rule "3.2.1 Security incidente detected and vulnerability exploited"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="Security incident",vulnerabExploited=="yes")
+then
+    AlertResponse output = new AlertResponse("conclusion"
+                                             ,null
+                                             ,new Conclusion(Conclusion.PREVENTIVE_MEASURES)
+                                             ,$input
+                                             ,"activityType"
+                                             ,"Mitigate the vulnerability exploited\nApply security recommendations");
+    insert(output);
+    end
+rule "3.2.2 Security incident detected and no vulnerability exploited"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="Security incident",vulnerabExploited=="no")
+then
+    AlertResponse output = new AlertResponse("conclusion"
+                                             ,null
+                                             ,new Conclusion(Conclusion.PREVENTIVE_MEASURES)
+                                             ,$input
+                                             ,"activityType"
+                                             ,"No vulnerability exploited, apply security recommendations");
+    insert(output);
+    end
+rule "3.3 Misconfiguration detected"
+when
+    $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="Misconfiguration",vulnerabExploited=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion"
+                                             ,null
+                                             ,new Conclusion(Conclusion.PREVENTIVE_MEASURES)
+                                             ,$input
+                                             ,"activityType"
+                                             ,"Misconfiguration detected, revert firewall configurations");
+    insert(output);
+    end
+
+
 
 
 //================================================================================================

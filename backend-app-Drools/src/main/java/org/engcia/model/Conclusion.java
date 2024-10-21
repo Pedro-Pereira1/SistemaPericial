@@ -9,7 +9,9 @@ public class Conclusion {
     public static final String BLOCK_SENDER_MONITOR = "Block the sender's email address and monitor for any further suspicious activity.";
     public static final String EDUCATE_USER = "Inform the user about phishing threats and provide guidelines to avoid similar attacks in the future.";
     public static final String RESOLVE_ALERT = "Mark the alert as resolved and take the necessary steps to ensure no further actions are required.";
-
+    public static final String ALTERATION_NOT_DETECTED = "Altering actions have not been detected";
+    public static final String LEGIT_ALTERATION = "Legitimate action";
+    public static final String PREVENTIVE_MEASURES ="Implement preventive measures, such as regularly auditing and monitoring firewall actions";
 
 
     private String description;
