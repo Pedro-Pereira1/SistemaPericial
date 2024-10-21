@@ -229,7 +229,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
 
   return (
     <div>
-      <h1>Simultaneous Login Activity</h1>
+      <h1>Multiple login failures for a single account</h1>
       <p>Sistema Escolhido: {props.expert_system}</p>
       <div style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}>
         {messages.map((message, index) => (
