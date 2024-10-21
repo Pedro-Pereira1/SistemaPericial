@@ -1,7 +1,7 @@
 package org.engcia.model;
 //Change made to the firewall
 public class EvidencesCMF extends Evidences{
-
+    private String alertId;
     private String changesFirewall;
     private String suspActivity;
     private String activityType;
