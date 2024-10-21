@@ -141,7 +141,7 @@ const App: React.FC = () => {
               <Route path="/alerts/phishing-alert" element={<AlertPage_Phishing />} />
               <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystemState}/>} />
               <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF />} />
-              <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA />} />
+              <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA expert_system={expertSystemState}/>} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
