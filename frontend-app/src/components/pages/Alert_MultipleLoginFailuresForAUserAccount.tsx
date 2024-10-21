@@ -51,7 +51,11 @@ const base:MultipleLoginFailuresForAUserAccount = {
   national_ip: "null"
 }
 
-const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
+interface AlertProps {
+  expert_system:string
+}
+
+const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:AlertProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>(""); // User input field
   const [expertSystem, setExpertSystem] = useState<string | null>(null); // Selected expert system
@@ -60,12 +64,9 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error message for invalid input
   const [alertResponse, setAlertResponse] = useState<AlertResponse | null>(null); // Track the alert response
   const [evidences, setMultipleLoginFailuresForAUserAccount] = useState<MultipleLoginFailuresForAUserAccount>(base);
-
-  // Initialize the chat with the first question
   useEffect(() => {
-    const initialQuestion = "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')";
-    setMessages([{ sender: 'bot', text: initialQuestion }]);
-    AlertService.clearDrools(); // Clear Drools session on component mount
+    if(props.expert_system === "Drools")
+      AlertService.clearDrools();
   }, []);
 
   // Function to handle sending a message
@@ -83,18 +84,10 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
       update(alertResponse?.parameterNumber as keyof MultipleLoginFailuresForAUserAccount, message.toLowerCase());      
     }
     
-    
-
-
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
 
-    // If expert system is not selected, handle expert system selection
-    if (!expertSystem) {
-      handleExpertSystemSelection(message);
-    } else {
-      // Send the user input to the backend and get the next question or conclusion
-      await fetchNextQuestionOrConclusion(message);
-    }
+    await fetchNextQuestionOrConclusion(message);
+
 
     // Clear input after sending
     setUserInput("");
@@ -104,25 +97,6 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
     evidences[param] = value;
   };
 
-  /// Handle expert system selection
-  const handleExpertSystemSelection = (message: string) => {
-    const selectedSystem = message.toLowerCase();
-    if (selectedSystem === 'expertsystem1' || selectedSystem === 'expertsystem2') {
-      setExpertSystem(selectedSystem);
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { sender: 'bot', text: `Expert System ${selectedSystem.toUpperCase()} selected. Please wait for the next question...` }
-      ]);
-
-      // Pass the expert system to fetchNextQuestionOrConclusion after setting it
-      fetchNextQuestionOrConclusion("", selectedSystem); // <-- Pass the selected expert system
-    } else {
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { sender: 'bot', text: "Please type 'ExpertSystem1' or 'ExpertSystem2'" }
-      ]);
-    }
-  };
   const convertToJsonFormat = (data: MultipleLoginFailuresForAUserAccount): { fact_name: string; variables: (number | string)[] } => {
     return {
         fact_name: "alert",
@@ -141,11 +115,10 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
     };
   }
   // Fetch the next question or conclusion from the backend
-  const fetchNextQuestionOrConclusion = async (userResponse: string, expertSystemOverride?: string) => {
-    const systemToUse = expertSystemOverride || expertSystem; // Use the override if available, otherwise use state
+  const fetchNextQuestionOrConclusion = async (userResponse: string) => {
     const alertContext = {
       alertId: "1",
-      expertSystem: systemToUse!,
+      expertSystem: props.expert_system!,
       userResponse,
       input: evidences
     };
@@ -154,9 +127,9 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
       // Call the backend service to process the alert and get the next question
       let result: any;
     
-      if (alertContext.expertSystem === 'expertsystem1') {
+      if (alertContext.expertSystem === 'Drools') {
         result = await AlertService.processAlertDrools(alertContext);
-      } else if (alertContext.expertSystem === 'expertsystem2') {
+      } else if (alertContext.expertSystem === 'Prolog') {
         const x = convertToJsonFormat(alertContext.input);
         result = await AlertService.processAlertProlog(x);
       }
@@ -195,9 +168,9 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
 
   // Restart the process by resetting the state
   const handleRestart = async () => {
-    setMessages([{ sender: 'bot', text: "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')" }]);
+    setMessages([{ sender: 'bot', text: "The selected system is " + props.expert_system }]);
     setUserInput("");
-    setExpertSystem(null);
+    setExpertSystem(props.expert_system);
     setCurrentQuestion(null);
     setIsProcessComplete(false);
     setMultipleLoginFailuresForAUserAccount({
@@ -218,11 +191,11 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
 
   const fetchHowExplanation = async () => {
     const alertContext = {
-      alertId: "Phishing",
+      alertId: "1",
       input: evidences
     };
   
-    if (expertSystem === 'expertsystem1' && currentQuestion) {
+    if (expertSystem === 'Drools' && currentQuestion) {
       try {
         const explanationList = await AlertService.getHowExplanationDrools(alertContext);
         
@@ -242,7 +215,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
   };
 
   const fetchWhyExplanation = async () => {
-    if (expertSystem === 'expertsystem1' && currentQuestion) {
+    if (expertSystem === 'Drools' && currentQuestion) {
       try {
         //const explanation = await AlertService.getWhyExplanationDrools(alertContext);
         const explanation = alertResponse?.relevance;
@@ -256,7 +229,8 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
 
   return (
     <div>
-      <h1>Multiple Login Failures Alert</h1>
+      <h1>Simultaneous Login Activity</h1>
+      <p>Sistema Escolhido: {props.expert_system}</p>
       <div style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}>
         {messages.map((message, index) => (
           <div key={index} style={{ textAlign: message.sender === 'user' ? 'right' : 'left' }}>

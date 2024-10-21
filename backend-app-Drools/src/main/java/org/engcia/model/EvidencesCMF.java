@@ -12,7 +12,7 @@ public class EvidencesCMF extends Evidences{
 
     }
 
-    public EvidencesCMF(String changesFirewall, String suspActivity, String activityType, String vulnerabExploited) {
+    public EvidencesCMF(String alertId,String changesFirewall, String suspActivity, String activityType, String vulnerabExploited) {
         this.changesFirewall = changesFirewall;
         this.suspActivity = suspActivity;
         this.activityType = activityType;
