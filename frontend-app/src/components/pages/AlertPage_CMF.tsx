@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService_Alert_MultipleLoginFailuresForAUserAccount";
+import AlertService from "../../services/AlertService_CMF";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {
@@ -12,7 +12,7 @@ interface Conclusion {
   summary: string;
 }
 
-interface MultipleLoginFailuresForAUserAccount {
+interface Evidences {
   alertId: string;
     user_known_1: string | null;
     was_the_user_1: string | null;
@@ -29,7 +29,7 @@ interface AlertResponse {
   currentStep: 'question' | 'conclusion';
   question?: Question;
   conclusion?: Conclusion;
-  evidences?: MultipleLoginFailuresForAUserAccount;  // <-- New field
+  evidences?: Evidences;  // <-- New field
   parameterNumber: String;
   relevance: String;
 }
@@ -38,7 +38,7 @@ interface Message {
   sender: 'bot' | 'user';
   text: string;
 }
-const base:MultipleLoginFailuresForAUserAccount = {
+const base:Evidences = {
   alertId:"1",
   user_known_1: "null",
   was_the_user_1: "null",
@@ -51,7 +51,7 @@ const base:MultipleLoginFailuresForAUserAccount = {
   national_ip: "null"
 }
 
-const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
+const Alert_Evidences: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>(""); // User input field
   const [expertSystem, setExpertSystem] = useState<string | null>(null); // Selected expert system
@@ -59,7 +59,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Track the current question
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error message for invalid input
   const [alertResponse, setAlertResponse] = useState<AlertResponse | null>(null); // Track the alert response
-  const [evidences, setMultipleLoginFailuresForAUserAccount] = useState<MultipleLoginFailuresForAUserAccount>(base);
+  const [evidences, setEvidences] = useState<Evidences>(base);
 
   // Initialize the chat with the first question
   useEffect(() => {
@@ -80,7 +80,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
-      update(alertResponse?.parameterNumber as keyof MultipleLoginFailuresForAUserAccount, message.toLowerCase());      
+      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
     }
     
     
@@ -100,7 +100,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
     setUserInput("");
   };
 
-  const update = (param: keyof MultipleLoginFailuresForAUserAccount, value: string) => {
+  const update = (param: keyof Evidences, value: string) => {
     evidences[param] = value;
   };
 
@@ -123,7 +123,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
       ]);
     }
   };
-  const convertToJsonFormat = (data: MultipleLoginFailuresForAUserAccount): { fact_name: string; variables: (number | string)[] } => {
+  const convertToJsonFormat = (data: Evidences): { fact_name: string; variables: (number | string)[] } => {
     return {
         fact_name: "alert",
         variables: [
@@ -168,7 +168,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
         ]);
         setCurrentQuestion(result.question || null); // Update current question
         setAlertResponse(result); // Update alert response
-        //setMultipleLoginFailuresForAUserAccount(result.evidences);
+        //setEvidences(result.evidences);
       } else if (result.currentStep === 'conclusion') {
         setMessages(prevMessages => [
           ...prevMessages,
@@ -200,7 +200,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
     setExpertSystem(null);
     setCurrentQuestion(null);
     setIsProcessComplete(false);
-    setMultipleLoginFailuresForAUserAccount({
+    setEvidences({
       alertId:"1",
       user_known_1: "null",
       was_the_user_1: "null",
@@ -256,7 +256,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
 
   return (
     <div>
-      <h1>Multiple Login Failures Alert</h1>
+      <h1>Changes made to the firewall</h1>
       <div style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}>
         {messages.map((message, index) => (
           <div key={index} style={{ textAlign: message.sender === 'user' ? 'right' : 'left' }}>
@@ -303,4 +303,4 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC = () => {
   );
 };
 
-export default Alert_MultipleLoginFailuresForAUserAccount;
+export default Alert_Evidences;
