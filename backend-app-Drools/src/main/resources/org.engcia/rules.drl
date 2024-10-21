@@ -5,6 +5,7 @@ import org.engcia.Utils.Question
 import org.engcia.model.EvidencesNUA
 import org.engcia.model.EvidencesSLA
 import org.engcia.model.EvidencesPhishing
+import org.engcia.model.EvidencesMLF
 import java.util.Arrays
 import org.engcia.model.Conclusion
 import java.util.ArrayList
@@ -358,7 +359,76 @@ then
 end
 //================================================================================================
 //Multiple login failures for a single account
+rule "MLF.1. Is the user known"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="null", was_the_user_1=="null", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Is the user known?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $inputMLF,
+                                             "user_known_1",
+                                             "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+    insert(output);
+end
 
+rule "MLF.2. Is the user known"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1 == "yes", was_the_user_1=="null", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "Foi o utilizador?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $inputMLF,
+                                             "user_known_1",
+                                             "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+    insert(output);
+end
+
+rule "MLF.3. First False Positive"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="yes", was_the_user_1=="yes", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.REVERSE_TRANSACTION),
+                                             $inputMLF,
+                                             "conclusion",
+                                             "The user confirmed the login, so the previous security actions (e.g., suspension) can be reversed.");
+    insert(output);
+end
+
+rule "MLF.4. First False Positive"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="yes", was_the_user_1=="no", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.REVERSE_TRANSACTION),
+                                             $inputMLF,
+                                             "conclusion",
+                                             "Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes");
+    insert(output);
+end
+
+rule "MLF.5. First False Positive"
+when
+    $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                                 new Question("multiple-choice",
+                                                              "São múltiplos IPs?",
+                                                              Arrays.asList("Yes", "No")),
+                                                 null,
+                                                 $inputMLF,
+                                                 "are_there_multiple_ips",
+                                                 "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+        insert(output);
+end
 
 //================================================================================================
 //Changes made to the firewall
