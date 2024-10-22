@@ -1,23 +1,218 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Metaconhecimento
 
-facto_dispara_regras(alert(1, "null", "null", "null"), [1]).
-facto_dispara_regras(alert(1, "Yes", "null", "null"), [2]).
-facto_dispara_regras(alert(1, "Yes", "Yes", "null"), [3]).
+facto_dispara_regras(alert(1, "null", "null", "null", "null", "null", "null", "null", "null", "null"), [1]). % Regra 1
+facto_dispara_regras(alert(1, "yes", "null", "null", "null", "null", "null", "null", "null", "null"), [2]). % Regra 2
+facto_dispara_regras(alert(1, "yes", "yes", "null", "null", "null", "null", "null", "null", "null"), [3]). % Regra 3
+facto_dispara_regras(alert(1, "yes", "no", "null", "null", "null", "null", "null", "null", "null"), [4]). % Regra 4
+facto_dispara_regras(alert(1, "no", "null", "null", "null", "null", "null", "null", "null", "null"), [5]). % Regra 5
+facto_dispara_regras(alert(1, "no", "null", "yes", "null", "null", "null", "null", "null", "null"), [6]). % Regra 6
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "null", "null", "null", "null", "null"), [7]). % Regra 7
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "yes", "null", "null", "null", "null"), [8]). % Regra 8
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "yes", "yes", "null", "yes", "null"), [9]). % Regra 9
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "yes", "yes", "null", "yes", "null"), [10]). % Regra 10
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "yes", "yes", "null", "no", "null"), [11]). % Regra 11
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "yes", "no", "null", "null", "null"), [12]). % Regra 12
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "no", "null", "null", "null", "null"), [13]). % Regra 13
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "no", "yes", "null", "null", "null"), [14]). % Regra 14
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "no", "yes", "yes", "null", "null"), [15]). % Regra 15
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "no", "yes", "no", "null", "null"), [16]). % Regra 16
+facto_dispara_regras(alert(1, "no", "null", "yes", "yes", "no", "no", "null", "null", "null"), [17]). % Regra 17
+facto_dispara_regras(alert(1, "no", "null", "yes", "no", "null", "null", "null", "null", "null"), [18]). % Regra 18
+facto_dispara_regras(alert(1, "no", "null", "yes", "no", "null", "yes", "null", "null", "null"), [19]). % Regra 19
+facto_dispara_regras(alert(1, "no", "null", "yes", "no", "null", "yes", "yes", "null", "null"), [20]). % Regra 20
+facto_dispara_regras(alert(1, "no", "null", "yes", "no", "null", "yes", "no", "null", "null"), [21]). % Regra 21
+facto_dispara_regras(alert(1, "no", "null", "yes", "no", "null", "no", "null", "null", "null"), [22]). % Regra 22
+facto_dispara_regras(alert(1, "no", "null", "no", "null", "null", "null", "null", "null", "null"), [23]). % Regra 23
+facto_dispara_regras(alert(1, "no", "null", "no", "null", "null", "null", "null", "null", "yes"), [24]). % Regra 24
+facto_dispara_regras(alert(1, "no", "null", "no", "null", "null", "yes", "null", "null", "yes"), [25]). % Regra 25
+facto_dispara_regras(alert(1, "no", "null", "no", "null", "null", "yes", "yes", "null", "yes"), [26]). % Regra 26
+facto_dispara_regras(alert(1, "no", "null", "no", "null", "null", "yes", "no", "null", "yes"), [27]). % Regra 27
+facto_dispara_regras(alert(1, "no", "null", "no", "null", "null", "no", "null", "null", "yes"), [28]). % Regra 28
+facto_dispara_regras(alert(1, "no", "null", "no", "null", "null", "no", "null", "null", "no"), [29]). % Regra 29
+
+facto_dispara_regras(alert("SLA", "null", "null", "null", "null", "null"), [30]).
+facto_dispara_regras(alert("SLA", "yes", "null", "null", "null", "null"), [31]).
+facto_dispara_regras(alert("SLA", "no", "null", "null", "null", "null"), [32]).
+facto_dispara_regras(alert("SLA", "yes", "yes", "null", "null", "null"), [33]).
+facto_dispara_regras(alert("SLA", "no", "null", "yes", "null", "null"), [34]).
+facto_dispara_regras(alert("SLA", "no", "null", "no", "null", "null"), [35]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "null", "null"), [36]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "yes", "null"), [37]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "no", "null"), [38]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "yes", "yes"), [39]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "no", "yes"), [40]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "yes", "no"), [41]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "no", "no"), [42]).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 regra 1
-	se [alert(1, "null", "null", "null")]
-	entao [cria_facto(questao("Existe um início de sessão simultâneo a partir de vários IPs?", "multiple-choice", ["Yes", "No"]))].
+	se [alert(1, "null", "null", "null", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["yes", "no"], "user_known_1"))].
 
 regra 2
-	se [alert(1, "Yes", "null", "null")]
-	entao [cria_facto(questao("Pode ser explicado?", "multiple-choice", ["Yes", "No"]))].
+	se [alert(1, "yes", "null", "null", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["yes", "no"], "was_the_user_1"))].
 
 regra 3
-	se [alert(1, "Yes", "Yes", "null")]
+	se [alert(1, "yes", "yes", "null", "null", "null", "null", "null", "null", "null")]
 	entao [cria_facto(conclusao("Falso Positivo"))].
 
+regra 4
+	se [alert(1, "yes", "no", "null", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
 
+regra 5
+	se [alert(1, "no", "null", "null", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("São múltiplos IPs?", "multiple-choice", ["yes", "no"], "are_there_multiple_ips"))].
+
+regra 6
+	se [alert(1, "no", "null", "yes", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("A quantidade de IPs faz sentido?", "multiple-choice", ["yes", "no"], "does_the_number_of_ips_make_sense"))].
+
+regra 7
+	se [alert(1, "no", "null", "yes", "yes", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("A recorrência é justificável?", "multiple-choice", ["yes", "no"], "is_the_reccurence_just"))].
+
+regra 8
+	se [alert(1, "no", "null", "yes", "yes", "yes", "null", "null", "null", "null")]
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["yes", "no"], "user_known_2"))].
+
+regra 9
+	se [alert(1, "no", "null", "yes", "yes", "yes", "yes", "null", "yes", "null")]
+	entao [cria_facto(questao("A origem dos IPs é justificável?", "multiple-choice", ["yes", "no"], "origins_just"))].
+
+regra 10
+	se [alert(1, "no", "null", "yes", "yes", "yes", "yes", "null", "yes", "null")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
+
+regra 11
+	se [alert(1, "no", "null", "yes", "yes", "yes", "yes", "null", "no", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
+
+regra 12
+	se [alert(1, "no", "null", "yes", "yes", "yes", "no", "null", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta.", "multiple-choice", ["yes", "no"]))].
+
+regra 13
+	se [alert(1, "no", "null", "yes", "yes", "no", "null", "null", "null", "null")]
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["yes", "no"], "user_known_2"))].
+
+regra 14
+	se [alert(1, "no", "null", "yes", "yes", "no", "yes", "null", "null", "null")]
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["yes", "no"], "was_the_user_2"))].
+
+regra 15
+	se [alert(1, "no", "null", "yes", "yes", "no", "yes", "yes", "null", "null")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
+
+regra 16
+	se [alert(1, "no", "null", "yes", "yes", "no", "yes", "no", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
+
+regra 17
+	se [alert(1, "no", "null", "yes", "yes", "no", "no", "null", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta."))].
+
+regra 18
+	se [alert(1, "no", "null", "yes", "no", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("Abrir caso\nIdentificar o utilizador\no utilizador é conhecido?", "multiple-choice", ["yes", "no"], "user_known_2"))].
+
+regra 19
+	se [alert(1, "no", "null", "yes", "no", "null", "yes", "null", "null", "null")]
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["yes", "no"], "was_the_user_2"))].
+
+regra 20
+	se [alert(1, "no", "null", "yes", "no", "null", "yes", "yes", "null", "null")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
+
+regra 21
+	se [alert(1, "no", "null", "yes", "no", "null", "yes", "no", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
+
+regra 22
+	se [alert(1, "no", "null", "yes", "no", "null", "no", "null", "null", "null")]
+	entao [cria_facto(conclusao("Bloquear a conta definitivamente."))].
+
+regra 23
+	se [alert(1, "no", "null", "no", "null", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("O IP é nacional?", "multiple-choice", ["yes", "no"], "national_ip"))].
+
+regra 24
+	se [alert(1, "no", "null", "no", "null", "null", "null", "null", "null", "yes")]
+	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["yes", "no"], "user_known_2"))].
+
+regra 25
+	se [alert(1, "no", "null", "no", "null", "null", "yes", "null", "null", "yes")]
+	entao [cria_facto(questao("Foi o utilizador?", "multiple-choice", ["yes", "no"], "was_the_user_2"))].
+
+regra 26
+	se [alert(1, "no", "null", "no", "null", "null", "yes", "yes", "null", "yes")]
+	entao [cria_facto(conclusao("Falso Positivo"))].
+
+regra 27
+	se [alert(1, "no", "null", "no", "null", "null", "yes", "no", "null", "yes")]
+	entao [cria_facto(conclusao("Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes"))].
+
+regra 28
+	se [alert(1, "no", "null", "no", "null", "null", "no", "null", "null", "yes")]
+	entao [cria_facto(conclusao("Bloquear a conta"))].
+
+regra 29
+	se [alert(1, "no", "null", "no", "null", "null", "no", "null", "null", "no")]
+	entao [cria_facto(conclusao("Abrir caso\nBloquear o IP."))].
+
+regra 30
+    se [alert("SLA", "null", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Is there a simultaneous login from multiple locations/IPs (>3)?", "multiple-choice", ["yes", "no"], "multipleLocations"))].
+
+regra 31
+    se [alert("SLA", "yes", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Can the login be explained by legitimate user behavior (VPN, travel, etc.)?", "multiple-choice", ["yes", "no"], "legitimateBehavior"))].
+
+regra 32
+    se [alert("SLA", "no", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Is there another abnormal pattern?", "multiple-choice", ["yes", "no"], "abnormalPattern"))].
+
+regra 33
+    se [alert("SLA", "yes", "yes", "null", "null", "null")]
+    entao [cria_facto(conclusao("Classify the alert as a False Positive and mark it as resolved."))].
+
+regra 34
+    se [alert("SLA", "no", "null", "yes", "null", "null")]
+    entao [cria_facto(conclusao("Escalate the alert to the support team for further investigation and remediation."))].    
+
+regra 35
+    se [alert("SLA", "no", "null", "no", "null", "null")]
+    entao [cria_facto(conclusao("Classify the alert as a False Positive and mark it as resolved."))].    
+
+regra 36
+    se [alert("SLA", "yes", "no", "null", "null", "null")]
+    entao [cria_facto(questao("Temporarily suspend the account\nDoes the user have MFA activated?", "multiple-choice", ["yes", "no"], "mfaEnabled"))].    
+
+regra 37
+    se [alert("SLA", "yes", "no", "null", "yes", "null")]
+    entao [cria_facto(questao("Can login be immediately validated by contacting the user?", "multiple-choice", ["yes", "no"], "userContacted"))].    
+
+regra 38
+    se [alert("SLA", "yes", "no", "null", "no", "null")]
+    entao [cria_facto(questao("Enforce MFA\nCan login be immediately validated by contacting the user?", "multiple-choice", ["yes", "no"], "userContacted"))].    
+
+regra 39
+    se [alert("SLA", "yes", "no", "null", "yes", "yes")]
+    entao [cria_facto(conclusao("Classify the alert as a False Positive and reverse any account suspension or access restriction."))].    
+
+regra 40
+    se [alert("SLA", "yes", "no", "null", "no", "yes")]
+    entao [cria_facto(conclusao("Classify the alert as a False Positive and reverse any account suspension or access restriction."))].    
+
+regra 41
+    se [alert("SLA", "yes", "no", "null", "yes", "no")]
+    entao [cria_facto(conclusao("Reset the user's password, revoke access tokens, and educate the user on preventing future incidents."))].    
+
+regra 42
+    se [alert("SLA", "yes", "no", "null", "no", "no")]
+    entao [cria_facto(conclusao("Reset the user's password, revoke access tokens, and educate the user on preventing future incidents."))].

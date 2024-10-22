@@ -1,0 +1,70 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Metaconhecimento
+
+facto_dispara_regras(alert("SLA", "null", "null", "null", "null", "null"), [30]).
+facto_dispara_regras(alert("SLA", "yes", "null", "null", "null", "null"), [31]).
+facto_dispara_regras(alert("SLA", "no", "null", "null", "null", "null"), [32]).
+facto_dispara_regras(alert("SLA", "yes", "yes", "null", "null", "null"), [33]).
+facto_dispara_regras(alert("SLA", "no", "null", "yes", "null", "null"), [34]).
+facto_dispara_regras(alert("SLA", "no", "null", "no", "null", "null"), [35]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "null", "null"), [36]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "yes", "null"), [37]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "no", "null"), [38]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "yes", "yes"), [39]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "no", "yes"), [40]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "yes", "no"), [41]).
+facto_dispara_regras(alert("SLA", "yes", "no", "null", "no", "no"), [42]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+regra 30
+    se [alert("SLA", "null", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Is there a simultaneous login from multiple locations/IPs (>3)?", "multiple-choice", ["yes", "no"], "multipleLocations"))].
+
+regra 31
+    se [alert("SLA", "yes", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Can the login be explained by legitimate user behavior (VPN, travel, etc.)?", "multiple-choice", ["yes", "no"], "legitimateBehavior"))].
+
+regra 32
+    se [alert("SLA", "no", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Is there another abnormal pattern?", "multiple-choice", ["yes", "no"], "abnormalPattern"))].
+
+regra 33
+    se [alert("SLA", "yes", "yes", "null", "null", "null")]
+    entao [cria_facto(conclusao("Classify the alert as a False Positive and mark it as resolved."))].
+
+regra 34
+    se [alert("SLA", "no", "null", "yes", "null", "null")]
+    entao [cria_facto(conclusao("Escalate the alert to the support team for further investigation and remediation."))].    
+
+regra 35
+    se [alert("SLA", "no", "null", "no", "null", "null")]
+    entao [cria_facto(conclusao("Classify the alert as a False Positive and mark it as resolved."))].    
+
+regra 36
+    se [alert("SLA", "yes", "no", "null", "null", "null")]
+    entao [cria_facto(questao("Temporarily suspend the account\nDoes the user have MFA activated?", "multiple-choice", ["yes", "no"], "mfaEnabled"))].    
+
+regra 37
+    se [alert("SLA", "yes", "no", "null", "yes", "null")]
+    entao [cria_facto(questao("Can login be immediately validated by contacting the user?", "multiple-choice", ["yes", "no"], "userContacted"))].    
+
+regra 38
+    se [alert("SLA", "yes", "no", "null", "no", "null")]
+    entao [cria_facto(questao("Enforce MFA\nCan login be immediately validated by contacting the user?", "multiple-choice", ["yes", "no"], "userContacted"))].    
+
+regra 39
+    se [alert("SLA", "yes", "no", "null", "yes", "yes")]
+    entao [cria_facto(conclusao("Classify the alert as a False Positive and reverse any account suspension or access restriction."))].    
+
+regra 40
+    se [alert("SLA", "yes", "no", "null", "no", "yes")]
+    entao [cria_facto(conclusao("Classify the alert as a False Positive and reverse any account suspension or access restriction."))].    
+
+regra 41
+    se [alert("SLA", "yes", "no", "null", "yes", "no")]
+    entao [cria_facto(conclusao("Reset the user's password, revoke access tokens, and educate the user on preventing future incidents."))].    
+
+regra 42
+    se [alert("SLA", "yes", "no", "null", "no", "no")]
+    entao [cria_facto(conclusao("Reset the user's password, revoke access tokens, and educate the user on preventing future incidents."))].
