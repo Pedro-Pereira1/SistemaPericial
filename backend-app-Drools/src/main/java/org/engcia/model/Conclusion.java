@@ -12,7 +12,9 @@ public class Conclusion {
     public static final String ALTERATION_NOT_DETECTED = "Altering actions have not been detected";
     public static final String LEGIT_ALTERATION = "Legitimate action";
     public static final String PREVENTIVE_MEASURES ="Implement preventive measures, such as regularly auditing and monitoring firewall actions";
-
+    public static final String BLOCK_ACCOUNT="Block the account definitely.";
+    public static final String BLOCK_TEMP="Temporarily lock the account\nReset the password\nReview controls and permissions\nImplement stronger authentication mechanisms.";
+    public static final String BLOCK_IP="Open Case\nBlock the IP.";
 
     private String description;
 

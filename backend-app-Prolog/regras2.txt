@@ -65,7 +65,7 @@ regra 8
 	entao [cria_facto(questao("O utilizador é conhecido?", "multiple-choice", ["yes", "no"], "user_known_2"))].
 
 regra 9
-	se [alert(1, "no", "null", "yes", "yes", "yes", "yes", "null", "yes", "null")]
+	se [alert(1, "no", "null", "yes", "yes", "yes", "yes", "null", "null", "null")]
 	entao [cria_facto(questao("A origem dos IPs é justificável?", "multiple-choice", ["yes", "no"], "origins_just"))].
 
 regra 10
@@ -145,5 +145,5 @@ regra 28
 	entao [cria_facto(conclusao("Bloquear a conta"))].
 
 regra 29
-	se [alert(1, "no", "null", "no", "null", "null", "no", "null", "null", "no")]
+	se [alert(1, "no", "null", "no", "null", "null", "null", "null", "null", "no")]
 	entao [cria_facto(conclusao("Abrir caso\nBloquear o IP."))].
