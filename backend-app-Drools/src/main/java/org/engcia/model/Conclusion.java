@@ -16,6 +16,9 @@ public class Conclusion {
     public static final String REVERT_SETTINGS = "Revert the changes made to the firewall.\n";
     public static final String APPLY_RECOMMENDATIONS = "Apply security recommendations.\n";
 
+    public static final String BLOCK_ACCOUNT="Block the account definitely.";
+    public static final String BLOCK_TEMP="Temporarily lock the account\nReset the password\nReview controls and permissions\nImplement stronger authentication mechanisms.";
+    public static final String BLOCK_IP="Open Case\nBlock the IP.";
 
     private String description;
 
