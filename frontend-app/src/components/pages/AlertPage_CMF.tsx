@@ -13,11 +13,11 @@ interface Conclusion {
 }
 
 interface Evidences {
-    alertId: string;
-    changesFirewall: string | null;
-    suspActivity: string | null;
-    activityType: string | null;
-    vulnerabExploited: string | null;
+  alertId: string;
+  changesFirewall: string | null;
+  suspActivity: string | null;
+  activityType: string | null;
+  vulnerabExploited: string | null;
 }
 
 interface AlertResponse {
@@ -33,6 +33,7 @@ interface Message {
   sender: 'bot' | 'user';
   text: string;
 }
+
 const base:Evidences = {
   alertId:"CMF",
   changesFirewall: "null",
@@ -41,7 +42,11 @@ const base:Evidences = {
   vulnerabExploited: "null"
 }
 
-const Alert_Evidences: React.FC = () => {
+interface AlertProps {
+  expert_system: string 
+}
+
+const Alert_Evidences: React.FC<AlertProps> = (props:AlertProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>(""); // User input field
   const [expertSystem, setExpertSystem] = useState<string | null>(null); // Selected expert system
@@ -50,13 +55,47 @@ const Alert_Evidences: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error message for invalid input
   const [alertResponse, setAlertResponse] = useState<AlertResponse | null>(null); // Track the alert response
   const [evidences, setEvidences] = useState<Evidences>(base);
+  const [isStarted, setIsStarted] = useState<boolean>(false); // Check if interaction is started
+  
 
-  // Initialize the chat with the first question
+
   useEffect(() => {
-    const initialQuestion = "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')";
-    setMessages([{ sender: 'bot', text: initialQuestion }]);
-    AlertService.clearDrools(); // Clear Drools session on component mount
-  }, []);
+    if (props.expert_system !== "Drools" && props.expert_system !== "Prolog") {
+      setMessages([{ sender: 'bot', text: "Please select an expert system to proceed." }]);
+      setIsStarted(false); // Prevent the process from starting
+    } else {
+      if(isStarted) {
+        setErrorMessage("You cannot change the expert system after the process has started.");
+      }else {
+        setMessages([]);
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { sender: 'bot', text: "The selected system is " + props.expert_system }
+        ]);
+        setExpertSystem(props.expert_system);
+        
+      }
+    }
+  }, [props.expert_system]);
+
+// Update the startProcess function to check for the expert system
+const startProcess = () => {
+  if (!props.expert_system) {
+    setErrorMessage("Please select an expert system before starting.");
+    return;
+  }
+
+  AlertService.clearDrools(); // Clear the Drools session before starting
+  setMessages(prevMessages => [
+    ...prevMessages,
+    { sender: 'bot', text: "Starting process with system: " + props.expert_system }
+  ]);
+  //clear error message
+  setErrorMessage(null);
+  fetchNextQuestionOrConclusion(""); // Fetch the first question
+  setIsStarted(true); // Mark as started
+};
+
 
   // Function to handle sending a message
   const sendMessage = async (message: string) => {
@@ -73,18 +112,10 @@ const Alert_Evidences: React.FC = () => {
       update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
     }
     
-    
-
-
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
 
-    // If expert system is not selected, handle expert system selection
-    if (!expertSystem) {
-      handleExpertSystemSelection(message);
-    } else {
-      // Send the user input to the backend and get the next question or conclusion
-      await fetchNextQuestionOrConclusion(message);
-    }
+    await fetchNextQuestionOrConclusion(message);
+
 
     // Clear input after sending
     setUserInput("");
@@ -94,30 +125,11 @@ const Alert_Evidences: React.FC = () => {
     evidences[param] = value;
   };
 
-  /// Handle expert system selection
-  const handleExpertSystemSelection = (message: string) => {
-    const selectedSystem = message.toLowerCase();
-    if (selectedSystem === 'expertsystem1' || selectedSystem === 'expertsystem2') {
-      setExpertSystem(selectedSystem);
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { sender: 'bot', text: `Expert System ${selectedSystem.toUpperCase()} selected. Please wait for the next question...` }
-      ]);
-
-      // Pass the expert system to fetchNextQuestionOrConclusion after setting it
-      fetchNextQuestionOrConclusion("", selectedSystem); // <-- Pass the selected expert system
-    } else {
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { sender: 'bot', text: "Please type 'ExpertSystem1' or 'ExpertSystem2'" }
-      ]);
-    }
-  };
   const convertToJsonFormat = (data: Evidences): { fact_name: string; variables: (number | string)[] } => {
     return {
         fact_name: "alert",
         variables: [
-            "NUA",
+            "CMF",
             data.changesFirewall ?? "null",
             data.suspActivity ?? "null",
             data.activityType ?? "null",
@@ -126,11 +138,10 @@ const Alert_Evidences: React.FC = () => {
     };
   }
   // Fetch the next question or conclusion from the backend
-  const fetchNextQuestionOrConclusion = async (userResponse: string, expertSystemOverride?: string) => {
-    const systemToUse = expertSystemOverride || expertSystem; // Use the override if available, otherwise use state
+  const fetchNextQuestionOrConclusion = async (userResponse: string) => {
     const alertContext = {
-      alertId: "NUA",
-      expertSystem: systemToUse!,
+      alertId: "CMF",
+      expertSystem: expertSystem!,
       userResponse,
       input: evidences
     };
@@ -139,15 +150,15 @@ const Alert_Evidences: React.FC = () => {
       // Call the backend service to process the alert and get the next question
       let result: any;
     
-      if (alertContext.expertSystem === 'expertsystem1') {
+      if (alertContext.expertSystem === 'Drools') {
         result = await AlertService.processAlertDrools(alertContext);
-      } else if (alertContext.expertSystem === 'expertsystem2') {
+      } else if (alertContext.expertSystem === 'Prolog') {
         const x = convertToJsonFormat(alertContext.input);
         result = await AlertService.processAlertProlog(x);
       }
 
       if (result.currentStep === 'question') {
-        setMessages(prevMessages => [
+        await setMessages(prevMessages => [
           ...prevMessages,
           { sender: 'bot', text: `Next Question: ${result.question?.text}` }
         ]);
@@ -180,21 +191,9 @@ const Alert_Evidences: React.FC = () => {
 
   // Restart the process by resetting the state
   const handleRestart = async () => {
-    setMessages([{ sender: 'bot', text: "Which Expert System do you want to use? (Please type 'ExpertSystem1' or 'ExpertSystem2')" }]);
-    setUserInput("");
-    setExpertSystem(null);
-    setCurrentQuestion(null);
-    setIsProcessComplete(false);
-    setEvidences({
-        alertId:"CMF",
-        changesFirewall: "null",
-        suspActivity: "null",
-        activityType: "null",
-        vulnerabExploited: "null"
-    });
-    await AlertService.reset_prolog();
-    AlertService.clearDrools(); // Clear Drools session on component mount
-  };
+    window.location.reload();
+};
+
 
   const fetchHowExplanation = async () => {
     const alertContext = {
@@ -202,7 +201,7 @@ const Alert_Evidences: React.FC = () => {
       input: evidences
     };
   
-    if (expertSystem === 'expertsystem1' && currentQuestion) {
+    if (expertSystem === 'Drools' && currentQuestion) {
       try {
         const explanationList = await AlertService.getHowExplanationDrools(alertContext);
         
@@ -222,7 +221,7 @@ const Alert_Evidences: React.FC = () => {
   };
 
   const fetchWhyExplanation = async () => {
-    if (expertSystem === 'expertsystem1' && currentQuestion) {
+    if (expertSystem === 'Drools' && currentQuestion) {
       try {
         //const explanation = await AlertService.getWhyExplanationDrools(alertContext);
         const explanation = alertResponse?.relevance;
@@ -237,50 +236,91 @@ const Alert_Evidences: React.FC = () => {
   return (
     <div>
       <h1>Changes made to the firewall</h1>
-      <div style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}>
+      <div
+        style={{
+          maxHeight: '400px',
+          overflowY: 'auto',
+          border: '1px solid #ccc',
+          padding: '10px',
+          borderRadius: '5px',
+        }}
+      >
         {messages.map((message, index) => (
-          <div key={index} style={{ textAlign: message.sender === 'user' ? 'right' : 'left' }}>
-           <i /*className='bx bx-bot' style={{ fontSize: '20px', marginRight: '10px' }}*/></i> 
-            <strong>{message.sender === 'user' ? 'You' : 'Bot' }:</strong>
+          <div
+            key={index}
+            style={{ textAlign: message.sender === 'user' ? 'right' : 'left' }}
+          >
+            <strong>{message.sender === 'user' ? 'You' : 'Bot'}:</strong>
             <p style={{ whiteSpace: 'pre-line' }}>{message.text}</p>
           </div>
         ))}
       </div>
-
+  
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '10px' }}>
           <strong>{errorMessage}</strong>
         </div>
       )}
-
-{isProcessComplete ? (
+  
+      {isProcessComplete ? (
         <div style={{ display: 'flex', marginTop: '10px' }}>
-          <button onClick={handleRestart} style={{ padding: '10px' }}>Restart</button>
-          {expertSystem === 'expertsystem1' && (
-            <button title="Why was this conclusion made?" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchHowExplanation}>
+          <button onClick={handleRestart} style={{ padding: '10px' }}>
+            Restart
+          </button>
+          {expertSystem === 'Drools' && (
+            <button
+              title="Why was this conclusion made?"
+              style={{ padding: '10px', marginLeft: '0px' }}
+              onClick={fetchHowExplanation}
+            >
               How?
             </button>
           )}
         </div>
       ) : (
-        <form onSubmit={handleSubmitForm} style={{ display: 'flex', marginTop: '10px' }}>
-          <input
-            type="text"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            placeholder={currentQuestion?.type === 'multiple-choice' ? `Select an answer (${currentQuestion.possibleAnswers?.join(", ")})` : "Type your response"}
-            style={{ flex: 1, padding: '10px' }}
-          />
-          <button type="submit" style={{ padding: '10px' }}>Send</button>
-          {expertSystem === 'expertsystem1' && currentQuestion && (
-            <button title="Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchWhyExplanation}>
-              Why?
+        <div>
+          <form
+            onSubmit={isStarted ? handleSubmitForm : (e) => {
+              e.preventDefault();
+              startProcess();
+            }}
+            style={{ display: 'flex', marginTop: '10px' }}
+          >
+            <input
+              type="text"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder={
+                !isStarted
+                  ? "Click 'Start' to enable input"
+                  : currentQuestion?.type === 'multiple-choice'
+                  ? `Select an answer (${currentQuestion.possibleAnswers?.join(
+                      ', '
+                    )})`
+                  : 'Type your response'
+              }
+              style={{ flex: 1, padding: '10px' }}
+              disabled={!isStarted}
+            />
+            <button type="submit" style={{ padding: '10px', marginLeft: '0px' }}>
+              {isStarted ? 'Send' : 'Start'}
             </button>
-          )}
-        </form>
+            {isStarted && expertSystem === 'Drools' && currentQuestion && (
+              <button
+                title="Why this question is relevant?"
+                type="button"
+                style={{ padding: '10px', marginLeft: '0px' }}
+                onClick={fetchWhyExplanation}
+              >
+                Why?
+              </button>
+            )}
+          </form>
+        </div>
       )}
     </div>
   );
+  
 };
 
 export default Alert_Evidences;

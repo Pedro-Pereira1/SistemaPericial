@@ -12,24 +12,24 @@ interface Conclusion {
   summary: string;
 }
 
-interface MultipleLoginFailuresForAUserAccount {
+interface Evidences {
   alertId: string;
-    user_known_1: string | null;
-    was_the_user_1: string | null;
-    are_there_multiple_ips: string | null;
-    does_the_number_of_ips_make_sense: string | null;
-    is_the_reccurence_just: string | null;
-    user_known_2: string | null;
-    was_the_user_2: string | null;
-    origins_just: string | null;
-    national_ip: string | null;
+  user_known_1: string | null;
+  was_the_user_1: string | null;
+  are_there_multiple_ips: string | null;
+  does_the_number_of_ips_make_sense: string | null;
+  is_the_reccurence_just: string | null;
+  user_known_2: string | null;
+  was_the_user_2: string | null;
+  origins_just: string | null;
+  national_ip: string | null;
 }
 
 interface AlertResponse {
   currentStep: 'question' | 'conclusion';
   question?: Question;
   conclusion?: Conclusion;
-  evidences?: MultipleLoginFailuresForAUserAccount;  // <-- New field
+  evidences?: Evidences;  // <-- New field
   parameterNumber: String;
   relevance: String;
 }
@@ -38,7 +38,7 @@ interface Message {
   sender: 'bot' | 'user';
   text: string;
 }
-const base:MultipleLoginFailuresForAUserAccount = {
+const base:Evidences = {
   alertId:"MLF",
   user_known_1: "null",
   was_the_user_1: "null",
@@ -52,10 +52,10 @@ const base:MultipleLoginFailuresForAUserAccount = {
 }
 
 interface AlertProps {
-  expert_system:string
+  expert_system: string 
 }
 
-const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:AlertProps) => {
+const Alert_Evidences: React.FC<AlertProps> = (props:AlertProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>(""); // User input field
   const [expertSystem, setExpertSystem] = useState<string | null>(null); // Selected expert system
@@ -63,11 +63,48 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null); // Track the current question
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error message for invalid input
   const [alertResponse, setAlertResponse] = useState<AlertResponse | null>(null); // Track the alert response
-  const [evidences, setMultipleLoginFailuresForAUserAccount] = useState<MultipleLoginFailuresForAUserAccount>(base);
+  const [evidences, setEvidences] = useState<Evidences>(base);
+  const [isStarted, setIsStarted] = useState<boolean>(false); // Check if interaction is started
+  
+
+
   useEffect(() => {
-    if(props.expert_system === "Drools")
-      AlertService.clearDrools();
-  }, []);
+    if (props.expert_system !== "Drools" && props.expert_system !== "Prolog") {
+      setMessages([{ sender: 'bot', text: "Please select an expert system to proceed." }]);
+      setIsStarted(false); // Prevent the process from starting
+    } else {
+      if(isStarted) {
+        setErrorMessage("You cannot change the expert system after the process has started.");
+      }else {
+        setMessages([]);
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { sender: 'bot', text: "The selected system is " + props.expert_system }
+        ]);
+        setExpertSystem(props.expert_system);
+        
+      }
+    }
+  }, [props.expert_system]);
+
+// Update the startProcess function to check for the expert system
+const startProcess = () => {
+  if (!props.expert_system) {
+    setErrorMessage("Please select an expert system before starting.");
+    return;
+  }
+
+  AlertService.clearDrools(); // Clear the Drools session before starting
+  setMessages(prevMessages => [
+    ...prevMessages,
+    { sender: 'bot', text: "Starting process with system: " + props.expert_system }
+  ]);
+  //clear error message
+  setErrorMessage(null);
+  fetchNextQuestionOrConclusion(""); // Fetch the first question
+  setIsStarted(true); // Mark as started
+};
+
 
   // Function to handle sending a message
   const sendMessage = async (message: string) => {
@@ -81,7 +118,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
-      update(alertResponse?.parameterNumber as keyof MultipleLoginFailuresForAUserAccount, message.toLowerCase());      
+      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
     }
     
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
@@ -93,11 +130,11 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
     setUserInput("");
   };
 
-  const update = (param: keyof MultipleLoginFailuresForAUserAccount, value: string) => {
+  const update = (param: keyof Evidences, value: string) => {
     evidences[param] = value;
   };
 
-  const convertToJsonFormat = (data: MultipleLoginFailuresForAUserAccount): { fact_name: string; variables: (number | string)[] } => {
+  const convertToJsonFormat = (data: Evidences): { fact_name: string; variables: (number | string)[] } => {
     return {
         fact_name: "alert",
         variables: [
@@ -118,7 +155,7 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
   const fetchNextQuestionOrConclusion = async (userResponse: string) => {
     const alertContext = {
       alertId: "MLF",
-      expertSystem: props.expert_system!,
+      expertSystem: expertSystem!,
       userResponse,
       input: evidences
     };
@@ -135,13 +172,13 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
       }
 
       if (result.currentStep === 'question') {
-        setMessages(prevMessages => [
+        await setMessages(prevMessages => [
           ...prevMessages,
           { sender: 'bot', text: `Next Question: ${result.question?.text}` }
         ]);
         setCurrentQuestion(result.question || null); // Update current question
         setAlertResponse(result); // Update alert response
-        //setMultipleLoginFailuresForAUserAccount(result.evidences);
+        //setEvidences(result.evidences);
       } else if (result.currentStep === 'conclusion') {
         setMessages(prevMessages => [
           ...prevMessages,
@@ -168,26 +205,9 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
 
   // Restart the process by resetting the state
   const handleRestart = async () => {
-    setMessages([{ sender: 'bot', text: "The selected system is " + props.expert_system }]);
-    setUserInput("");
-    setExpertSystem(props.expert_system);
-    setCurrentQuestion(null);
-    setIsProcessComplete(false);
-    setMultipleLoginFailuresForAUserAccount({
-      alertId:"MLF",
-      user_known_1: "null",
-      was_the_user_1: "null",
-      are_there_multiple_ips: "null",
-      does_the_number_of_ips_make_sense: "null",
-      is_the_reccurence_just: "null",
-      user_known_2: "null",
-      was_the_user_2: "null",
-      origins_just: "null",
-      national_ip: "null"
-    });
-    await AlertService.reset_prolog();
-    AlertService.clearDrools(); // Clear Drools session on component mount
-  };
+    window.location.reload();
+};
+
 
   const fetchHowExplanation = async () => {
     const alertContext = {
@@ -230,51 +250,91 @@ const Alert_MultipleLoginFailuresForAUserAccount: React.FC<AlertProps> = (props:
   return (
     <div>
       <h1>Multiple login failures for a single account</h1>
-      <p>Sistema Escolhido: {props.expert_system}</p>
-      <div style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}>
+      <div
+        style={{
+          maxHeight: '400px',
+          overflowY: 'auto',
+          border: '1px solid #ccc',
+          padding: '10px',
+          borderRadius: '5px',
+        }}
+      >
         {messages.map((message, index) => (
-          <div key={index} style={{ textAlign: message.sender === 'user' ? 'right' : 'left' }}>
-           <i /*className='bx bx-bot' style={{ fontSize: '20px', marginRight: '10px' }}*/></i> 
-            <strong>{message.sender === 'user' ? 'You' : 'Bot' }:</strong>
+          <div
+            key={index}
+            style={{ textAlign: message.sender === 'user' ? 'right' : 'left' }}
+          >
+            <strong>{message.sender === 'user' ? 'You' : 'Bot'}:</strong>
             <p style={{ whiteSpace: 'pre-line' }}>{message.text}</p>
           </div>
         ))}
       </div>
-
+  
       {errorMessage && (
         <div style={{ color: 'red', marginTop: '10px' }}>
           <strong>{errorMessage}</strong>
         </div>
       )}
-
-{isProcessComplete ? (
+  
+      {isProcessComplete ? (
         <div style={{ display: 'flex', marginTop: '10px' }}>
-          <button onClick={handleRestart} style={{ padding: '10px' }}>Restart</button>
-          {expertSystem === 'expertsystem1' && (
-            <button title="Why was this conclusion made?" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchHowExplanation}>
+          <button onClick={handleRestart} style={{ padding: '10px' }}>
+            Restart
+          </button>
+          {expertSystem === 'Drools' && (
+            <button
+              title="Why was this conclusion made?"
+              style={{ padding: '10px', marginLeft: '0px' }}
+              onClick={fetchHowExplanation}
+            >
               How?
             </button>
           )}
         </div>
       ) : (
-        <form onSubmit={handleSubmitForm} style={{ display: 'flex', marginTop: '10px' }}>
-          <input
-            type="text"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            placeholder={currentQuestion?.type === 'multiple-choice' ? `Select an answer (${currentQuestion.possibleAnswers?.join(", ")})` : "Type your response"}
-            style={{ flex: 1, padding: '10px' }}
-          />
-          <button type="submit" style={{ padding: '10px' }}>Send</button>
-          {expertSystem === 'expertsystem1' && currentQuestion && (
-            <button title="Why this question is relevant?" type="button" style={{ padding: '10px', marginLeft: '0px' }} onClick={fetchWhyExplanation}>
-              Why?
+        <div>
+          <form
+            onSubmit={isStarted ? handleSubmitForm : (e) => {
+              e.preventDefault();
+              startProcess();
+            }}
+            style={{ display: 'flex', marginTop: '10px' }}
+          >
+            <input
+              type="text"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder={
+                !isStarted
+                  ? "Click 'Start' to enable input"
+                  : currentQuestion?.type === 'multiple-choice'
+                  ? `Select an answer (${currentQuestion.possibleAnswers?.join(
+                      ', '
+                    )})`
+                  : 'Type your response'
+              }
+              style={{ flex: 1, padding: '10px' }}
+              disabled={!isStarted}
+            />
+            <button type="submit" style={{ padding: '10px', marginLeft: '0px' }}>
+              {isStarted ? 'Send' : 'Start'}
             </button>
-          )}
-        </form>
+            {isStarted && expertSystem === 'Drools' && currentQuestion && (
+              <button
+                title="Why this question is relevant?"
+                type="button"
+                style={{ padding: '10px', marginLeft: '0px' }}
+                onClick={fetchWhyExplanation}
+              >
+                Why?
+              </button>
+            )}
+          </form>
+        </div>
       )}
     </div>
   );
+  
 };
 
-export default Alert_MultipleLoginFailuresForAUserAccount;
+export default Alert_Evidences;

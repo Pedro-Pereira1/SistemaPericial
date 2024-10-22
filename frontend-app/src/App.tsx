@@ -8,6 +8,7 @@ import AlertPage_Phishing from './components/pages/AlertPage_Phishing';
 import AlertPage_MultipleLoginFailuresForAUserAccount from './components/pages/Alert_MultipleLoginFailuresForAUserAccount';
 import AlertPage_CMF from './components/pages/AlertPage_CMF';
 import AlertPage_SLA from './components/pages/AlertPage_SLA';
+import AlertPage_NUA from './components/pages/AlertPage_NUA';
 import History from './components/pages/History';
 import Settings from './components/pages/Settings';
 import Profile from './components/pages/Profile';
@@ -39,6 +40,7 @@ const App: React.FC = () => {
     { name: 'Multiple Login Failures Alert', path: '/alerts/multiple-login-failures' },
     { name: 'Changes made to the firewall', path: '/alerts/changes-made-to-the-firewall' },
     { name: 'Simultaneous Login Activity', path: '/alerts/simultaneous-login-activity' },
+    { name: 'New User Account', path: '/alerts/new-user-account' },
   ];
 
   // Filter alert categories based on the search term
@@ -138,10 +140,11 @@ const App: React.FC = () => {
           <div className="main-content">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/alerts/phishing-alert" element={<AlertPage_Phishing />} />
+              <Route path="/alerts/phishing-alert" element={<AlertPage_Phishing expert_system={expertSystemState}/>} />
               <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystemState}/>} />
-              <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF />} />
+              <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF expert_system={expertSystemState}/>} />
               <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA expert_system={expertSystemState}/>} />
+              <Route path="/alerts/new-user-account" element={<AlertPage_NUA expert_system={expertSystemState}/>} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />

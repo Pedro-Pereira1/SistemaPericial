@@ -1,42 +1,50 @@
-.dual-button-container .button-left {
-    border: 0;
-    border-right: 1px solid gray;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+.dual-button-container {
+    padding: 5px 10px; /* Reduced padding for the container */
+    background-color: #1d1b31; /* Match container background with sidebar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1px;
+    font-size: 8px; /* Reduced font size for smaller buttons */
 }
 
+.dual-button-container .button-left,
 .dual-button-container .button-right {
     border: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.dual-button-container button {
-    background-color: bisque;
     width: 50%;
+    padding: 5px; /* Reduced padding for smaller buttons */
+    background-color: #252546; /* Dark background for buttons */
+    color: white; /* Button text color */
+    cursor: pointer; /* Pointer on hover */
+    transition: background-color 0.2s; /* Smooth transition */
 }
 
+/* Left button rounded on the left side */
+.dual-button-container .button-left {
+    border-top-left-radius: 10px; /* Smaller rounded corners on the left */
+    border-bottom-left-radius: 10px; /* Smaller rounded corners on the left */
+    border-right: 1px solid #252546; /* Slightly lighter gray for divider */
+}
+
+/* Right button rounded on the right side */
+.dual-button-container .button-right {
+    border-top-right-radius: 10px; /* Smaller rounded corners on the right */
+    border-bottom-right-radius: 10px; /* Smaller rounded corners on the right */
+}
+
+/* Common styles for buttons */
 .dual-button-container button:hover {
-    background-color: rgba(255, 228, 196, 0.671);
-    transition: 0.2s;
+    background-color: #1d1b31; /* Darker background on hover */
 }
 
-.dual-button-container {
-    font-size: 10px;
+.dual-button-container .button-left.active,
+.dual-button-container .button-right.active {
+    background-color: #2c2c54; /* Active state color, matching search bar focus color */
+    color: white; /* Keep text color for better contrast */
 }
 
-/* Active state for the left and right buttons */
-.dual-button-container .button-left.active, .dual-button-container .button-right.active {
-    background-color: rgba(255, 228, 196, 0.671); /* Darker shade for active state */
-    color: white; /* Optional: change text color for better contrast */
-}
-
-/* Optional: if you want a transition when activating */
-.dual-button-container .button-left.active, .dual-button-container .button-right.active {
+/* Optional: Transition for active state */
+.dual-button-container .button-left.active,
+.dual-button-container .button-right.active {
     transition: background-color 0.2s ease; /* Smooth transition for active state */
-}
-
-/* Container styling */
-.dual-button-container {
-    font-size: 10px;
 }

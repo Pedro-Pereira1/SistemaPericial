@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService_SLA";
+import AlertService from "../../services/AlertService_NUA";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {
@@ -13,12 +13,12 @@ interface Conclusion {
 }
 
 interface Evidences {
-    alertId: string;
-    multipleLocations: string | null;
-    legitimateBehavior: string | null;
-    abnormalPattern: string | null;
-    mfaEnabled: string | null;
-    userContacted: string | null;
+  alertId: string;
+  permittedUser: string | null;
+  userContacted: string | null;
+  accordingPolicy: string | null;
+  userResponse: string | null;
+  userProblemResolved: string | null;
 }
 
 interface AlertResponse {
@@ -34,13 +34,14 @@ interface Message {
   sender: 'bot' | 'user';
   text: string;
 }
+
 const base:Evidences = {
-  alertId: "SLA",
-  multipleLocations: "null",
-  legitimateBehavior: "null",
-  abnormalPattern: "null",
-  mfaEnabled: "null",
-  userContacted: "null"
+  alertId:"NUA",
+  permittedUser: "null",
+  userContacted: "null",
+  accordingPolicy: "null",
+  userResponse: "null",
+  userProblemResolved: "null",
 }
 
 interface AlertProps {
@@ -130,19 +131,19 @@ const startProcess = () => {
     return {
         fact_name: "alert",
         variables: [
-            "SLA",
-            data.multipleLocations ?? "null",
-            data.legitimateBehavior ?? "null",
-            data.abnormalPattern ?? "null",
-            data.mfaEnabled ?? "null",
-            data.userContacted ?? "null"
+            "NUA",
+            data.permittedUser ?? "null",
+            data.userContacted ?? "null",
+            data.accordingPolicy ?? "null",
+            data.userResponse ?? "null",
+            data.userProblemResolved ?? "null"
         ]
     };
   }
   // Fetch the next question or conclusion from the backend
   const fetchNextQuestionOrConclusion = async (userResponse: string) => {
     const alertContext = {
-      alertId: "SLA",
+      alertId: "NUA",
       expertSystem: expertSystem!,
       userResponse,
       input: evidences
@@ -199,7 +200,7 @@ const startProcess = () => {
 
   const fetchHowExplanation = async () => {
     const alertContext = {
-      alertId: "SLA",
+      alertId: "NUA",
       input: evidences
     };
   
@@ -237,7 +238,7 @@ const startProcess = () => {
 
   return (
     <div>
-      <h1>Simultaneous Login Activity</h1>
+      <h1>New user account</h1>
       <div
         style={{
           maxHeight: '400px',
