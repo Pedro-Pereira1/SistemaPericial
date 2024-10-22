@@ -12,6 +12,9 @@ public class Conclusion {
     public static final String ALTERATION_NOT_DETECTED = "Altering actions have not been detected";
     public static final String LEGIT_ALTERATION = "Legitimate action";
     public static final String PREVENTIVE_MEASURES ="Implement preventive measures, such as regularly auditing and monitoring firewall actions";
+    public static final String MITIGATE_VULNERABILITY = "Mitigate the vulnerability exploited by the suspicious activity\n";
+    public static final String REVERT_SETTINGS = "Revert the changes made to the firewall.\n";
+    public static final String APPLY_RECOMMENDATIONS = "Apply security recommendations.\n";
 
 
     private String description;
