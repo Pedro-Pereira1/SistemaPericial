@@ -45,6 +45,18 @@ facto_dispara_regras(alert("SLA", "yes", "no", "null", "no", "yes"), [40]).
 facto_dispara_regras(alert("SLA", "yes", "no", "null", "yes", "no"), [41]).
 facto_dispara_regras(alert("SLA", "yes", "no", "null", "no", "no"), [42]).
 
+facto_dispara_regras(alert("CMF","null","null","null","null"),[43])
+facto_dispara_regras(alert("CMF","no","null","null","null"),[44])
+facto_dispara_regras(alert("CMF","yes","null","null","null"),[45])
+facto_dispara_regras(alert("CMF","yes","yes","null","null"),[46])
+facto_dispara_regras(alert("CMF","yes","no","null","null"),[47])
+facto_dispara_regras(alert("CMF","yes","yes","malicious activity","null"),[48])
+facto_dispara_regras(alert("CMF","yes","yes","security incident","null"),[49])
+facto_dispara_regras(alert("CMF","yes","yes","security incident","yes"),[50])
+facto_dispara_regras(alert("CMF","yes","yes","security incident","no"),[51])
+facto_dispara_regras(alert("CMF","yes","yes","misconfiguration","null"),[52])
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -216,3 +228,37 @@ regra 41
 regra 42
     se [alert("SLA", "yes", "no", "null", "no", "no")]
     entao [cria_facto(conclusao("Reset the user's password, revoke access tokens, and educate the user on preventing future incidents."))].
+
+
+regra 43 
+	se[alert("CMF",null,null,null,null)]
+	entao[cria_facto(questao("Changes made to the firewall?","multiple-choice",["yes", "no"],"changesFirewall"))]
+
+regra 44 
+	se[alert("CMF","no",null,null,null)]
+	entao[cria_facto(conclusao("Altering actions have not been detected"))]
+regra 45
+	se[alert("CMF","yes",null,null,null)]
+	entao[cria_facto(questao("Is the activity suspicious?","multiple-choice",["yes", "no"],"suspActivity"))]
+regra 46
+	se[alert("CMF","yes",yes,null,null)]
+	entao[cria_facto(questao("Type of activity detected?","multiple-choice",["Malicious activity","Security incident", "Misconfiguration"],"activityType"))]
+regra 47
+	se[alert("CMF","yes",no,null,null)]
+	entao[cria_facto(conclusao("Legitimate action"))]
+regra 48
+	se[alert("CMF","yes","yes","malicious activity",null)]
+	entao[cria_facto(conclusao(Apply security recommendations. Implement preventive measures, such as regularly auditing and monitoring firewall actions.))]
+regra 49
+	se[alert("CMF","yes","yes","security incident",null)]
+	entao[cria_facto(questao("Was a vulnerability exploited?","multiple-choice",["yes", "no"],"vulnerabExploited"))]
+regra 50
+	se[alert("CMF","yes","yes","security incident",yes)]
+	entao[cria_facto(conclusao("Mitigate the vulnerability exploited by the suspicious activity. Implement preventive measures, such as regularly auditing and monitoring firewall actions"))]
+regra 51
+	se[alert("CMF","yes","yes","security incident",no)]
+	entao[cria_facto(conclusao("Apply security recommendations. Implement preventive measures, such as regularly auditing and monitoring firewall actions))]
+regra 52
+	se[alert("CMF","yes","yes","misconfiguration",null)]
+	entao[cria_facto(conclusao("Revert the changes made to the firewall. Implement preventive measures, such as regularly auditing and monitoring firewall actions"))]
+
