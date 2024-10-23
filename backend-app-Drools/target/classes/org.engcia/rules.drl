@@ -900,9 +900,6 @@ then
     insert(output);
     end
 
-
-
-
 //================================================================================================
 //New user account
 rule "Step 1 - Start Analysis for New user account"
