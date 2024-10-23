@@ -1,5 +1,4 @@
 import os
-from langfuse.callback import CallbackHandler
 from dotenv import load_dotenv
 from pymongo import MongoClient
 

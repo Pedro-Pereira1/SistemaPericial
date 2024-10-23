@@ -10,3 +10,6 @@ class RulesController:
 
     async def get_all_rules(self):
         return await self.service.get_all_rules()
+    
+    async def add_to_history(self, rules):
+        return await self.service.add_to_history(rules)

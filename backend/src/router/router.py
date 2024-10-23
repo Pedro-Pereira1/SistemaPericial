@@ -12,7 +12,7 @@ class Router:
     async def default():
         rules_controller:RulesController = loader.resolve(config.rules_controller["name"]) 
         return await rules_controller.get_all_rules()
-    @router.post("/history/")
+    @router.post("/history")
     async def send_prompt(rules:RulesDto):
         rules_controller:RulesController = loader.resolve(config.rules_controller["name"])
-        return await {}
+        return await rules_controller.add_to_history(rules)
