@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AlertService from "../../services/AlertService_SLA";
+import HistoryService from "../../services/historyService";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {
@@ -173,8 +174,10 @@ const startProcess = () => {
           ...prevMessages,
           { sender: 'bot', text: `Conclusion: ${result.conclusion?.description}` }
         ]);
-        
         setIsProcessComplete(true); // Mark process as complete
+      
+        const explanationList = await AlertService.getHowExplanationDrools(alertContext);
+        postHistory(explanationList);
       }
     } catch (error) {
       console.error("Error processing alert:", error);
@@ -235,6 +238,12 @@ const startProcess = () => {
       }
     }
   };
+
+  const postHistory = async (list: string[]) => {
+    HistoryService.postHistory(
+      { alertType: "SLA",
+        rules: list });
+  }
 
   return (
     <div>
