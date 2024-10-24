@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchHistory } from './../../services/historyService';
+import historyService from './../../services/historyService';
 import './History.css';
 
 interface HistoryItem {
@@ -17,7 +17,7 @@ const History: React.FC = () => {
     useEffect(() => {
         const getHistory = async () => {
             try {
-                const historyData = await fetchHistory();
+                const historyData = await historyService.fetchHistory();
                 if (historyData.length === 0) {
                     setError('No history available.');
                 } else {

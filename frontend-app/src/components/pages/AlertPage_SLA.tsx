@@ -112,7 +112,7 @@ const startProcess = () => {
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
-      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
+      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());
     }
     
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);

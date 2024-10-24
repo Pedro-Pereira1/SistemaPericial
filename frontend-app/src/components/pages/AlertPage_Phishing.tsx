@@ -3,7 +3,7 @@ import AlertService from "../../services/AlertService_Phishing";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {
-  type: 'multiple-choice' | 'text';
+  type: 'multiple-choice' | 'text' | 'ip-quest' | 'list-question';
   text: string;
   possibleAnswers?: string[];
 }
@@ -112,6 +112,26 @@ const startProcess = () => {
         return;
       }
       update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
+    }
+
+    // Handle IP-quest validation
+    if (currentQuestion?.type === 'ip-quest') {
+      const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+      if (!ipRegex.test(message)) {
+        setErrorMessage("Please enter a valid IP address.");
+        return;
+      }
+      update(alertResponse?.parameterNumber as keyof Evidences, message);
+    }
+
+    // Handle list-question input
+    if (currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers) {
+      currentQuestion.possibleAnswers = currentQuestion.possibleAnswers.map(answer => answer.toLowerCase());
+      if (!currentQuestion.possibleAnswers.includes(message.toLowerCase())) {
+        setErrorMessage(`Please select an answer from the list: ${currentQuestion.possibleAnswers.join(", ")}`);
+        return;
+      }
+      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());
     }
     
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
@@ -283,42 +303,60 @@ const startProcess = () => {
       ) : (
         <div>
           <form
-            onSubmit={isStarted ? handleSubmitForm : (e) => {
-              e.preventDefault();
-              startProcess();
-            }}
-            style={{ display: 'flex', marginTop: '10px' }}
-          >
-            <input
-              type="text"
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder={
-                !isStarted
-                  ? "Click 'Start' to enable input"
-                  : currentQuestion?.type === 'multiple-choice'
-                  ? `Select an answer (${currentQuestion.possibleAnswers?.join(
-                      ', '
-                    )})`
-                  : 'Type your response'
-              }
-              style={{ flex: 1, padding: '10px' }}
-              disabled={!isStarted}
-            />
-            <button type="submit" style={{ padding: '10px', marginLeft: '0px' }}>
-              {isStarted ? 'Send' : 'Start'}
-            </button>
-            {isStarted && expertSystem === 'Drools' && currentQuestion && (
-              <button
-                title="Why this question is relevant?"
-                type="button"
-                style={{ padding: '10px', marginLeft: '0px' }}
-                onClick={fetchWhyExplanation}
-              >
-                Why?
-              </button>
-            )}
-          </form>
+  onSubmit={isStarted ? handleSubmitForm : (e) => {
+    e.preventDefault();
+    startProcess();
+  }}
+  style={{ display: 'flex', marginTop: '10px' }}
+>
+  {currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers ? (
+    // Render a dropdown list for list-question
+    <select
+      value={userInput}
+      onChange={(e) => setUserInput(e.target.value)}
+      style={{ flex: 1, padding: '10px' }}
+    >
+      <option value="" disabled>Select an option</option> {/* Placeholder */}
+      {currentQuestion.possibleAnswers.map((answer, index) => (
+        <option key={index} value={answer}>
+          {answer}
+        </option>
+      ))}
+    </select>
+  ) : (
+    // Render the normal input field for other types of questions
+    <input
+      type="text"
+      value={userInput}
+      onChange={(e) => setUserInput(e.target.value)}
+      placeholder={
+        !isStarted
+          ? "Click 'Start' to enable input"
+          : currentQuestion?.type === 'multiple-choice'
+          ? `Select an answer (${currentQuestion.possibleAnswers?.join(', ')})`
+          : currentQuestion?.type === 'ip-quest'
+          ? 'Enter a valid IP address'
+          : 'Type your response'
+      }
+      style={{ flex: 1, padding: '10px' }}
+      disabled={!isStarted}
+    />
+  )}
+  <button type="submit" style={{ padding: '10px', marginLeft: '0px' }}>
+    {isStarted ? 'Send' : 'Start'}
+  </button>
+  {isStarted && expertSystem === 'Drools' && currentQuestion && (
+    <button
+      title="Why this question is relevant?"
+      type="button"
+      style={{ padding: '10px', marginLeft: '0px' }}
+      onClick={fetchWhyExplanation}
+    >
+      Why?
+    </button>
+  )}
+</form>
+
         </div>
       )}
     </div>
