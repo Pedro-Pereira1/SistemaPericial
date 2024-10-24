@@ -1,4 +1,3 @@
-from fastapi import UploadFile
 from src.loaders import loader
 from src.services.rules_service import RulesService
 from src import config
@@ -12,4 +11,4 @@ class RulesController:
         return await self.service.get_all_rules()
     
     async def add_to_history(self, rules):
-        return await self.service.add_to_history(rules)
+        return await self.service.add_to_history(rules)       
