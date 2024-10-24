@@ -1,50 +1,76 @@
 .dual-button-container {
-    padding: 5px 10px; /* Reduced padding for the container */
-    background-color: #1d1b31; /* Match container background with sidebar */
+    background: #252546;
+    border-radius: 30px;
+    overflow: hidden;
+    width: 240px;
+    text-align: center;
+    font-size: 16px; /* Reduced font size */
+    letter-spacing: 1px;
+    color: #fff;
+    position: relative;
+    padding-right: 120px;
+    max-width: 90%; /* Keep responsiveness */
+    margin: 10px auto; /* Reduced margin for better compactness */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dual-button-container::before {
+    content: "Prolog"; /* Right-side text */
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 120px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    margin-bottom: 1px;
-    font-size: 8px; /* Reduced font size for smaller buttons */
-}
-
-.dual-button-container .button-left,
-.dual-button-container .button-right {
-    border: 0;
-    width: 50%;
-    padding: 5px; /* Reduced padding for smaller buttons */
-    background-color: #252546; /* Dark background for buttons */
-    color: white; /* Button text color */
-    cursor: pointer; /* Pointer on hover */
-    transition: background-color 0.2s; /* Smooth transition */
-}
-
-/* Left button rounded on the left side */
-.dual-button-container .button-left {
-    border-top-left-radius: 10px; /* Smaller rounded corners on the left */
-    border-bottom-left-radius: 10px; /* Smaller rounded corners on the left */
-    border-right: 1px solid #252546; /* Slightly lighter gray for divider */
-}
-
-/* Right button rounded on the right side */
-.dual-button-container .button-right {
-    border-top-right-radius: 10px; /* Smaller rounded corners on the right */
-    border-bottom-right-radius: 10px; /* Smaller rounded corners on the right */
-}
-
-/* Common styles for buttons */
-.dual-button-container button:hover {
-    background-color: #1d1b31; /* Darker background on hover */
-}
-
-.dual-button-container .button-left.active,
-.dual-button-container .button-right.active {
-    background-color: #2c2c54; /* Active state color, matching search bar focus color */
-    color: white; /* Keep text color for better contrast */
-}
-
-/* Optional: Transition for active state */
-.dual-button-container .button-left.active,
-.dual-button-container .button-right.active {
-    transition: background-color 0.2s ease; /* Smooth transition for active state */
-}
+    justify-content: center;
+    z-index: 3;
+    pointer-events: none;
+  }
+  
+  .dual-button-container .switch-button-checkbox {
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 2;
+  }
+  
+  .dual-button-container .switch-button-checkbox:checked + .switch-button-label::before {
+    transform: translateX(120px);
+    transition: transform 300ms linear;
+  }
+  
+  .dual-button-container .switch-button-label {
+    position: relative;
+    padding: 5px 0; /* Reduced padding for smaller height */
+    display: block;
+    user-select: none;
+  }
+  
+  .dual-button-container .switch-button-label::before {
+    content: "";
+    background: #1d1b31;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 30px;
+    transform: translateX(0);
+    transition: transform 300ms;
+  }
+  
+  .dual-button-container .switch-button-label-span {
+    position: relative;
+    z-index: 3;
+  }
+  
+  .dual-button-container .switch-button-checkbox:checked + .switch-button-label .switch-button-label-span {
+    color: #fff;
+  }
+  

@@ -1,38 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './DualButton.css';
 
 interface DualButtonProps {
   left_button_text: string;
   right_button_text: string;
-  setState: (newState: string) => void; // Function to update the parent state
+  setState: (newState: string) => void;
 }
 
 const DualButton: React.FC<DualButtonProps> = ({ left_button_text, right_button_text, setState }) => {
-  const [activeButton, setActiveButton] = useState('Drools'); // Track which button is active
+  
+  const [activeButton, setActiveButton] = useState('Drools');
 
-  // Function to handle button clicks
+  useEffect(() => {
+    handleButtonClick('Drools'); // Trigger click on mount
+  }, []);
+
   const handleButtonClick = (buttonType: string) => {
-    setActiveButton(buttonType); // Set the clicked button as active
-    setState(buttonType); // Update the parent component state with the clicked button type
+    setActiveButton(buttonType);
+    setState(buttonType);
   };
 
   return (
     <div className="dual-button-container">
-      {/* Left Button */}
-      <button
-        className={`button-left ${activeButton === 'Drools' ? 'active' : ''}`}
-        onClick={() => handleButtonClick('Drools')}
-      >
-        {left_button_text}
-      </button>
-
-      {/* Right Button */}
-      <button
-        className={`button-right ${activeButton === 'Prolog' ? 'active' : ''}`}
-        onClick={() => handleButtonClick('Prolog')}
-      >
-        {right_button_text}
-      </button>
+      <input
+        className="switch-button-checkbox"
+        type="checkbox"
+        id="toggle-switch"
+        checked={activeButton === 'Prolog'}
+        onChange={() => handleButtonClick(activeButton === 'Drools' ? 'Prolog' : 'Drools')}
+      />
+      <label className="switch-button-label" htmlFor="toggle-switch">
+        <span className="switch-button-label-span">{left_button_text}</span>
+      </label>
     </div>
   );
 };
