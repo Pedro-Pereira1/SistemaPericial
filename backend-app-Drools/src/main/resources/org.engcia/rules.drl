@@ -212,46 +212,46 @@ when
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Is there a simultaneous login from multiple locations/IPs (>3)?",
+                                                          "\nIs there a simultaneous login from multiple locations/IPs (>3)?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "multipleLocations",
-                                             "This question checks if multiple login attempts from different locations could indicate a potential compromise.");
+                                             "Detecting logins from multiple locations or IPs helps identify potential unauthorized access attempts, as legitimate users typically do not log in from multiple disparate locations at the same time.");
     insert(output);
 end
 
-rule "Step 1: Check if there are logins from multiple locations"
+rule "Simultaneous logins, check if there are logins from multiple locations"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "yes", legitimateBehavior == "null", abnormalPattern == "null", mfaEnabled == "null", userContacted == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Can the login be explained by legitimate user behavior (VPN, travel, etc.)?",
+                                                          "\nCan the login be explained by legitimate user behavior (VPN, travel, etc.)?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "legitimateBehavior",
-                                             "We need to understand if the simultaneous logins can be attributed to normal user behavior.");
+                                             "It's essential to determine if unusual login patterns can be justified by legitimate reasons like VPN usage or travel, as these could account for seemingly suspicious activity.");
     insert(output);
 end
 
-rule "Step 1: No simultaneous logins, check for anomalies"
+rule "No simultaneous logins, check for anomalies"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "no", legitimateBehavior == "null", abnormalPattern == "null", mfaEnabled == "null", userContacted == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Is there another abnormal pattern?",
+                                                          "\nIs there another abnormal pattern?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "abnormalPattern",
-                                             "This question checks for other abnormal patterns, which may indicate a security issue even if multiple logins are not present.");
+                                             "This question checks for other abnormal patterns, such as login times or unusual behavior post-login, can reveal subtle signs of compromised accounts or malicious activity.");
     insert(output);
 end
 
-rule "Step 2: Multiple IP locations, classify as false positive"
+rule "Login explained by legitime behaviour, classify as false positive"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "yes", legitimateBehavior == "yes", abnormalPattern == "null", mfaEnabled == "null", userContacted == "null")
 then
@@ -264,7 +264,7 @@ then
     insert(output);
 end
 
-rule "Step 2: Abnormal pattern detected, notify support team"
+rule "Abnormal pattern detected, notify support team"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "no", legitimateBehavior == "null", abnormalPattern == "yes", mfaEnabled == "null", userContacted == "null")
 then
@@ -277,7 +277,7 @@ then
     insert(output);
 end
 
-rule "Step 2: No multiple IP locations, false positive"
+rule "No multiple IP locations, false positive"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "no", legitimateBehavior == "null", abnormalPattern == "no", mfaEnabled == "null", userContacted == "null")
 then
@@ -290,28 +290,29 @@ then
     insert(output);
 end
 
-rule "Step 3: Simultaneous logins explained by legitimate behavior"
+rule "Simultaneous logins not explained by legitimate behavior, do account suspension and check Multi-factor authentication"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "yes", legitimateBehavior == "no", abnormalPattern == "null", mfaEnabled == "null", userContacted == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Temporarily suspend the account\nDoes the user have MFA activated?",
+                                                          "\nTemporarily suspend the account\nDoes the user have MFA activated?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "mfaEnabled",
-                                             "Since legitimate behavior can't explain the logins, it's critical to determine if MFA is enabled for additional security.");
+                                             "Temporarily suspending the account prevents further unauthorized access while the suspicious activity is investigated, mitigating potential damage.\n" +
+                                             "Since legitimate behavior can't explain the logins, it's critical to determine if MFA is enabled as it significantly enhances account security, making it harder for attackers to access the account even if credentials are compromised.");
     insert(output);
 end
 
-rule "Step 4: Does the user have MFA enabled?"
+rule "User have Multi-factor authentication, validate activity with the user"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "yes", legitimateBehavior == "no", abnormalPattern == "null", mfaEnabled == "yes", userContacted == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Can login be immediately validated by contacting the user?",
+                                                          "\nCan login be immediately validated by contacting the user?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
@@ -320,22 +321,23 @@ then
     insert(output);
 end
 
-rule "Step 4.2: Does the user have MFA enabled?"
+rule "User don´t have Multi-factor authentication, enforce MFA and validate activity with the user"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "yes", legitimateBehavior == "no", abnormalPattern == "null", mfaEnabled == "no", userContacted == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Enforce MFA\nCan login be immediately validated by contacting the user?",
+                                                          "\nEnforce MFA\nCan login be immediately validated by contacting the user?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "userContacted",
-                                             "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                             "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user. Enforcing MFA adds an additional security layer, ensuring that future logins are protected, even if credentials are leaked or guessed.\n" +
+                                             "Immediate validation through the user helps confirm whether the activity is legitimate, ensuring quick resolution or further investigation if unauthorized.");
     insert(output);
 end
 
-rule "Step 5: User contacted, validate login"
+rule "User contacted, user confirmed login, reverse previous security actions"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "yes", legitimateBehavior == "no", abnormalPattern == "null", (mfaEnabled == "yes" || mfaEnabled == "no"), userContacted == "yes")
 then
@@ -348,7 +350,7 @@ then
     insert(output);
 end
 
-rule "Step 5.2: User contacted, validate login"
+rule "User contacted, user don´t confirmed the login, reset password and revoke tokens to protect the account"
 when
     $input: EvidencesSLA(alertId == "SLA", multipleLocations == "yes", legitimateBehavior == "no", abnormalPattern == "null", (mfaEnabled == "yes" || mfaEnabled == "no"), userContacted == "no")
 then
@@ -813,7 +815,7 @@ when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="null",vulnerabExploited=="null")
 then
      AlertResponse output = new AlertResponse("question"
-                                                 ,new Question("multiple-choice","Type of activity detected?"
+                                                 ,new Question("list-question","Type of activity detected?"
                                                  ,Arrays.asList("Malicious activity","Security incident", "Misconfiguration"))
                                                  ,null
                                                  ,$input
