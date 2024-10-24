@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AlertService from "../../services/AlertService_Phishing";
+import HistoryService from "../../services/historyService";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {
@@ -195,6 +196,8 @@ const startProcess = () => {
         ]);
         
         setIsProcessComplete(true); // Mark process as complete
+        const explanationList = await AlertService.getHowExplanationDrools(alertContext);
+        HistoryService.postHistory({ alertType: "Phishing",rules: explanationList });
       }
     } catch (error) {
       console.error("Error processing alert:", error);
@@ -303,60 +306,59 @@ const startProcess = () => {
       ) : (
         <div>
           <form
-  onSubmit={isStarted ? handleSubmitForm : (e) => {
-    e.preventDefault();
-    startProcess();
-  }}
-  style={{ display: 'flex', marginTop: '10px' }}
->
-  {currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers ? (
-    // Render a dropdown list for list-question
-    <select
-      value={userInput}
-      onChange={(e) => setUserInput(e.target.value)}
-      style={{ flex: 1, padding: '10px' }}
-    >
-      <option value="" disabled>Select an option</option> {/* Placeholder */}
-      {currentQuestion.possibleAnswers.map((answer, index) => (
-        <option key={index} value={answer}>
-          {answer}
-        </option>
-      ))}
-    </select>
-  ) : (
-    // Render the normal input field for other types of questions
-    <input
-      type="text"
-      value={userInput}
-      onChange={(e) => setUserInput(e.target.value)}
-      placeholder={
-        !isStarted
-          ? "Click 'Start' to enable input"
-          : currentQuestion?.type === 'multiple-choice'
-          ? `Select an answer (${currentQuestion.possibleAnswers?.join(', ')})`
-          : currentQuestion?.type === 'ip-quest'
-          ? 'Enter a valid IP address'
-          : 'Type your response'
-      }
-      style={{ flex: 1, padding: '10px' }}
-      disabled={!isStarted}
-    />
-  )}
-  <button type="submit" style={{ padding: '10px', marginLeft: '0px' }}>
-    {isStarted ? 'Send' : 'Start'}
-  </button>
-  {isStarted && expertSystem === 'Drools' && currentQuestion && (
-    <button
-      title="Why this question is relevant?"
-      type="button"
-      style={{ padding: '10px', marginLeft: '0px' }}
-      onClick={fetchWhyExplanation}
-    >
-      Why?
-    </button>
-  )}
-</form>
-
+            onSubmit={isStarted ? handleSubmitForm : (e) => {
+              e.preventDefault();
+              startProcess();
+            }}
+            style={{ display: 'flex', marginTop: '10px' }}
+          >
+            {currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers ? (
+              // Render a dropdown list for list-question
+              <select
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                style={{ flex: 1, padding: '10px' }}
+              >
+                <option value="" disabled>Select an option</option> {/* Placeholder */}
+                {currentQuestion.possibleAnswers.map((answer, index) => (
+                  <option key={index} value={answer}>
+                    {answer}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              // Render the normal input field for other types of questions
+              <input
+                type="text"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                placeholder={
+                  !isStarted
+                    ? "Click 'Start' to enable input"
+                    : currentQuestion?.type === 'multiple-choice'
+                    ? `Select an answer (${currentQuestion.possibleAnswers?.join(', ')})`
+                    : currentQuestion?.type === 'ip-quest'
+                    ? 'Enter a valid IP address'
+                    : 'Type your response'
+                }
+                style={{ flex: 1, padding: '10px' }}
+                disabled={!isStarted}
+              />
+            )}
+            <button type="submit" style={{ padding: '10px', marginLeft: '0px' }}>
+              {isStarted ? 'Send' : 'Start'}
+            </button>
+            {isStarted && expertSystem === 'Drools' && currentQuestion && (
+              <button
+                title="Why this question is relevant?"
+                type="button"
+                style={{ padding: '10px', marginLeft: '0px' }}
+                onClick={fetchWhyExplanation}
+              >
+                Why?
+              </button>
+            )}
+          </form>
         </div>
       )}
     </div>
