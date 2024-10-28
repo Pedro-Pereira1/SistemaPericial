@@ -50,8 +50,8 @@ public class AlertController {
                 break;
             //User data has been changed
             case "UDC":
-                //EvidencesUDC input = mapper.convertValue(alertContext.get("input"), EvidencesUDC.class);
-                //response = alertService.runEngine(input);
+                EvidencesUDC inputUDC = mapper.convertValue(alertContext.get("input"), EvidencesUDC.class);
+                response = alertService.runEngine(inputUDC);
                 break;
             // Phishing: Test case
             case "Phishing":

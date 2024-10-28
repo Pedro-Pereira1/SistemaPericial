@@ -321,4 +321,4 @@ regra 62
 
 regra 63
     se [alert("NUA", "no", "null", "no", "no", "no")]
-    entao [cria_facto(conclusao("Eliminate the account and associated data"))].
+    entao [cria_facto(conclusao("Eliminate the account and associated data. Verify and modify account creation policies."))].

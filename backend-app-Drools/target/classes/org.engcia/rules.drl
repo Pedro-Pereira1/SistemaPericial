@@ -7,6 +7,7 @@ import org.engcia.model.EvidencesSLA
 import org.engcia.model.EvidencesPhishing
 import org.engcia.model.EvidencesMLF
 import org.engcia.model.EvidencesCMF
+import org.engcia.model.EvidencesUDC
 import java.util.Arrays
 import org.engcia.model.Conclusion
 import java.util.ArrayList
@@ -1059,9 +1060,167 @@ end
 
 //================================================================================================
 //User data has been changed
+//================================================================================================
+
+// Start of the Analysis for "UDC" Alert
+rule "Start Analysis for UDC"
+when
+    $input: EvidencesUDC(alertId == "UDC", userKnown == "null", legitimateAction == "null", userVerified == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nDoes the analyst know the user?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "userKnown",
+                                             "This step checks if the analyst is familiar with the user, which could help in verifying the legitimacy of the action.");
+    insert(output);
+end
+
+// Analyst knows user, verify legitimacy with user
+rule "Analyst knows user, verify legitimacy with user"
+when
+    $input: EvidencesUDC(alertId == "UDC", userKnown == "yes", legitimateAction == "null", userVerified == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nWas the action taken by the user?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "legitimateAction",
+                                             "Confirming the legitimacy of the action with the user helps determine if this is a genuine alert or a false positive.");
+    insert(output);
+end
+
+// Legitimate action by user, classify as false positive
+rule "Legitimate action by user, classify as false positive"
+when
+    $input: EvidencesUDC(alertId == "UDC", userKnown == "yes", legitimateAction == "yes", userVerified == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "Since the action was verified as legitimate by the user, classify this as a false positive.");
+    insert(output);
+end
+
+// Analyst does not know user, collect IP and identify change
+rule "Analyst does not know user, collect IP and identify change"
+when
+    $input: EvidencesUDC(alertId == "UDC", userKnown == "no", legitimateAction == "null", userVerified == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nProceed to collect the IP address associated with the change?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "ipCollected",
+                                             "Since the user is not known, proceed with collecting the IP address associated with the change to further investigate.");
+    insert(output);
+end
+
+// IP collected, open case and temporarily block account
+rule "IP collected, open case and block account"
+when
+    $input: EvidencesUDC(alertId == "UDC", userKnown == "no", legitimateAction == "null", userVerified == "no", ipCollected == "yes", helpdeskVerified == "null", reversalPossible == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nOpen a case, temporarily block the account, and revoke privileges?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "caseOpened",
+                                             "Open a case, temporarily block the account, and revoke privileges for security.");
+    insert(output);
+end
+
+// Helpdesk verification step
+rule "Check if user is verified by Helpdesk"
+when
+    $input: EvidencesUDC(alertId == "UDC", userKnown == "no", legitimateAction == "null", userVerified == "no", ipCollected == "yes", helpdeskVerified == "null", reversalPossible == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nIs the user recognized by the Helpdesk?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "helpdeskVerified",
+                                             "Determine if the Helpdesk recognizes the user, which can help classify this as a false positive if confirmed.");
+    insert(output);
+end
+
+// User verified by Helpdesk, classify as false positive
+rule "User verified by Helpdesk, classify as false positive"
+when
+    $input: EvidencesUDC(alertId == "UDC", helpdeskVerified == "yes")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "Helpdesk verification confirms the user, so classify as a false positive.");
+    insert(output);
+end
+
+// Helpdesk does not verify user, attempt reversal
+rule "Helpdesk does not verify user, attempt reversal"
+when
+    $input: EvidencesUDC(alertId == "UDC", helpdeskVerified == "no", reversalPossible == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nCan the change be reversed?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "reversalPossible",
+                                             "Attempt to reverse the change if it’s unauthorized.");
+    insert(output);
+end
+
+// Reversal confirmed, suggest password change and alert
+rule "Reversal confirmed, suggest password change and alert"
+when
+    $input: EvidencesUDC(alertId == "UDC", reversalPossible == "yes")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nThe reversal was successful; suggest the user changes their password and enhance security measures?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "conclusion",
+                                             "The reversal was successful; suggest the user changes their password and enhance security measures.");
+    insert(output);
+end
+
+// Reversal not possible, block account
+rule "Reversal not possible, block account"
+when
+    $input: EvidencesUDC(alertId == "UDC", reversalPossible == "no")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.BLOCK_ACCOUNT),
+                                             $input,
+                                             "conclusion",
+                                             "Since the reversal was not possible and the user couldn't be verified, proceed with blocking the account.");
+    insert(output);
+end
 
 
 //================================================================================================
+
+//================================================================================================
+
 
 rule "Default: Unknown response or invalid step"
 when
