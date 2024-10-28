@@ -22,3 +22,6 @@ class RulesAdapter:
             documents.append(document)
 
         return documents
+
+    async def delete_all(self):
+        self.db["history"].delete_many({})
