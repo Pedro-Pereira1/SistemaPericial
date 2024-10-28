@@ -15,7 +15,7 @@ interface Conclusion {
 
 interface Evidences {
     alertId: string;
-    userKnow: string | null;
+    userKnown: string | null;
     legitimateAction: string | null;
     userVerified: string | null;
     ipCollected: string | null;
@@ -38,7 +38,7 @@ interface Message {
 }
 const base:Evidences = {
   alertId: "UDC",
-  userKnow: "null",
+  userKnown: "null",
   legitimateAction: "null",
   userVerified: "null",
   ipCollected: "null",
@@ -155,7 +155,7 @@ const startProcess = () => {
         fact_name: "alert",
         variables: [
             "UDC",
-            data.userKnow ?? "null",
+            data.userKnown ?? "null",
             data.legitimateAction ?? "null",
             data.userVerified ?? "null",
             data.ipCollected ?? "null",
