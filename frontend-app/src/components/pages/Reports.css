@@ -1,0 +1,73 @@
+/* Overall Container */
+.reports-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+
+/* Header and Description */
+.reports-container h1 {
+    font-size: 2em;
+    color: #007bff;
+    margin-bottom: 0.5em;
+    text-align: left;
+}
+
+.reports-description {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 1.5em;
+    text-align: left;
+}
+
+/* List of Reports */
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Individual Report Item */
+.report-item {
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.report-item:hover {
+    transform: translateY(-5px);
+}
+
+.report-title {
+    font-size: 1.5em;
+    color: #333;
+    margin: 0 0 10px;
+}
+
+.report-description {
+    font-size: 1em;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+/* Download Button */
+.download-button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.download-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
