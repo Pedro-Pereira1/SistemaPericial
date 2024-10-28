@@ -1,0 +1,72 @@
+% Metaconhecimento
+
+% Factos que disparam as regras com as condições especificadas
+
+facto_dispara_regras(alert("NUA", "null", "null", "null", "null", "null"), [53]).  % Regra 53
+facto_dispara_regras(alert("NUA", "yes", "null", "null", "null", "null"), [54]).   % Regra 54
+facto_dispara_regras(alert("NUA", "yes", "yes", "null", "null", "null"), [55]).    % Regra 55
+facto_dispara_regras(alert("NUA", "yes", "no", "null", "null", "null"), [56]).     % Regra 56
+facto_dispara_regras(alert("NUA", "no", "null", "null", "null", "null"), [57]).    % Regra 57
+facto_dispara_regras(alert("NUA", "no", "null", "yes", "null", "null"), [58]).     % Regra 58
+facto_dispara_regras(alert("NUA", "no", "null", "no", "null", "null"), [59]).      % Regra 59
+facto_dispara_regras(alert("NUA", "no", "null", "no", "yes", "null"), [60]).       % Regra 60
+facto_dispara_regras(alert("NUA", "no", "null", "no", "no", "null"), [61]).        % Regra 61
+facto_dispara_regras(alert("NUA", "no", "null", "no", "no", "yes"), [62]).         % Regra 62
+facto_dispara_regras(alert("NUA", "no", "null", "no", "no", "no"), [63]).          % Regra 63
+
+% Regras que definem as ações a serem executadas para cada condição
+
+% Step 1 - Start Analysis for New User Account
+regra 1
+    se [alert("NUA", "null", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Is the Username in permitted access list?", "multiple-choice", ["Yes", "No"], "permittedUser"))].
+
+% Step 2 - Username in Permitted Access List
+regra 2
+    se [alert("NUA", "yes", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Was the user successfully contacted?", "multiple-choice", ["Yes", "No"], "userContacted"))].
+
+% Step 3 - Contact User
+regra 3
+    se [alert("NUA", "yes", "yes", "null", "null", "null")]
+    entao [cria_facto(conclusao("Classify as false positive"))].
+
+% Step 4 - Failed Contact
+regra 4
+    se [alert("NUA", "yes", "no", "null", "null", "null")]
+    entao [cria_facto(conclusao("Contact support team for further investigation"))].
+
+% Step 5 - Account Creation Policy Check
+regra 5
+    se [alert("NUA", "no", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Was the account created according to policy?", "multiple-choice", ["Yes", "No"], "accordingPolicy"))].
+
+% Step 6 - Account Creation Policy Valid
+regra 6
+    se [alert("NUA", "no", "null", "yes", "null", "null")]
+    entao [cria_facto(conclusao("Classify as false positive"))].
+
+% Step 7 - Revoke Access Privileges
+regra 7
+    se [alert("NUA", "no", "null", "no", "null", "null")]
+    entao [cria_facto(questao("Revoke access privileges. Has the issue been resolved?", "multiple-choice", ["Yes", "No"], "userResponse"))].
+
+% Step 8 - Issue Resolved After Revocation
+regra 8
+    se [alert("NUA", "no", "null", "no", "yes", "null")]
+    entao [cria_facto(conclusao("Educate the user to prevent future incidents"))].
+
+% Step 9 - Deactivate Account
+regra 9
+    se [alert("NUA", "no", "null", "no", "no", "null")]
+    entao [cria_facto(questao("Deactivate account. Has the issue been resolved?", "multiple-choice", ["Yes", "No"], "userProblemResolved"))].
+
+% Step 10 - Issue Resolved After Deactivation
+regra 10
+    se [alert("NUA", "no", "null", "no", "no", "yes")]
+    entao [cria_facto(conclusao("Verify and adjust account creation policies"))].
+
+% Step 11 - Eliminate Account
+regra 11
+    se [alert("NUA", "no", "null", "no", "no", "no")]
+    entao [cria_facto(conclusao("Eliminate the account and associated data"))].

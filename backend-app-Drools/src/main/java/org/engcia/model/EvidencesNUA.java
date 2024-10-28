@@ -8,6 +8,9 @@ public class EvidencesNUA extends Evidences{
     private String userResponse;
     private String userProblemResolved;
 
+    public EvidencesNUA() {
+    }
+
     public EvidencesNUA(String alertId, String permittedUser, String userContacted, String accordingPolicy, String userResponse, String userProblemResolved) {
         this.alertId = alertId;
         this.permittedUser = permittedUser;
