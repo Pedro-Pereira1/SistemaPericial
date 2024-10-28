@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService_CMF";
+import AlertService from "../../services/AlertService";
 import HistoryService from "../../services/historyService";
 import 'boxicons/css/boxicons.min.css';
 
@@ -249,7 +249,8 @@ const startProcess = () => {
       try {
         //const explanation = await AlertService.getWhyExplanationDrools(alertContext);
         const explanation = alertResponse?.relevance;
-        alert(`Why this question? ${explanation}`); // Use window alert to show the reason
+        const explanationList = await AlertService.getHowExplanationDrools(alertResponse?.evidences as Evidences);
+        alert(`Why this question is relevant?\n${explanation}\n\nHow we reach this conclusion?\n${explanationList.join('\n')}`);
       } catch (error) {
         console.error("Error fetching why explanation:", error);
         alert("Unable to fetch the reason for this question.");
