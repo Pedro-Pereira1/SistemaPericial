@@ -17,6 +17,10 @@ class Router:
     async def add_to_history(rules:RulesDto):
         rules_controller:RulesController = loader.resolve(config.rules_controller["name"])
         return await rules_controller.add_to_history(rules)
+    @router.delete("/history")
+    async def delete_all_history():
+        rules_controller:RulesController = loader.resolve(config.rules_controller["name"])
+        return await rules_controller.delete_all()
     @router.get("/ip/{ip}")
     async def is_malicious(ip:str):
         general_controller:GeneralController = loader.resolve(config.general_controller["name"])

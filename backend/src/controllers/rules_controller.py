@@ -11,4 +11,11 @@ class RulesController:
         return await self.service.get_all_rules()
     
     async def add_to_history(self, rules):
-        return await self.service.add_to_history(rules)       
+        return await self.service.add_to_history(rules)  
+
+    async def delete_all(self):
+        try:
+            await self.service.delete_all()
+        except Exception as e: 
+            return {"message":f"Error: {e.message()}"}
+        return {"message":"DB Deleted"}   

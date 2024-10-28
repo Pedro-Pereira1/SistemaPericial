@@ -106,10 +106,48 @@ handle_reset(Request):-
     cors_enable(Request,[methods([get])]),
     format('Content-type: application/json\r\n'),
     format('~n'). 
+
 handle_reset(_Request) :-
     cors_enable,
     retractall(facto(_, _)),
+    retractall(justifica(_,_,_)),
     reply_json(_{status: 'success', message: 'Database reset.'}).
 
+:- http_handler('/api/prolog/why', handle_why, []).
+handle_why(Request):-
+    option(method(options), Request),
+    !,
+    cors_enable(Request,[methods([get])]),
+    format('Content-type: application/json\r\n'),
+    format('~n').
+handle_why(Request) :-
+    cors_enable,
+    http_parameters(Request, [
+        id(Id, [optional(true), default('none')])
+    ]),
+    atom_number(Id, Num),
+    why(Num,Why),
+    reply_json(_{status: 'success', message: Why}).
+
+handle_why(_Request) :-
+    cors_enable,
+    reply_json(_{status: 'error', message: 'This fact does not exist.'}).
+
+
+:- http_handler('/api/prolog/how', handle_how, []).
+handle_how(Request):-
+    option(method(options), Request),
+    !,
+    cors_enable(Request,[methods([get])]),
+    format('Content-type: application/json\r\n'),
+    format('~n').
+handle_how(_Request) :-
+    cors_enable,
+    how(How),
+    reply_json(How).
+
+handle_how(_Request) :-
+    cors_enable,
+    reply_json(_{status: 'error', message: 'This fact does not exist.'}).
 
 

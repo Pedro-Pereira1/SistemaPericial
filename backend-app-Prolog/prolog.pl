@@ -42,7 +42,6 @@ dispara_regras(N, Facto, [_|LRegras]):-
 
 dispara_regras(_, _, []).
 
-
 facto_esta_numa_condicao(F,[F  e _]).
 
 facto_esta_numa_condicao(F,[avalia(F1)  e _]):- F=..[H,H1|_],F1=..[H,H1|_].
@@ -118,25 +117,52 @@ mostra_factos:-
 	findall(N, facto(N, _), LFactos),
 	escreve_factos(LFactos).
 
+how(How) :-
+    justifica_todos(LJustificacoes),
+    how_iteracao(LJustificacoes, [], How).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Gera��o de explica��es do tipo "Como"
+how_iteracao([], How, How):-!.
+how_iteracao([(Facto, Regra)|L], HowAcumulado, How) :-
+    ultimo_facto(N),
+    Facto =:= N,
+	facto(Facto, conclusao(Conclusao)),
+	concatenar_lista([Regra, ': ', Conclusao], Resultado),
+	append(HowAcumulado, [Resultado], HowFinal),
+    how_iteracao(L, HowFinal, How),!.
 
-como(N):-ultimo_facto(Last),Last<N,!,
-	write('Essa conclusao nao foi tirada'),nl,nl.
-como(N):-justifica(N,ID,LFactos),!,
-	facto(N,F),
-	write('Conclui o facto numero '),write(N),write(' -> '),write(F),nl,
-	write('pela regra '),write(ID),nl,
-	write('por se ter verificado que:'),nl,
-	escreve_factos(LFactos),
-	write('********************************************************'),nl,
-	explica(LFactos).
-como(N):-facto(N,F),
-	write('O facto numero '),write(N),write(' -> '),write(F),nl,
-	write('foi conhecido inicialmente'),nl,
-	write('********************************************************'),nl.
+how_iteracao([(Facto, Regra)|L], HowAcumulado, How) :-
+    facto(Facto, questao(Questao_Texto,_,_,_)),
+	% Procura o numero dos factos
+	Facto1_Num is Facto+1,
+	Facto2_Num is Facto-1,
 
+	%Retorna os Factos para aqueles nums
+	facto(Facto1_Num, Facto1),
+	facto(Facto2_Num, Facto2),
+
+	% Retira os parâmetros para listas
+	Facto1 =.. [_|P1],
+	Facto2 =.. [_|P2],
+	compara_parametros(P2, P1, Diferente),
+	concatenar_lista([Regra, ': ', Questao_Texto, ' | Resposta: ', Diferente], Concat_String),
+
+    append(HowAcumulado, [Concat_String], HowNovo),
+    how_iteracao(L, HowNovo, How).
+
+compara_parametros([],_,_):-!.
+compara_parametros([H|L1],[H|L2],Diferente):-compara_parametros(L1,L2,Diferente).
+compara_parametros([_|_],[H2|_],H2).
+
+
+
+why(Id,Resposta):-ultimo_facto(N),Id>N,Resposta='This fact does not exist'.
+why(Id,Resposta):-FactoNum is Id-1, FactoNum<1,Resposta='This is the first fact'.
+why(Id,Resposta):-FactoNum is Id-1, facto(FactoNum,R), term_to_atom(R, Resposta).
+
+concatenar_lista([Unico], Unico).
+concatenar_lista([Primeiro|Restante], Resultado) :-
+    concatenar_lista(Restante, Parcial),
+    atom_concat(Primeiro, Parcial, Resultado).
 
 escreve_factos([I|R]):-facto(I,F), !,
 	write('O facto numero '),write(I),write(' -> '),write(F),write(' e verdadeiro'),nl,
@@ -236,8 +262,6 @@ explica_porque_nao([P|LPF],Nivel):-
 formata(Nivel):-
 	Esp is (Nivel-1)*5, tab(Esp).
 
-
-% Made 8/10/2024
 create_dynamic_fact(Fact, N):-
 	findall(N, facto(N, _), LFactos),
 	length(LFactos, NFactos),
@@ -245,5 +269,9 @@ create_dynamic_fact(Fact, N):-
 	(ultimo_facto(N);assertz(ultimo_facto(0))),
 	retract(ultimo_facto(N)),
 	assertz(facto(N1,Fact)),
-	assertz(ultimo_facto(N1)).
+	asserta(ultimo_facto(N1)).
+
+
+justifica_todos(LJustifica):-
+	findall((N,Regras), justifica(N,Regras,_), LJustifica).
 

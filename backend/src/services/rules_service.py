@@ -17,4 +17,6 @@ class RulesService :
     async def add_to_history(self, rules:RulesDto):
         rules_obj = Rules(rules["alertType"], rules["rules"])
         return await self.rules_adapter.save_rule(rules_obj)
-        
+    
+    async def delete_all(self):
+        await self.rules_adapter.delete_all()
