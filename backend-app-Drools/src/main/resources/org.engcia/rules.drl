@@ -915,8 +915,7 @@ then
                                              null,
                                              $input,
                                              "permittedUser",
-                                             "???"
-                                             );
+                                             "Select the appropriate response.");
     insert(output);
 end
 
@@ -926,13 +925,12 @@ when
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Is the Username in permitted access list?",
+                                                          "Was the user successfully contacted?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "userContacted",
-                                             "???"
-                                             );
+                                             "Select the appropriate response.");
     insert(output);
 end
 
@@ -945,28 +943,39 @@ then
                                              new Conclusion(Conclusion.CLASSIFY_FP),
                                              $input,
                                              "conclusion",
-                                             "The new user account was created according policies and the user was contacted with success, thus it can be classified as a false positive.");
+                                             "The user account was successfully contacted and is permitted, classify as false positive.");
     insert(output);
 end
 
+rule "Step 4 - Failed Contact"
+when
+    $input: EvidencesNUA(alertId == "NUA", permittedUser == "yes", userContacted == "no", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
+then
+    AlertResponse output = new AlertResponse("action",
+                                             null,
+                                             new Conclusion(Conclusion.CONTACT_SUPPORT),
+                                             $input,
+                                             "conclusion",
+                                             "Contact support team for further investigation.");
+    insert(output);
+end
 
-rule "Step 4 - Created according policies"
+rule "Step 5 - Account Creation Policy Check"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Is the Username in permitted access list?",
+                                                          "Was the account created according to policy, with no signs of suspicious activity?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "accordingPolicy",
-                                             "???"
-                                             );
+                                             "Select the appropriate response.");
     insert(output);
 end
 
-rule "Step 5 - Created according policies"
+rule "Step 6 - Account Creation Policy Valid"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "yes", userResponse == "null", userProblemResolved == "null")
 then
@@ -975,82 +984,76 @@ then
                                              new Conclusion(Conclusion.CLASSIFY_FP),
                                              $input,
                                              "conclusion",
-                                             "The new user account was not in permitted list but it was created according policies and the user was contacted with success, thus it can be classified as a false positive.");
+                                             "Account is compliant with policy; classify as false positive.");
     insert(output);
 end
 
-rule "Step 6 - Created according policies"
+rule "Step 7 - Revoke Access Privileges"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "null", userProblemResolved == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Revoke access Privileges\n" +
-                                                           "Contact customer, is the problem resolved?",
+                                                          "Revoke access privileges. Has the issue been resolved after contacting the user?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "userResponse",
-                                             "???"
-                                             );
+                                             "Select the appropriate response.");
     insert(output);
 end
 
-rule "Step 7 - Contact customer"
+rule "Step 8 - Issue Resolved After Revocation"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "yes", userProblemResolved == "null")
 then
     AlertResponse output = new AlertResponse("conclusion",
                                              null,
-                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             new Conclusion(Conclusion.EDUCATE_USER),
                                              $input,
                                              "conclusion",
-                                             "Warn customer to avoid future cases.");
+                                             "Educate the user to prevent future incidents.");
     insert(output);
 end
 
-rule "Step 8 - So account"
+rule "Step 9 - Deactivate Account"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "Deactivate account\n" +
-                                                           "Contact customer, is the problem resolved?",
+                                                          "Deactivate account. Has the issue been resolved after contacting the user?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "userProblemResolved",
-                                             "???"
-                                             );
+                                             "Select the appropriate response.");
     insert(output);
 end
 
-rule "Step 8 - Deactivate account"
+rule "Step 10 - Issue Resolved After Deactivation"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "yes")
 then
     AlertResponse output = new AlertResponse("conclusion",
                                              null,
-                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             new Conclusion(Conclusion.VERIFY_POLICIES),
                                              $input,
                                              "conclusion",
-                                             "Verify and modify new user account policies as necessary to prevent new cases.");
+                                             "Verify and adjust account creation policies to prevent recurrence.");
     insert(output);
 end
 
-
-rule "Step 8 - Eliminate account"
+rule "Step 11 - Eliminate Account"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "no")
 then
     AlertResponse output = new AlertResponse("conclusion",
                                              null,
-                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             new Conclusion(Conclusion.ELIMINATE_ACCOUNT),
                                              $input,
                                              "conclusion",
-                                             "Eliminate Account completely. " +
-                                              "\nVerify and modify new user account policies as necessary to prevent new cases.");
+                                             "Eliminate the account and all associated data. Verify and modify account creation policies.");
     insert(output);
 end
 

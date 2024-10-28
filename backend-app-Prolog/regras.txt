@@ -56,7 +56,17 @@ facto_dispara_regras(alert("CMF","yes","yes","security incident","yes"),[50]).
 facto_dispara_regras(alert("CMF","yes","yes","security incident","no"),[51]).
 facto_dispara_regras(alert("CMF","yes","yes","misconfiguration","null"),[52]).
 
-
+facto_dispara_regras(alert("NUA", "null", "null", "null", "null", "null"), [53]).  % Regra 53
+facto_dispara_regras(alert("NUA", "yes", "null", "null", "null", "null"), [54]).   % Regra 54
+facto_dispara_regras(alert("NUA", "yes", "yes", "null", "null", "null"), [55]).    % Regra 55
+facto_dispara_regras(alert("NUA", "yes", "no", "null", "null", "null"), [56]).     % Regra 56
+facto_dispara_regras(alert("NUA", "no", "null", "null", "null", "null"), [57]).    % Regra 57
+facto_dispara_regras(alert("NUA", "no", "null", "yes", "null", "null"), [58]).     % Regra 58
+facto_dispara_regras(alert("NUA", "no", "null", "no", "null", "null"), [59]).      % Regra 59
+facto_dispara_regras(alert("NUA", "no", "null", "no", "yes", "null"), [60]).       % Regra 60
+facto_dispara_regras(alert("NUA", "no", "null", "no", "no", "null"), [61]).        % Regra 61
+facto_dispara_regras(alert("NUA", "no", "null", "no", "no", "yes"), [62]).         % Regra 62
+facto_dispara_regras(alert("NUA", "no", "null", "no", "no", "no"), [63]).          % Regra 63
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -269,3 +279,46 @@ regra 52
 	se[alert("CMF","yes","yes","misconfiguration","null")]
 	entao[cria_facto(conclusao("Revert the changes made to the firewall. Implement preventive measures, such as regularly auditing and monitoring firewall actions"))].
 
+regra 53
+    se [alert("NUA", "null", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Is the Username in permitted access list?", "multiple-choice", ["Yes", "No"], "permittedUser"))].
+
+regra 54
+    se [alert("NUA", "yes", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Was the user successfully contacted?", "multiple-choice", ["Yes", "No"], "userContacted"))].
+
+regra 55
+    se [alert("NUA", "yes", "yes", "null", "null", "null")]
+    entao [cria_facto(conclusao("Classify as false positive"))].
+
+regra 56
+    se [alert("NUA", "yes", "no", "null", "null", "null")]
+    entao [cria_facto(conclusao("Contact support team for further investigation"))].
+
+regra 57
+    se [alert("NUA", "no", "null", "null", "null", "null")]
+    entao [cria_facto(questao("Was the account created according to policy?", "multiple-choice", ["Yes", "No"], "accordingPolicy"))].
+
+regra 58
+    se [alert("NUA", "no", "null", "yes", "null", "null")]
+    entao [cria_facto(conclusao("Classify as false positive"))].
+
+regra 59
+    se [alert("NUA", "no", "null", "no", "null", "null")]
+    entao [cria_facto(questao("Revoke access privileges. Has the issue been resolved?", "multiple-choice", ["Yes", "No"], "userResponse"))].
+
+regra 60
+    se [alert("NUA", "no", "null", "no", "yes", "null")]
+    entao [cria_facto(conclusao("Educate the user to prevent future incidents"))].
+
+regra 61
+    se [alert("NUA", "no", "null", "no", "no", "null")]
+    entao [cria_facto(questao("Deactivate account. Has the issue been resolved?", "multiple-choice", ["Yes", "No"], "userProblemResolved"))].
+
+regra 62
+    se [alert("NUA", "no", "null", "no", "no", "yes")]
+    entao [cria_facto(conclusao("Verify and adjust account creation policies"))].
+
+regra 63
+    se [alert("NUA", "no", "null", "no", "no", "no")]
+    entao [cria_facto(conclusao("Eliminate the account and associated data"))].
