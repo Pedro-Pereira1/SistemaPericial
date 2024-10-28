@@ -14,6 +14,8 @@ import Settings from './components/pages/Settings';
 import Profile from './components/pages/Profile';
 import NotFoundPage from './components/pages/NotFoundPage';
 import DualButton from './components/dual_button/DualButton';
+import Website from './components/pages/Website'; 
+import Reports from './components/pages/Reports'; 
 
 const App: React.FC = () => {
   const [isSidebarClosed, setSidebarClosed] = useState(false); // Sidebar toggle
@@ -65,6 +67,21 @@ const App: React.FC = () => {
                 <span className="link_name">Dashboard</span>
               </Link>
             </li>
+
+            <li>
+              <Link to="/website">
+                <i className='bx bx-globe'></i>
+                <span className="link_name">Website</span>
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/reports">
+                <i className='bx bxs-report'></i>
+                <span className="link_name">Reports</span>
+              </Link>
+            </li>
+            
 
             <li className={isSubMenuOpen ? 'showMenu' : ''}>
               <div className="iocn-link">
@@ -140,6 +157,8 @@ const App: React.FC = () => {
           <div className="main-content">
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/website" element={<Website />} />
+              <Route path="/reports" element={<Reports />} />
               <Route path="/alerts/phishing-alert" element={<AlertPage_Phishing expert_system={expertSystemState}/>} />
               <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystemState}/>} />
               <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF expert_system={expertSystemState}/>} />
