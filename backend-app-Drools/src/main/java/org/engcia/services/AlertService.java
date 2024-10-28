@@ -12,6 +12,8 @@ import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -63,8 +65,10 @@ public class AlertService {
             return firedRules;
         }
 
-        firedRules.add(0, "The following rules were triggered during the decision process:");
-        firedRules.add("\n\nThe decision was made based on these rules and the provided input.");
+        List<String> sessionRules = new ArrayList<>(firedRules);
+        sessionRules.add("\n\nThe decision was made based on these rules and the provided input.");
+        sessionRules.add(0, "The following rules were triggered during the decision process:");
+
         return firedRules;
     }
 
