@@ -9,6 +9,7 @@ import AlertPage_MultipleLoginFailuresForAUserAccount from './components/pages/A
 import AlertPage_CMF from './components/pages/AlertPage_CMF';
 import AlertPage_SLA from './components/pages/AlertPage_SLA';
 import AlertPage_NUA from './components/pages/AlertPage_NUA';
+import AlertPage_UDC from './components/pages/AlertPage_UDC';
 import History from './components/pages/History';
 import Settings from './components/pages/Settings';
 import Profile from './components/pages/Profile';
@@ -43,6 +44,7 @@ const App: React.FC = () => {
     { name: 'Changes made to the firewall', path: '/alerts/changes-made-to-the-firewall' },
     { name: 'Simultaneous Login Activity', path: '/alerts/simultaneous-login-activity' },
     { name: 'New User Account', path: '/alerts/new-user-account' },
+    { name: 'User data has been changed', path: '/alerts/user-data-has-been-changed' },
   ];
 
   // Filter alert categories based on the search term
@@ -81,7 +83,6 @@ const App: React.FC = () => {
                 <span className="link_name">Reports</span>
               </Link>
             </li>
-            
 
             <li className={isSubMenuOpen ? 'showMenu' : ''}>
               <div className="iocn-link">
@@ -164,6 +165,7 @@ const App: React.FC = () => {
               <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF expert_system={expertSystemState}/>} />
               <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA expert_system={expertSystemState}/>} />
               <Route path="/alerts/new-user-account" element={<AlertPage_NUA expert_system={expertSystemState}/>} />
+              <Route path="/alerts/user-data-has-been-changed" element={<AlertPage_UDC expert_system={expertSystemState}/>} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
