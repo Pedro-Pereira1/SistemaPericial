@@ -15,13 +15,12 @@ interface Conclusion {
 
 interface Evidences {
     alertId: string;
-    accountChanged: string | null;
-    changeAuthorized: string | null;
-    containmentRequired: string | null;
-    investigationRequired: string | null;
-    eradicationRequired: string | null;
-    recoveryRequired: string | null;
-    lessonsLearned: string | null;
+    userKnow: string | null;
+    legitimateAction: string | null;
+    userVerified: string | null;
+    ipCollected: string | null;
+    helpdeskVerified: string | null;
+    reversalPossible: string | null;
 }
 
 interface AlertResponse {
@@ -39,13 +38,12 @@ interface Message {
 }
 const base:Evidences = {
   alertId: "UDC",
-  accountChanged: "null",
-  changeAuthorized: "null",
-  containmentRequired: "null",
-  investigationRequired: "null",
-  eradicationRequired: "null",
-  recoveryRequired: "null",
-  lessonsLearned: "null"
+  userKnow: "null",
+  legitimateAction: "null",
+  userVerified: "null",
+  ipCollected: "null",
+  helpdeskVerified: "null",
+  reversalPossible: "null"
 }
 
 interface AlertProps {
@@ -157,13 +155,12 @@ const startProcess = () => {
         fact_name: "alert",
         variables: [
             "UDC",
-            data.accountChanged ?? "null",
-            data.changeAuthorized ?? "null",
-            data.containmentRequired ?? "null",
-            data.investigationRequired ?? "null",
-            data.eradicationRequired ?? "null",
-            data.recoveryRequired ?? "null",
-            data.lessonsLearned ?? "null"
+            data.userKnow ?? "null",
+            data.legitimateAction ?? "null",
+            data.userVerified ?? "null",
+            data.ipCollected ?? "null",
+            data.helpdeskVerified ?? "null",
+            data.reversalPossible ?? "null"
         ]
     };
   }
