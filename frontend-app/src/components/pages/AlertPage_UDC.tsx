@@ -17,7 +17,6 @@ interface Evidences {
     alertId: string;
     userKnown: string | null;
     legitimateAction: string | null;
-    userVerified: string | null;
     ipCollected: string | null;
     helpdeskVerified: string | null;
     reversalPossible: string | null;
@@ -40,7 +39,6 @@ const base:Evidences = {
   alertId: "UDC",
   userKnown: "null",
   legitimateAction: "null",
-  userVerified: "null",
   ipCollected: "null",
   helpdeskVerified: "null",
   reversalPossible: "null"
@@ -121,10 +119,10 @@ const startProcess = () => {
     if (currentQuestion?.type === 'ip-quest') {
       const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
       if (!ipRegex.test(message)) {
-        setErrorMessage("Please enter a valid IP address.");
-        return;
+        update(alertResponse?.parameterNumber as keyof Evidences, "no");
+      }else{
+      update(alertResponse?.parameterNumber as keyof Evidences, "yes");
       }
-      update(alertResponse?.parameterNumber as keyof Evidences, message);
     }
 
     // Handle list-question input
@@ -157,7 +155,6 @@ const startProcess = () => {
             "UDC",
             data.userKnown ?? "null",
             data.legitimateAction ?? "null",
-            data.userVerified ?? "null",
             data.ipCollected ?? "null",
             data.helpdeskVerified ?? "null",
             data.reversalPossible ?? "null"
