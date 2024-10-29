@@ -1130,7 +1130,8 @@ when
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "\nOpen a case, temporarily block the account, and revoke privileges.\n" +
+                                                          "\nNot a malicious IP" +
+                                                           "\nOpen a case, temporarily block the account, and revoke privileges.\n" +
                                                            "Is the user recognized by the Helpdesk? ",
                                                           Arrays.asList("Yes", "No")),
                                              null,
@@ -1146,10 +1147,10 @@ when
 then
      AlertResponse output = new AlertResponse("conclusion",
                                                  null,
-                                                 new Conclusion(Conclusion.BLOCK_ACCOUNT),
+                                                 new Conclusion(Conclusion.MALICIOUS_IP),
                                                  $input,
                                                  "conclusion",
-                                                 "Since the action was verified as legitimate by the user, classify this as a false positive.");
+                                                 "Since the IP address is suspicious, block the account and revoke privileges.");
         insert(output);
 end
 

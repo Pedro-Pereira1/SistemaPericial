@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AlertService from "../../services/AlertService";
 import HistoryService from "../../services/historyService";
+import generalService from "../../services/generalService";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {
@@ -119,11 +120,22 @@ const startProcess = () => {
     if (currentQuestion?.type === 'ip-quest') {
       const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
       if (!ipRegex.test(message)) {
-        update(alertResponse?.parameterNumber as keyof Evidences, "no");
+        setErrorMessage("Please enter a valid IP address.");
+        return;
       }else{
-      update(alertResponse?.parameterNumber as keyof Evidences, "yes");
+        try {
+          const result = await generalService.isMalicious(message);
+          console.log("Is malicious:", result);
+          if(result){
+            update(alertResponse?.parameterNumber as keyof Evidences, "no");
+          }else{
+            update(alertResponse?.parameterNumber as keyof Evidences, "yes");
+          }  
+      } catch (error) {
+          console.error("Error checking if IP is malicious:", error);
       }
     }
+  }
 
     // Handle list-question input
     if (currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers) {

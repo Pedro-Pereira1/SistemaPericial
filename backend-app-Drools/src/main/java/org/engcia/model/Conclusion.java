@@ -24,6 +24,7 @@ public class Conclusion {
     public static final String BLOCK_TEMP="Temporarily lock the account\nReset the password\nReview controls and permissions\nImplement stronger authentication mechanisms.";
     public static final String BLOCK_IP="Open Case\nBlock the IP.";
 
+    public static final String MALICIOUS_IP = "The IP address is malicious. Contain the IP address and investigate further.";
     private String description;
 
     public Conclusion(String description) {
