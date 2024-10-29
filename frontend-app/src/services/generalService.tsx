@@ -4,7 +4,7 @@ const generalService = {
     isMalicious: async (ip:string): Promise<Boolean> => {
         try {
             const response = await axios.get('http://localhost:7000/ip/' + ip);
-            const data = response.data;
+            const data = response.data.is_malicious;
             return data;
         } catch (error) {
             console.error("Error fetching history:", error);
