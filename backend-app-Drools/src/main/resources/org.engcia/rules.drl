@@ -1060,12 +1060,11 @@ end
 
 //================================================================================================
 //User data has been changed
-//================================================================================================
 
 // Start of the Analysis for "UDC" Alert
-rule "Start Analysis for UDC"
+rule "Start Analysis for User data has been changed Alert"
 when
-    $input: EvidencesUDC(alertId == "UDC", userKnown == "null", legitimateAction == "null", userVerified == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
+    $input: EvidencesUDC(alertId == "UDC", userKnown == "null", legitimateAction == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
@@ -1081,7 +1080,7 @@ end
 // Analyst knows user, verify legitimacy with user
 rule "Analyst knows user, verify legitimacy with user"
 when
-    $input: EvidencesUDC(alertId == "UDC", userKnown == "yes", legitimateAction == "null", userVerified == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
+    $input: EvidencesUDC(alertId == "UDC", userKnown == "yes", legitimateAction == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
@@ -1097,7 +1096,7 @@ end
 // Legitimate action by user, classify as false positive
 rule "Legitimate action by user, classify as false positive"
 when
-    $input: EvidencesUDC(alertId == "UDC", userKnown == "yes", legitimateAction == "yes", userVerified == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
+    $input: EvidencesUDC(alertId == "UDC", userKnown == "yes", legitimateAction == "yes", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
 then
     AlertResponse output = new AlertResponse("conclusion",
                                              null,
@@ -1111,10 +1110,10 @@ end
 // Analyst does not know user, collect IP and identify change
 rule "Analyst does not know user, collect IP and identify change"
 when
-    $input: EvidencesUDC(alertId == "UDC", userKnown == "no", legitimateAction == "null", userVerified == "null", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
+    $input: EvidencesUDC(alertId == "UDC", userKnown != "null", legitimateAction != "yes", ipCollected == "null", helpdeskVerified == "null", reversalPossible == "null")
 then
     AlertResponse output = new AlertResponse("question",
-                                             new Question("multiple-choice",
+                                             new Question("ip-quest",
                                                           "\nProceed to collect the IP address associated with the change?",
                                                           Arrays.asList("Yes", "No")),
                                              null,
@@ -1125,41 +1124,40 @@ then
 end
 
 // IP collected, open case and temporarily block account
-rule "IP collected, open case and block account"
-when
-    $input: EvidencesUDC(alertId == "UDC", userKnown == "no", legitimateAction == "null", userVerified == "no", ipCollected == "yes", helpdeskVerified == "null", reversalPossible == "null")
-then
-    AlertResponse output = new AlertResponse("question",
-                                             new Question("multiple-choice",
-                                                          "\nOpen a case, temporarily block the account, and revoke privileges?",
-                                                          Arrays.asList("Yes", "No")),
-                                             null,
-                                             $input,
-                                             "caseOpened",
-                                             "Open a case, temporarily block the account, and revoke privileges for security.");
-    insert(output);
-end
-
-// Helpdesk verification step
 rule "Check if user is verified by Helpdesk"
 when
-    $input: EvidencesUDC(alertId == "UDC", userKnown == "no", legitimateAction == "null", userVerified == "no", ipCollected == "yes", helpdeskVerified == "null", reversalPossible == "null")
+    $input: EvidencesUDC(alertId == "UDC",  userKnown != "null", legitimateAction != "yes", ipCollected == "yes", helpdeskVerified == "null", reversalPossible == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
-                                                          "\nIs the user recognized by the Helpdesk?",
+                                                          "\nOpen a case, temporarily block the account, and revoke privileges.\n" +
+                                                           "Is the user recognized by the Helpdesk? ",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $input,
                                              "helpdeskVerified",
-                                             "Determine if the Helpdesk recognizes the user, which can help classify this as a false positive if confirmed.");
+                                             "Open a case, temporarily block the account, and revoke privileges for security.");
     insert(output);
 end
+
+rule "Suspicious IP collected, block account"
+when
+    $input: EvidencesUDC(alertId == "UDC",  userKnown != "null", legitimateAction != "yes", ipCollected == "no", helpdeskVerified == "null", reversalPossible == "null")
+then
+     AlertResponse output = new AlertResponse("conclusion",
+                                                 null,
+                                                 new Conclusion(Conclusion.BLOCK_ACCOUNT),
+                                                 $input,
+                                                 "conclusion",
+                                                 "Since the action was verified as legitimate by the user, classify this as a false positive.");
+        insert(output);
+end
+
 
 // User verified by Helpdesk, classify as false positive
 rule "User verified by Helpdesk, classify as false positive"
 when
-    $input: EvidencesUDC(alertId == "UDC", helpdeskVerified == "yes")
+    $input: EvidencesUDC(alertId == "UDC",  userKnown != "null", legitimateAction != "yes", ipCollected == "yes", helpdeskVerified == "yes", reversalPossible == "null")
 then
     AlertResponse output = new AlertResponse("conclusion",
                                              null,
@@ -1173,7 +1171,7 @@ end
 // Helpdesk does not verify user, attempt reversal
 rule "Helpdesk does not verify user, attempt reversal"
 when
-    $input: EvidencesUDC(alertId == "UDC", helpdeskVerified == "no", reversalPossible == "null")
+    $input: EvidencesUDC(alertId == "UDC",  userKnown != "null", legitimateAction != "yes", ipCollected == "yes", helpdeskVerified == "no", reversalPossible == "null")
 then
     AlertResponse output = new AlertResponse("question",
                                              new Question("multiple-choice",
@@ -1189,23 +1187,21 @@ end
 // Reversal confirmed, suggest password change and alert
 rule "Reversal confirmed, suggest password change and alert"
 when
-    $input: EvidencesUDC(alertId == "UDC", reversalPossible == "yes")
+    $input: EvidencesUDC(alertId == "UDC",  userKnown != "null", legitimateAction != "yes", ipCollected == "yes", helpdeskVerified == "no", reversalPossible == "yes")
 then
-    AlertResponse output = new AlertResponse("question",
-                                             new Question("multiple-choice",
-                                                          "\nThe reversal was successful; suggest the user changes their password and enhance security measures?",
-                                                          Arrays.asList("Yes", "No")),
-                                             null,
-                                             $input,
-                                             "conclusion",
-                                             "The reversal was successful; suggest the user changes their password and enhance security measures.");
-    insert(output);
+    AlertResponse output = new AlertResponse("conclusion",
+                                                 null,
+                                                 new Conclusion(Conclusion.RESET_PASSWORD_REVOKE_TOKENS),
+                                                 $input,
+                                                 "conclusion",
+                                                 "Since the change can be reversed, suggest a password change and revoke any tokens.");
+        insert(output);
 end
 
 // Reversal not possible, block account
 rule "Reversal not possible, block account"
 when
-    $input: EvidencesUDC(alertId == "UDC", reversalPossible == "no")
+    $input: EvidencesUDC(alertId == "UDC",  userKnown != "null", legitimateAction != "yes", ipCollected == "yes", helpdeskVerified == "no", reversalPossible == "no")
 then
     AlertResponse output = new AlertResponse("conclusion",
                                              null,
@@ -1215,8 +1211,6 @@ then
                                              "Since the reversal was not possible and the user couldn't be verified, proceed with blocking the account.");
     insert(output);
 end
-
-
 //================================================================================================
 
 //================================================================================================

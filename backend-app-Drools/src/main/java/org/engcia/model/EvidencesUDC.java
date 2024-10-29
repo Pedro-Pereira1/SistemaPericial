@@ -4,7 +4,6 @@ public class EvidencesUDC extends Evidences {
     private String alertId; // Indica se a recuperação é necessária
     private String userKnown; // ID do alerta
     private String legitimateAction; // Indica se a conta foi alterada
-    private String userVerified; // Indica se a alteração foi autorizada
     private String ipCollected; // Indica se a contenção é necessária
     private String helpdeskVerified; // Indica se a investigação é necessária
     private String reversalPossible; // Indica se a erradicação é necessária
@@ -12,11 +11,10 @@ public class EvidencesUDC extends Evidences {
     public EvidencesUDC() {
     }
 
-    public EvidencesUDC(String alertId, String userKnown, String legitimateAction, String userVerified, String ipCollected, String helpdeskVerified, String reversalPossible) {
+    public EvidencesUDC(String alertId, String userKnown, String legitimateAction, String ipCollected, String helpdeskVerified, String reversalPossible) {
         this.alertId = alertId;
         this.userKnown = userKnown;
         this.legitimateAction = legitimateAction;
-        this.userVerified = userVerified;
         this.ipCollected = ipCollected;
         this.helpdeskVerified = helpdeskVerified;
         this.reversalPossible = reversalPossible;
@@ -46,13 +44,7 @@ public class EvidencesUDC extends Evidences {
         this.legitimateAction = legitimateAction;
     }
 
-    public String getUserVerified() {
-        return userVerified;
-    }
 
-    public void setUserVerified(String userVerified) {
-        this.userVerified = userVerified;
-    }
 
     public String getIpCollected() {
         return ipCollected;
