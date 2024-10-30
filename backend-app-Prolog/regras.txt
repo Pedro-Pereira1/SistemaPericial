@@ -68,6 +68,25 @@ facto_dispara_regras(alert("NUA", "no", "null", "no", "no", "null"), [61]).     
 facto_dispara_regras(alert("NUA", "no", "null", "no", "no", "yes"), [62]).         % Regra 62
 facto_dispara_regras(alert("NUA", "no", "null", "no", "no", "no"), [63]).          % Regra 63
 
+facto_dispara_regras(alert("UDC", "null", "null", "null", "null", "null"), [64]).   % Regra 64
+facto_dispara_regras(alert("UDC", "yes", "null", "null", "null", "null"), [65]).    % Regra 65
+facto_dispara_regras(alert("UDC", "yes", "yes", "null", "null", "null"), [66]).     % Regra 66
+facto_dispara_regras(alert("UDC", "no", "null", "null", "null", "null"), [67]).     % Regra 67
+facto_dispara_regras(alert("UDC", "no", "null", "no", "null", "null"), [68]).       % Regra 68
+facto_dispara_regras(alert("UDC", "no", "null", "yes", "null", "null"), [69]).      % Regra 69
+facto_dispara_regras(alert("UDC", "no", "null", "yes", "yes", "null"), [70]).       % Regra 70
+facto_dispara_regras(alert("UDC", "no", "null", "yes", "no", "null"), [71]).        % Regra 71
+facto_dispara_regras(alert("UDC", "no", "null", "yes", "no", "yes"), [72]).         % Regra 72
+facto_dispara_regras(alert("UDC", "no", "null", "yes", "no", "no"), [73]).          % Regra 73
+facto_dispara_regras(alert("UDC", "yes", "no", "null", "null", "null"), [74]).      % Regra 74
+facto_dispara_regras(alert("UDC", "yes", "no", "no", "null", "null"), [75]).        % Regra 75
+facto_dispara_regras(alert("UDC", "yes", "no", "yes", "null", "null"), [76]).       % Regra 76
+facto_dispara_regras(alert("UDC", "yes", "no", "yes", "yes", "null"), [77]).        % Regra 77
+facto_dispara_regras(alert("UDC", "yes", "no", "yes", "no", "null"), [78]).         % Regra 78
+facto_dispara_regras(alert("UDC", "yes", "no", "yes", "no", "yes"), [79]).          % Regra 79
+facto_dispara_regras(alert("UDC", "yes", "no", "yes", "no", "no"), [80]).           % Regra 80
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -322,3 +341,71 @@ regra 62
 regra 63
     se [alert("NUA", "no", "null", "no", "no", "no")]
     entao [cria_facto(conclusao("Eliminate the account and associated data. Verify and modify account creation policies."))].
+
+regra 64
+	se [alert("UDC", "null", "null", "null", "null", "null")]
+	entao [cria_facto(questao("Does the analyst know the user?", "multiple-choice", ["yes", "no"], "userKnown"))].
+
+regra 65
+	se [alert("UDC", "yes", "null", "null", "null", "null")]
+	entao [cria_facto(questao("Was the action taken by the user?", "multiple-choice", ["yes", "no"], "legitimateAction"))].
+
+regra 66
+	se [alert("UDC", "yes", "yes", "null", "null", "null")]
+	entao [cria_facto(conclusao("Classify as False Positive"))].
+
+regra 67
+	se [alert("UDC", "no", "null", "null", "null", "null")]
+	entao [cria_facto(questao("Collect the IP address associated with the change?", "ip-quest", ["yes", "no"], "ipCollected"))].
+
+regra 68
+	se [alert("UDC", "no", "null", "no", "null", "null")]
+	entao [cria_facto(conclusao("Block account and revoke privileges due to suspicious IP"))].
+
+regra 69
+	se [alert("UDC", "no", "null", "yes", "null", "null")]
+	entao [cria_facto(questao("Is the user recognized by the Helpdesk?", "multiple-choice", ["yes", "no"], "helpdeskVerified"))].
+
+regra 70
+	se [alert("UDC", "no", "null", "yes", "yes", "null")]
+	entao [cria_facto(conclusao("Classify as False Positive"))].
+
+regra 71
+	se [alert("UDC", "no", "null", "yes", "no", "null")]
+	entao [cria_facto(questao("Can the change be reversed?", "multiple-choice", ["yes", "no"], "reversalPossible"))].
+
+regra 72
+	se [alert("UDC", "no", "null", "yes", "no", "yes")]
+	entao [cria_facto(conclusao("Suggest password change and revoke session tokens"))].
+
+regra 73
+	se [alert("UDC", "no", "null", "yes", "no", "no")]
+	entao [cria_facto(conclusao("Block account, as reversal was not possible and user was not verified"))].
+
+regra 74
+	se [alert("UDC", "yes", "no", "null", "null", "null")]
+	entao [cria_facto(questao("Collect the IP address associated with the change?", "ip-quest", ["yes", "no"], "ipCollected"))].
+
+regra 75
+	se [alert("UDC", "yes", "no", "no", "null", "null")]
+	entao [cria_facto(conclusao("Block account and revoke privileges due to suspicious IP"))].
+
+regra 76
+	se [alert("UDC", "yes", "no", "yes", "null", "null")]
+	entao [cria_facto(questao("Is the user recognized by the Helpdesk?", "multiple-choice", ["yes", "no"], "helpdeskVerified"))].
+
+regra 77
+	se [alert("UDC", "yes", "no", "yes", "yes", "null")]
+	entao [cria_facto(conclusao("Classify as False Positive"))].
+
+regra 78
+	se [alert("UDC", "yes", "no", "yes", "no", "null")]
+	entao [cria_facto(questao("Can the change be reversed?", "multiple-choice", ["yes", "no"], "reversalPossible"))].
+
+regra 79
+	se [alert("UDC", "yes", "no", "yes", "no", "yes")]
+	entao [cria_facto(conclusao("Suggest password change and revoke session tokens"))].
+
+regra 80
+	se [alert("UDC", "yes", "no", "yes", "no", "no")]
+	entao [cria_facto(conclusao("Block account, as reversal was not possible and user was not verified"))].
