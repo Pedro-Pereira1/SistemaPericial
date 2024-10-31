@@ -142,7 +142,17 @@ const AlertService = {
       console.error("Error processing alert:", error);
       throw error;
     }
-  }
+  },
+
+  whyNotPrlog : async (conclusion: string): Promise<string> =>{
+    try {
+      const response = await axios.post(`${config.prolog_ip}/api/prolog/not?conclusion=${conclusion}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error processing alert:", error);
+      throw error;
+    }
+  },
 
 };
 

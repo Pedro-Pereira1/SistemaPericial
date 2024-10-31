@@ -277,11 +277,10 @@ justifica_todos(LJustifica):-
 
 
 whyNot(Texto,WhyNot):-
-	findall((ID, LHS, RHS), regra ID se LHS entao RHS, LRegras),
-	findall(LHS, (regra ID se [LHS] entao [cria_facto(conclusao(Texto))]), L),
+	findall(LHS, (regra _ se [LHS] entao [cria_facto(conclusao(Texto))]), L),
 	whyNot_each(L,[],WhyNot).
 
-whyNot(Texto,WhyNot):-WhyNot = "This conclusion does not exist".
+whyNot(_,WhyNot):-WhyNot = "This conclusion does not exist".
 
 whyNot_each([],FL,FL).
 
@@ -317,6 +316,33 @@ replace_first_non_null([H | T], NewValue, [NewValue | T]) :-
 
 replace_first_non_null(["null" | T], NewValue, ["null" | NewTail]) :-
     replace_first_non_null(T, NewValue, NewTail).
+
+all_conclusions_to_alert(Alert, Conclusions):-
+	findall((LHS,Texto), (regra _ se [LHS] entao [cria_facto(conclusao(Texto))]), L),
+	all_conclusions_to_alert1(Alert, L, Conclusions).
+	
+
+all_conclusions_to_alert1(_, [],[]).
+all_conclusions_to_alert1(Alert, [(H,Texto)|L],[Texto|L1]):-
+	H =.. [_|P],
+	contains(Alert, P),
+	all_conclusions_to_alert1(Alert, L,L1),
+	\+contains(Texto, L1).
+
+all_conclusions_to_alert1(Alert, [_|L], L1):-
+	all_conclusions_to_alert1(Alert, L,L1).
+
+% Base case: An empty list does not contain any element.
+contains(_, []):- 
+    false.
+
+contains(Element, [Element|_]) :- 
+    true.
+
+contains(Element, [_|Tail]) :- 
+    contains(Element, Tail).
+	
+
 
 
 

@@ -171,6 +171,25 @@ handle_why_not(_Request) :-
     cors_enable,
     reply_json(_{status: 'error', message: 'This conclusion does not exist.'}).
 
+:- http_handler('/api/prolog/conclusions', handle_conclusions, []).
+handle_conclusions(Request):-
+    option(method(options), Request),
+    !,
+    cors_enable(Request,[methods([get])]),
+    format('Content-type: application/json\r\n'),
+    format('~n').
+handle_conclusions(Request) :-
+    cors_enable,
+    http_parameters(Request, [
+        alert(Alert, [optional(true), default('none')])
+    ]),
+    atom_string(Alert, AlertS),
+    all_conclusions_to_alert(AlertS,Conclusions),
+    reply_json(_{status: 'success', message:Conclusions}).
+handle_conclusions(_Request) :-
+    cors_enable,
+    reply_json(_{status: 'error', message: 'This alert does not exist.'}).
+
 convert_to_strings_list([],[]).
 convert_to_strings_list([H|L1], [C|L2]):-
     atom_string(H, C),
