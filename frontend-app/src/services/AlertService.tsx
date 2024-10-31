@@ -99,7 +99,9 @@ const AlertService = {
 
   getWhyNotExplanation : async (response: any, conclusion: String, expertSystem: String | null) => {
     if(expertSystem === "Drools"){
-      return "Drools explanation";
+      const response = await axios.post('http://localhost:8080/api/alerts/get-why-not-explanation', {conclusion: conclusion});
+        console.log(response.data)
+        return response.data;
     } else if(expertSystem === "Prolog"){
       return "Prolog explanation";
     }

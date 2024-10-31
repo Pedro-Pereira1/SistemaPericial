@@ -3,7 +3,7 @@ import AlertService from "../../services/AlertService";
 import HistoryService from "../../services/historyService";
 import generalService from "../../services/generalService";
 import 'boxicons/css/boxicons.min.css';
-
+import './AlertPage.css';
 interface Question {
   type: 'multiple-choice' | 'text' | 'ip-quest' | 'list-question' | 'fuzzy-input';
   text: string;
@@ -308,150 +308,124 @@ const startProcess = () => {
     }
   };
 
-  return (
-    <div>
-      <h1>Port Scan Activity</h1>
-      <div
-        style={{
-          maxHeight: '400px',
-          overflowY: 'auto',
-          border: '1px solid #ccc',
-          padding: '10px',
-          borderRadius: '5px',
-        }}
-      >
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            style={{ textAlign: message.sender === 'user' ? 'right' : 'left' }}
-          >
+return (
+  <div className="container">
+    <h1>Port Scan Activity</h1>
+    <div className="message-list">
+      {messages.map((message, index) => (
+        <div
+          key={index}
+          className={`message ${message.sender}`}
+        >
+          {message.sender === 'bot' && (
+            <i className="bx bx-bot icon bot"></i>
+          )}
+          <div className={`message-bubble ${message.sender}`}>
             <strong>{message.sender === 'user' ? 'You' : 'Bot'}:</strong>
-            <p style={{ whiteSpace: 'pre-line' }}>{message.text}</p>
+            <p style={{ whiteSpace: 'pre-line', margin: 0 }}>{message.text}</p>
           </div>
-        ))}
-      </div>
-  
-      {errorMessage && (
-        <div style={{ color: 'red', marginTop: '10px' }}>
-          <strong>{errorMessage}</strong>
+          {message.sender === 'user' && (
+            <i className="bx bx-user icon user"></i>
+          )}
         </div>
-      )}
-  
-      {isProcessComplete ? (
-        <div style={{ display: 'flex', marginTop: '10px' }}>
-          <button onClick={handleRestart} style={{ padding: '10px' }}>
-            Restart
-          </button>
-          {(expertSystem === 'Drools' || expertSystem === 'Prolog') && (
-            <button
-              title="How was this conclusion made?"
-              style={{ padding: '10px', marginLeft: '0px' }}
-              onClick={fetchHowExplanation}
-            >
+      ))}
+    </div>
+
+    {errorMessage && (
+      <div className="error-message">
+        <strong>{errorMessage}</strong>
+      </div>
+    )}
+
+    {isProcessComplete ? (
+      <div className="button-group">
+        <button onClick={handleRestart} className="button">
+          Restart
+        </button>
+        {(expertSystem === 'Drools' || expertSystem === 'Prolog') && (
+          <>
+            <button title="How was this conclusion made?" className="button" onClick={fetchHowExplanation}>
               How?
             </button>
-          )}
-          {(expertSystem === 'Drools' || expertSystem === 'Prolog') && (
-            <>
-              <button
-                title="Why this question is relevant?"
-                style={{ padding: '10px', marginLeft: '0px' }}
-                onClick={fetchWhyExplanation}
-              >
-                Why?
-              </button>
-              <button
-                title="Why was this option not chosen?"
-                style={{ padding: '10px', marginLeft: '0px' }}
-                onClick={fetchWhyNotExplanation}
-              >
-                Why Not?
-              </button>
-            </>
-          )}
-        </div>
-      ) : (
-        <div>
-          <form
-            onSubmit={isStarted ? handleSubmitForm : (e) => {
-              e.preventDefault();
-              startProcess();
-            }}
-            style={{ display: 'flex', marginTop: '10px' }}
-          >
-            {currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers ? (
-              // Render a dropdown list for list-question
-              <select
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                style={{ flex: 1, padding: '10px' }}
-              >
-                <option value="" disabled>Select an option</option> {/* Placeholder */}
-                {currentQuestion.possibleAnswers.map((answer, index) => (
-                  <option key={index} value={answer}>
-                    {answer}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              // Render the normal input field for other types of questions
-              <input
-                type="text"
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                placeholder={
-                  !isStarted
-                    ? "Click 'Start' to enable input"
-                    : currentQuestion?.type === 'multiple-choice'
-                    ? `Select an answer (${currentQuestion.possibleAnswers?.join(', ')})`
-                    : currentQuestion?.type === 'ip-quest'
-                    ? 'Enter a valid IP address'
-                    : 'Type your response'
-                }
-                style={{ flex: 1, padding: '10px' }}
-                disabled={!isStarted}
-              />
-            )}
-            <button type="submit" style={{ padding: '10px', marginLeft: '0px' }}>
-              {isStarted ? 'Send' : 'Start'}
+            <button title="Why this question is relevant?" className="button" onClick={fetchWhyExplanation}>
+              Why?
             </button>
-            {isStarted && expertSystem === 'Drools' && currentQuestion && (
-              <button
-                title="Why this question is relevant?"
-                type="button"
-                style={{ padding: '10px', marginLeft: '0px' }}
-                onClick={fetchWhyExplanation}
-              >
-                Why?
-              </button>
-            )}
-          </form>
-        </div>
-      )}
-  
-      {/* Add the Why Not dropdown here */}
-      {showWhyNotDropdown && (
-        <div style={{ marginTop: '10px' }}>
-          <label>Select a conclusion to understand why it wasn't reached:</label>
+            <button title="Why was this option not chosen?" className="button" onClick={fetchWhyNotExplanation}>
+              Why Not?
+            </button>
+          </>
+        )}
+      </div>
+    ) : (
+      <form
+        onSubmit={isStarted ? handleSubmitForm : (e) => {
+          e.preventDefault();
+          startProcess();
+        }}
+        style={{ display: 'flex', marginTop: '10px' }}
+      >
+        {currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers ? (
           <select
-            value={selectedConclusion}
-            onChange={(e) => setSelectedConclusion(e.target.value)}
-            style={{ padding: '10px', marginLeft: '10px' }}
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            className="input"
           >
-            <option value="" disabled>Select a conclusion</option>
-            {possibleConclusions.map((conclusion, index) => (
-              <option key={index} value={conclusion}>
-                {conclusion}
+            <option value="" disabled>Select an option</option>
+            {currentQuestion.possibleAnswers.map((answer, index) => (
+              <option key={index} value={answer}>
+                {answer}
               </option>
             ))}
           </select>
-          <button onClick={handleWhyNotExplanation} style={{ padding: '10px', marginLeft: '10px' }}>
-            Explain Why Not
+        ) : (
+          <input
+            type="text"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            placeholder={isStarted
+              ? currentQuestion?.type === 'multiple-choice'
+                ? `Select an answer (${currentQuestion.possibleAnswers?.join(', ')})`
+                : currentQuestion?.type === 'ip-quest'
+                ? 'Enter a valid IP address'
+                : 'Type your response'
+              : "Click 'Start' to enable input"}
+            className="input"
+            disabled={!isStarted}
+          />
+        )}
+        <button type="submit" className="button">
+          {isStarted ? 'Send' : 'Start'}
+        </button>
+        {isStarted && expertSystem === 'Drools' && currentQuestion && (
+          <button title="Why this question is relevant?" type="button" className="button" onClick={fetchWhyExplanation}>
+            Why?
           </button>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </form>
+    )}
+
+    {showWhyNotDropdown && (
+      <div className="dropdown">
+        <label>Select a conclusion to understand why it wasn't reached:</label>
+        <select
+          value={selectedConclusion}
+          onChange={(e) => setSelectedConclusion(e.target.value)}
+          className="input"
+        >
+          <option value="" disabled>Select a conclusion</option>
+          {possibleConclusions.map((conclusion, index) => (
+            <option key={index} value={conclusion}>
+              {conclusion}
+            </option>
+          ))}
+        </select>
+        <button onClick={handleWhyNotExplanation} className="button">
+          Explain Why Not
+        </button>
+      </div>
+    )}
+  </div>
+);
 };
 
 export default Alert_Evidences;
