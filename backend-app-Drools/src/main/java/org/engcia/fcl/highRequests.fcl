@@ -1,0 +1,38 @@
+FUNCTION_BLOCK highRequests
+
+// Define input variable: numberOfRequestsPerMinute
+VAR_INPUT
+    numberOfRequestsPerMinute : REAL;
+END_VAR
+
+// Define output variable: threatLevel
+VAR_OUTPUT
+    highRequests : REAL;
+END_VAR
+
+// Define fuzzy sets for input (adjusted for higher rates)
+FUZZIFY numberOfRequestsPerMinute
+    TERM normal := (0, 1) (10000, 0);               // Normal traffic up to 10,000 requests/min
+    TERM portScan := (5000, 0) (15000, 1) (50000, 0); // Moderate rate up to 50,000 requests/min
+    TERM dos := (100000, 0) (300000, 1);            // Very high rate for DoS detection
+END_FUZZIFY
+
+// Define fuzzy sets and defuzzification method for output
+DEFUZZIFY highRequests
+    TERM low := (0, 1) (0.3, 0);
+    TERM medium := (0.2, 0) (0.7, 1) (0.8, 0);
+    TERM high := (0.7, 0) (1, 1);
+
+    // Use the Center of Gravity (COG) method for defuzzification
+    METHOD : COG;
+    DEFAULT := 0.0;
+END_DEFUZZIFY
+
+// Define fuzzy rules for detecting threat level
+RULEBLOCK No1
+    RULE 1 : IF numberOfRequestsPerMinute IS dos THEN highRequests IS high;      // High rate (300k+) -> DoS
+    RULE 2 : IF numberOfRequestsPerMinute IS portScan THEN highRequests IS medium; // Moderate rate -> Port Scan
+    RULE 3 : IF numberOfRequestsPerMinute IS normal THEN highRequests IS low;      // Normal rate -> Low Threat
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

@@ -1220,7 +1220,7 @@ when
     $input: EvidencesPS(alertId == "PS", highRequests == "null", maliciousIP == "null", permitedRequest == "null", nationalIP == "null", geoPolicy == "null")
 then
     AlertResponse output = new AlertResponse("question",
-                                             new Question("multiple-choice",
+                                             new Question("fuzzy-input",
                                                           "\nEnter the number of requests per minute",
                                                           Arrays.asList("Yes", "No")),
                                              null,
@@ -1249,7 +1249,7 @@ when
     $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "null", permitedRequest == "null", nationalIP == "null", geoPolicy == "null")
 then
     AlertResponse output = new AlertResponse("question",
-                                             new Question("multiple-choice",
+                                             new Question("ip-quest",
                                                           "\nIs the IP address malicious?",
                                                           Arrays.asList("Yes", "No")),
                                              null,

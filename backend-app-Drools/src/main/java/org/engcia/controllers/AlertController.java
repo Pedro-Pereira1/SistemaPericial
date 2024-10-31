@@ -2,6 +2,7 @@ package org.engcia.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.engcia.Utils.FuzzyHighRequests;
 import org.engcia.model.*;
 import org.engcia.services.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +79,17 @@ public class AlertController {
         alertService.clear();
     }
 
+    @GetMapping("/get-conclusions")
+    public ResponseEntity<List<String>> getConclusions() {
+        return ResponseEntity.ok(alertService.getConclusions());
+    }
+
+    @PostMapping("/process-fuzzy")
+    public ResponseEntity<String> processFuzzy(@RequestBody Map<String, Object> alertContext) {
+        ObjectMapper mapper = new ObjectMapper();
+        Number requestsPerMinute = (Number) alertContext.get("requestsPerMinute");
+        String result = FuzzyHighRequests.evaluateHighRequests(requestsPerMinute.doubleValue());
+        return ResponseEntity.ok(result);
+    }
 
 }
