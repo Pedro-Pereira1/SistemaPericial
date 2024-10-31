@@ -1,6 +1,7 @@
 package org.engcia.services;
 
 import org.engcia.Listener.CustomAgendaEventListener;
+import org.engcia.Utils.FuzzyHighRequests;
 import org.engcia.model.AlertResponse;
 import org.engcia.model.Evidences;
 import org.kie.api.KieServices;
@@ -75,6 +76,16 @@ public class AlertService {
     public void clear() {
         agendaEventListener.getFiredRules().clear();
     }
+
+    public List<String> getConclusions(){
+        List<String> list = new ArrayList<>();
+        list.add("X");
+        list.add("Y");
+        list.add("Z");
+        return list;
+    }
+
+
 
 
 

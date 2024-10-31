@@ -5,7 +5,7 @@ import generalService from "../../services/generalService";
 import 'boxicons/css/boxicons.min.css';
 
 interface Question {
-  type: 'multiple-choice' | 'text' | 'ip-quest' | 'list-question';
+  type: 'multiple-choice' | 'text' | 'ip-quest' | 'list-question' | 'fuzzy-input';
   text: string;
   possibleAnswers?: string[];
 }
@@ -149,6 +149,16 @@ const startProcess = () => {
       }
       update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());
     }
+
+    if(currentQuestion?.type === 'fuzzy-input'){
+    if(isNaN(Number(message))){
+      setErrorMessage("Please enter a valid number");
+      return;
+    }
+    message = await AlertService.fuzzyInput(Number(message));
+    console.log(message)
+    update(alertResponse?.parameterNumber as keyof Evidences, message);
+    }
     
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
 
@@ -274,7 +284,7 @@ const startProcess = () => {
   const fetchWhyNotExplanation = async () => {
     if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
       try {
-        const conclusions = await AlertService.getPossibleConclusions();
+        const conclusions = await AlertService.getPossibleConclusions(expertSystem);
         setPossibleConclusions(conclusions);
         setShowWhyNotDropdown(true); // Show dropdown for selection
       } catch (error) {
