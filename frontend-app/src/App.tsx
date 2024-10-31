@@ -4,12 +4,12 @@ import 'boxicons/css/boxicons.min.css'; // Import Boxicons for the icons.
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'; // Importing react-router-dom
 
 import Dashboard from './components/pages/Dashboard';
-import AlertPage_Phishing from './components/pages/AlertPage_Phishing';
 import AlertPage_MultipleLoginFailuresForAUserAccount from './components/pages/Alert_MultipleLoginFailuresForAUserAccount';
 import AlertPage_CMF from './components/pages/AlertPage_CMF';
 import AlertPage_SLA from './components/pages/AlertPage_SLA';
 import AlertPage_NUA from './components/pages/AlertPage_NUA';
 import AlertPage_UDC from './components/pages/AlertPage_UDC';
+import AlertPage_PS from './components/pages/AlertPage_PS';
 import History from './components/pages/History';
 import Settings from './components/pages/Settings';
 import Profile from './components/pages/Profile';
@@ -39,12 +39,12 @@ const App: React.FC = () => {
 
   // List of alert categories
   const alertCategories = [
-    { name: 'Phishing Alert', path: '/alerts/phishing-alert' },
     { name: 'Multiple Login Failures Alert', path: '/alerts/multiple-login-failures' },
     { name: 'Changes made to the firewall', path: '/alerts/changes-made-to-the-firewall' },
     { name: 'Simultaneous Login Activity', path: '/alerts/simultaneous-login-activity' },
     { name: 'New User Account', path: '/alerts/new-user-account' },
     { name: 'User data has been changed', path: '/alerts/user-data-has-been-changed' },
+    { name: 'Port Scan', path: '/alerts/port-scan' },
   ];
 
   // Filter alert categories based on the search term
@@ -160,12 +160,12 @@ const App: React.FC = () => {
               <Route path="/" element={<Dashboard />} />
               <Route path="/website" element={<Website />} />
               <Route path="/reports" element={<Reports />} />
-              <Route path="/alerts/phishing-alert" element={<AlertPage_Phishing expert_system={expertSystemState}/>} />
               <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystemState}/>} />
               <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF expert_system={expertSystemState}/>} />
               <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA expert_system={expertSystemState}/>} />
               <Route path="/alerts/new-user-account" element={<AlertPage_NUA expert_system={expertSystemState}/>} />
               <Route path="/alerts/user-data-has-been-changed" element={<AlertPage_UDC expert_system={expertSystemState}/>} />
+              <Route path="/alerts/port-scan" element={<AlertPage_PS expert_system={expertSystemState}/>} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />

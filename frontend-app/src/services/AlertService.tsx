@@ -77,7 +77,40 @@ const AlertService = {
       console.error("Error processing alert:", error);
       throw error;
     }
+  },
+
+
+  getPossibleConclusions : async () => {
+    return ["conclusion1", "conclusion2", "conclusion3"];
+  },
+
+  getWhyNotExplanation : async (response: any, conclusion: String, expertSystem: String | null) => {
+    if(expertSystem === "Drools"){
+      return "Drools explanation";
+    } else if(expertSystem === "Prolog"){
+      return "Prolog explanation";
+    }
+  },
+
+  getHowExplanation : async (alertContext: any, expertSystem: String | null) => {
+    if(expertSystem === "Drools"){
+      return AlertService.getHowExplanationDrools(alertContext);
+    } else if(expertSystem === "Prolog"){
+      //return AlertService.processAlertProlog(alertContext);
+      return "Prolog explanation";
+    }
+  },
+
+
+  getWhyExplanation : async (alertContext: any, expertSystem: String | null) => {
+    if(expertSystem === "Drools"){
+      return AlertService.getHowExplanationDrools(alertContext);
+    } else if(expertSystem === "Prolog"){
+      //return AlertService.processAlertProlog(alertContext);
+      return "Prolog explanation";
+    }
   }
+
 
 
 };
