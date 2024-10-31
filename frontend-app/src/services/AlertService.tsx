@@ -80,8 +80,21 @@ const AlertService = {
   },
 
 
-  getPossibleConclusions : async () => {
-    return ["conclusion1", "conclusion2", "conclusion3"];
+  getPossibleConclusions : async (expertSystem: String |null): Promise<string[]> => {
+    try {
+      if(expertSystem === "Drools"){
+        const response = await axios.get('http://localhost:8080/api/alerts/get-conclusions');
+        console.log(response.data)
+        return response.data;
+      } else if(expertSystem === "Prolog"){
+        return ["A", "B", "C"];
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error("Error processing alert:", error);
+      throw error;
+    }
   },
 
   getWhyNotExplanation : async (response: any, conclusion: String, expertSystem: String | null) => {
@@ -116,7 +129,15 @@ const AlertService = {
     }
   },
 
-
+  fuzzyInput : async (number: Number): Promise<string> =>{
+    try {
+      const response = await axios.post('http://localhost:8080/api/alerts/process-fuzzy', {requestsPerMinute:number});
+      return response.data;
+    } catch (error) {
+      console.error("Error processing alert:", error);
+      throw error;
+    }
+  }
 
 };
 
