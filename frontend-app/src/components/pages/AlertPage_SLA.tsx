@@ -234,7 +234,7 @@ const fetchHowExplanation = async () => {
     try {
       const explanationList = await AlertService.getHowExplanation(alertContext, expertSystem);
       if (Array.isArray(explanationList)) {
-        const formattedExplanation = explanationList.join('\n'); // Join the list into a single string, separated by newlines
+        const formattedExplanation = explanationList.join('\n');
         alert(`How we reach this conclusion?\n${formattedExplanation}`);
       } else {
         alert("Explanation is not in the expected format.");

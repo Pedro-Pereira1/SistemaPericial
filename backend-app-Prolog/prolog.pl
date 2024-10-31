@@ -126,7 +126,7 @@ how_iteracao([(Facto, Regra)|L], HowAcumulado, How) :-
     ultimo_facto(N),
     Facto =:= N,
 	facto(Facto, conclusao(Conclusao)),
-	concatenar_lista([Regra, ': ', Conclusao], Resultado),
+	concatenar_lista(['Rule N.', Regra, ': ', Conclusao], Resultado),
 	append(HowAcumulado, [Resultado], HowFinal),
     how_iteracao(L, HowFinal, How),!.
 
@@ -144,7 +144,7 @@ how_iteracao([(Facto, Regra)|L], HowAcumulado, How) :-
 	Facto1 =.. [_|P1],
 	Facto2 =.. [_|P2],
 	compara_parametros(P2, P1, Diferente),
-	concatenar_lista([Regra, ': ', Questao_Texto, ' | Resposta: ', Diferente], Concat_String),
+	concatenar_lista(['Rule N.', Regra, ': ', Questao_Texto, ' Response: ', Diferente], Concat_String),
 
     append(HowAcumulado, [Concat_String], HowNovo),
     how_iteracao(L, HowNovo, How).

@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import config from '../config';
 
 
 const AlertService = {
@@ -69,7 +69,7 @@ const AlertService = {
         headers: myHeaders,
       };
 
-      const response = await fetch("http://localhost:5000/api/prolog/reset", requestOptions);
+      const response = await fetch(`${config.prolog_ip}/reset`, requestOptions);
       const result = await response.json();
 
       return result;
@@ -96,8 +96,13 @@ const AlertService = {
     if(expertSystem === "Drools"){
       return AlertService.getHowExplanationDrools(alertContext);
     } else if(expertSystem === "Prolog"){
-      //return AlertService.processAlertProlog(alertContext);
-      return "Prolog explanation";
+      try {
+        const response = await axios.get(config.prolog_ip + '/how')
+        if(response) return response.data
+        return ["Unable to get the How explanation for this case."]
+      } catch(error) {
+        return [`An error occured: ${error}.`]
+      }
     }
   },
 
@@ -109,7 +114,7 @@ const AlertService = {
       //return AlertService.processAlertProlog(alertContext);
       return "Prolog explanation";
     }
-  }
+  },
 
 
 
