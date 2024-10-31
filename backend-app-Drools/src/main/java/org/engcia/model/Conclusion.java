@@ -15,7 +15,6 @@ public class Conclusion {
     public static final String MITIGATE_VULNERABILITY = "Mitigate the vulnerability exploited by the suspicious activity\n";
     public static final String REVERT_SETTINGS = "Revert the changes made to the firewall.\n";
     public static final String APPLY_RECOMMENDATIONS = "Apply security recommendations.\n";
-
     public static final String CONTACT_SUPPORT = "Contact support team for further investigation.\n";
     public static final String VERIFY_POLICIES = "Verify and adjust account creation policies to prevent recurrence.\n";
     public static final String ELIMINATE_ACCOUNT = "Eliminate the account and all associated data. Verify and modify account creation policies.\n";
@@ -25,6 +24,13 @@ public class Conclusion {
     public static final String BLOCK_IP="Open Case\nBlock the IP.";
 
     public static final String MALICIOUS_IP = "The IP address is malicious. Contain the IP address and investigate further.";
+
+    public static final String DOS_ATTACK = "The high number of requests indicates a possible Denial of Service (DoS) attack. Block the IP address and investigate further.";
+    public static final String CREATE_GEO_POLICY = "Create a geo-blocking policy to block traffic from the identified country.";
+
+
+
+
     private String description;
 
     public Conclusion(String description) {

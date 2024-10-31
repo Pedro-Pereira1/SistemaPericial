@@ -58,6 +58,11 @@ public class AlertController {
                 EvidencesPhishing inputPhishing = mapper.convertValue(alertContext.get("input"), EvidencesPhishing.class);
                 response = alertService.runEngine(inputPhishing);
                 break;
+            // Port Scan
+            case "PS":
+                EvidencesPS inputps = mapper.convertValue(alertContext.get("input"), EvidencesPS.class);
+                response = alertService.runEngine(inputps);
+                break;
         }
         return ResponseEntity.ok(response);
     }

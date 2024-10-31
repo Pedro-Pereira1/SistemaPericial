@@ -8,6 +8,7 @@ import org.engcia.model.EvidencesPhishing
 import org.engcia.model.EvidencesMLF
 import org.engcia.model.EvidencesCMF
 import org.engcia.model.EvidencesUDC
+import org.engcia.model.EvidencesPS
 import java.util.Arrays
 import org.engcia.model.Conclusion
 import java.util.ArrayList
@@ -1213,6 +1214,162 @@ then
     insert(output);
 end
 //================================================================================================
+// Port scan detected
+rule "Start Analysis for Port scan detected Alert"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "null", maliciousIP == "null", permitedRequest == "null", nationalIP == "null", geoPolicy == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nEnter the number of requests per minute",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "highRequests",
+                                             "This step checks if the number of requests per minute is high, which could indicate a port scan.");
+    insert(output);
+end
+
+rule "High number of requests per minute, classify as DoS"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "yes", maliciousIP == "null", permitedRequest == "null", nationalIP == "null", geoPolicy == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.DOS_ATTACK),
+                                             $input,
+                                             "conclusion",
+                                             "Since the number of requests per minute is high, classify this as a DoS attack.");
+    insert(output);
+end
+
+
+rule "Low number of requests per minute, check for malicious IP"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "null", permitedRequest == "null", nationalIP == "null", geoPolicy == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nIs the IP address malicious?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "maliciousIP",
+                                             "If the number of requests per minute is low, check if the IP address is malicious.");
+    insert(output);
+end
+
+rule "Malicious IP detected, block IP"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "yes", permitedRequest == "null", nationalIP == "null", geoPolicy == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.BLOCK_IP),
+                                             $input,
+                                             "conclusion",
+                                             "Since the IP address is malicious, block the IP.");
+    insert(output);
+end
+
+rule "Non-malicious IP detected, check the requested ports"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "no", permitedRequest == "null", nationalIP == "null", geoPolicy == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nAccess the permitted request" +
+                                                          "\nIs there a permitted request, for a port different from the usual ones (443, 80, 53)?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "permitedRequest",
+                                             "If the IP address is not malicious, check if the requested ports are permitted.");
+    insert(output);
+end
+
+rule "Permitted request not detected, classify as False Positive"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "no", permitedRequest == "no", nationalIP == "null", geoPolicy == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "Since the request is not permitted, classify this as a false positive.");
+    insert(output);
+end
+
+
+rule "Permitted request detected, check for national IP"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "no", permitedRequest == "yes", nationalIP == "null", geoPolicy == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nIs the IP address national?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "nationalIP",
+                                             "If the request is permitted, check if the IP address is national.");
+    insert(output);
+end
+
+rule "National IP detected, block IP"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "no", permitedRequest == "yes", nationalIP == "yes", geoPolicy == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.BLOCK_IP),
+                                             $input,
+                                             "conclusion",
+                                             "Since the IP address is national, block the IP.");
+    insert(output);
+end
+
+rule "Non-national IP detected, check for geo-policy"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "no", permitedRequest == "yes", nationalIP == "no", geoPolicy == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nIs the IP address in a country with a geo-policy?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "geoPolicy",
+                                             "If the IP address is not national, check if it is in a country with a geo-policy.");
+    insert(output);
+end
+
+rule "Geo-policy detected, block IP"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "no", permitedRequest == "yes", nationalIP == "no", geoPolicy == "yes")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.BLOCK_IP),
+                                             $input,
+                                             "conclusion",
+                                             "Since the IP address is in a country with a geo-policy, block the IP.");
+    insert(output);
+end
+
+rule "No geo-policy detected, create new geo-policy"
+when
+    $input: EvidencesPS(alertId == "PS", highRequests == "no", maliciousIP == "no", permitedRequest == "yes", nationalIP == "no", geoPolicy == "no")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CREATE_GEO_POLICY),
+                                             $input,
+                                             "conclusion",
+                                             "Since the IP address is not in a country with a geo-policy, create a new geo-policy.");
+    insert(output);
+end
 
 //================================================================================================
 
