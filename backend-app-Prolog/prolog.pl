@@ -275,3 +275,59 @@ create_dynamic_fact(Fact, N):-
 justifica_todos(LJustifica):-
 	findall((N,Regras), justifica(N,Regras,_), LJustifica).
 
+
+whyNot(Texto,WhyNot):-
+	findall((ID, LHS, RHS), regra ID se LHS entao RHS, LRegras),
+	findall(LHS, (regra ID se [LHS] entao [cria_facto(conclusao(Texto))]), L),
+	whyNot_each(L,[],WhyNot).
+
+whyNot(Texto,WhyNot):-WhyNot = "This conclusion does not exist".
+
+whyNot_each([],FL,FL).
+
+whyNot_each([LHS|L],FL,Rules1):-
+	whyNot_each2(LHS,[],Rules),
+	whyNot_each(L,[Rules|FL],Rules1).
+	
+whyNot_each2(LHS,List,Rules):-
+	LHS =.. [_|P],
+	replace_last_non_null(P, Variables),
+	Fact =.. [alert | Variables],
+	regra _ se [Fact] entao [cria_facto(questao(RHS,_,_,_))],
+	whyNot_each2(Fact, [RHS|List], Rules).
+whyNot_each2(_,Rules,Rules).
+
+replace_last_non_null(P,Variables):-
+	reverse_list(P, X),
+	replace_first_non_null(X, "null", Y),
+	reverse_list(Y, Variables).
+
+reverse_list(List, Reversed) :-
+    reverse_helper(List, [], Reversed).
+
+reverse_helper([], Acc, Acc).
+
+reverse_helper([H | T], Acc, Reversed) :-
+    reverse_helper(T, [H | Acc], Reversed).
+
+replace_first_non_null([], _NewValue, []).
+
+replace_first_non_null([H | T], NewValue, [NewValue | T]) :-
+    H \= "null".
+
+replace_first_non_null(["null" | T], NewValue, ["null" | NewTail]) :-
+    replace_first_non_null(T, NewValue, NewTail).
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

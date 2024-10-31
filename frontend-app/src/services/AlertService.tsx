@@ -111,8 +111,13 @@ const AlertService = {
     if(expertSystem === "Drools"){
       return AlertService.getHowExplanationDrools(alertContext);
     } else if(expertSystem === "Prolog"){
-      //return AlertService.processAlertProlog(alertContext);
-      return "Prolog explanation";
+      try {
+        const response = await axios.get(config.prolog_ip + '/why')
+        if(response) return response.data
+        return "Unable to get the why for this question"
+      } catch(error) {
+        return `An error occured: ${error}.`
+      }
     }
   },
 

@@ -150,4 +150,30 @@ handle_how(_Request) :-
     cors_enable,
     reply_json(_{status: 'error', message: 'This fact does not exist.'}).
 
+:- http_handler('/api/prolog/not', handle_why_not, []).
+handle_why_not(Request):-
+    option(method(options), Request),
+    !,
+    cors_enable(Request,[methods([get])]),
+    format('Content-type: application/json\r\n'),
+    format('~n').
+handle_why_not(Request) :-
+    cors_enable,
+    http_parameters(Request, [
+        conclusion(Conclusion, [optional(true), default('none')])
+    ]),
+    atom_string(Conclusion, C),
+    whyNot(C, WhyNot),
+    reply_json(_{status: 'success', message: WhyNot}).
+
+
+handle_why_not(_Request) :-
+    cors_enable,
+    reply_json(_{status: 'error', message: 'This conclusion does not exist.'}).
+
+convert_to_strings_list([],[]).
+convert_to_strings_list([H|L1], [C|L2]):-
+    atom_string(H, C),
+    convert_to_strings_list(L1,L2).
+
 
