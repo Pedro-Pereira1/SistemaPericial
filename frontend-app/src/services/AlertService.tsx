@@ -80,14 +80,15 @@ const AlertService = {
   },
 
 
-  getPossibleConclusions : async (expertSystem: String |null): Promise<string[]> => {
+  getPossibleConclusions : async (expertSystem: String |null, alert: String): Promise<string[]> => {
     try {
       if(expertSystem === "Drools"){
         const response = await axios.get('http://localhost:8080/api/alerts/get-conclusions');
-        console.log(response.data)
         return response.data;
       } else if(expertSystem === "Prolog"){
-        return ["A", "B", "C"];
+        const response = await axios.post(`${config.prolog_ip}/conclusions?alert=${alert}`);
+        console.log(response.data)
+        return response.data.message;
       } else {
         return [];
       }
@@ -103,7 +104,14 @@ const AlertService = {
         console.log(response.data)
         return response.data;
     } else if(expertSystem === "Prolog"){
-      return "Prolog explanation";
+      try {
+        const response = await axios.post(`${config.prolog_ip}/not?conclusion=${conclusion}`);
+        const formattedMessage = response.data.message.map((list: string[], index: number) => `==========${index + 1} Option==========\n${list.join('\n')}`).join('\n\n');
+        return formattedMessage;
+      } catch (error) {
+        console.error("Error processing alert:", error);
+        throw error;
+      }
     }
   },
 
@@ -139,16 +147,6 @@ const AlertService = {
   fuzzyInput : async (number: Number): Promise<string> =>{
     try {
       const response = await axios.post('http://localhost:8080/api/alerts/process-fuzzy', {requestsPerMinute:number});
-      return response.data;
-    } catch (error) {
-      console.error("Error processing alert:", error);
-      throw error;
-    }
-  },
-
-  whyNotPrlog : async (conclusion: string): Promise<string> =>{
-    try {
-      const response = await axios.post(`${config.prolog_ip}/api/prolog/not?conclusion=${conclusion}`);
       return response.data;
     } catch (error) {
       console.error("Error processing alert:", error);

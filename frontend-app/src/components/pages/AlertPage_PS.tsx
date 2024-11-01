@@ -284,7 +284,7 @@ const startProcess = () => {
   const fetchWhyNotExplanation = async () => {
     if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
       try {
-        const conclusions = await AlertService.getPossibleConclusions(expertSystem);
+        const conclusions = await AlertService.getPossibleConclusions(expertSystem, "PS");
         setPossibleConclusions(conclusions);
         setShowWhyNotDropdown(true); // Show dropdown for selection
       } catch (error) {
