@@ -262,9 +262,13 @@ const fetchHowExplanation = async () => {
 const fetchWhyExplanation = async () => {
   if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
     try {
-      const explanation = alertResponse?.relevance;
-      const explanationList = await AlertService.getWhyExplanation(alertResponse?.evidences as Evidences, expertSystem);
-      alert(`Why this question is relevant?\n${explanation}\n\nHow we reach this conclusion?\n${explanationList.join('\n')}`);
+      const explanationList = await AlertService.getWhyExplanation(alertResponse, expertSystem,"SLA");
+      if(expertSystem === 'Drools'){
+        const explanation = alertResponse?.relevance;
+        alert(`Why this question is relevant?\n${explanation}\n\nHow we reach this conclusion?\n${explanationList.join('\n')}`);
+      }else{
+        alert(`Why this question is relevant?\n${explanationList}`);
+      }
     } catch (error) {
       console.error("Error fetching why explanation:", error);
       alert("Unable to fetch the reason for this question.");

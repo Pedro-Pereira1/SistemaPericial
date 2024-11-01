@@ -130,14 +130,14 @@ const AlertService = {
   },
 
 
-  getWhyExplanation : async (alertContext: any, expertSystem: String | null) => {
+  getWhyExplanation : async (alertContext: any, expertSystem: String | null, alert: string) => {
     if(expertSystem === "Drools"){
-      return AlertService.getHowExplanationDrools(alertContext);
+      return AlertService.getHowExplanationDrools(alertContext.evidences);
     } else if(expertSystem === "Prolog"){
       try {
-        const response = await axios.get(config.prolog_ip + '/why')
-        if(response) return response.data
-        return "Unable to get the why for this question"
+        const response = await axios.post(config.prolog_ip + '/why?question=' + alertContext.question.text + "&alert=" + alert)
+        const formattedMessage = response.data.message.map((list: string[]) => `==========Possible Conclusions==========\n${list.join('\n')}`).join('\n\n');
+        return formattedMessage
       } catch(error) {
         return `An error occured: ${error}.`
       }
