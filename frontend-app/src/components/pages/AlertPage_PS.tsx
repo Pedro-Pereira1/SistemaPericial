@@ -91,6 +91,11 @@ const startProcess = () => {
     return;
   }
 
+  if(props.expert_system === "Prolog"){
+    setErrorMessage("Prolog is not supported for this process.");
+    return;
+  }
+
   AlertService.clearDrools(); // Clear the Drools session before starting
   AlertService.reset_prolog(); // Clear the Prolog session before starting
   setMessages(prevMessages => [
@@ -396,7 +401,7 @@ return (
         <button type="submit" className="button">
           {isStarted ? 'Send' : 'Start'}
         </button>
-        {isStarted && expertSystem === 'Drools' && currentQuestion && (
+        {isStarted && (expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion && (
           <button title="Why this question is relevant?" type="button" className="button" onClick={fetchWhyExplanation}>
             Why?
           </button>

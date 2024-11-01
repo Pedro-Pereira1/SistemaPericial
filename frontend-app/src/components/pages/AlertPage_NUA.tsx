@@ -375,7 +375,7 @@ return (
         <button type="submit" className="button">
           {isStarted ? 'Send' : 'Start'}
         </button>
-        {isStarted && expertSystem === 'Drools' && currentQuestion && (
+        {isStarted && (expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion && (
           <button title="Why this question is relevant?" type="button" className="button" onClick={fetchWhyExplanation}>
             Why?
           </button>
