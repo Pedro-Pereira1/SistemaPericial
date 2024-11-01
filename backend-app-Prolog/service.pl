@@ -123,10 +123,12 @@ handle_why(Request):-
 handle_why(Request) :-
     cors_enable,
     http_parameters(Request, [
-        id(Id, [optional(true), default('none')])
+        question(Question, [optional(true), default('none')]),
+        alert(Alert, [optional(true), default('none')])
     ]),
-    atom_number(Id, Num),
-    why(Num,Why),
+    atom_string(Question, QuestionS),
+    atom_string(Alert, AS),
+    why(QuestionS,AS, Why),
     reply_json(_{status: 'success', message: Why}).
 
 handle_why(_Request) :-

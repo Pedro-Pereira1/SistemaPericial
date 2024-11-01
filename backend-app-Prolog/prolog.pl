@@ -155,9 +155,9 @@ compara_parametros([_|_],[H2|_],H2).
 
 
 
-why(Id,Resposta):-ultimo_facto(N),Id>N,Resposta='This fact does not exist'.
-why(Id,Resposta):-FactoNum is Id-1, FactoNum<1,Resposta='This is the first fact'.
-why(Id,Resposta):-FactoNum is Id-1, facto(FactoNum,R), term_to_atom(R, Resposta).
+%why(Id,Resposta):-ultimo_facto(N),Id>N,Resposta='This fact does not exist'.
+%why(Id,Resposta):-FactoNum is Id-1, FactoNum<1,Resposta='This is the first fact'.
+%why(Id,Resposta):-FactoNum is Id-1, facto(FactoNum,R), term_to_atom(R, Resposta).
 
 concatenar_lista([Unico], Unico).
 concatenar_lista([Primeiro|Restante], Resultado) :-
@@ -343,17 +343,76 @@ contains(Element, [_|Tail]) :-
     contains(Element, Tail).
 	
 
+why(Questao,Alert,Why):-
+	findall(LHS, regra _ se [LHS] entao [cria_facto(questao(Questao,_,_,_))], Questions),
+	why_question_from_alert(Questions, Alert, Facts),
+	all_conclusions_to_alert2(Alert, Conclusions),
+	why_each_question(Facts,Conclusions,L),
+	get_conclusions_text(L, Why).
 
+why_question_from_alert([],_,[]).
+why_question_from_alert([H|L1],Alert,[H|L2]):-
+	H=.. [_|P],
+	why_question_from_alert_get_head(P,H1),
+	H1 == Alert,
+	why_question_from_alert(L1,Alert,L2).
 
+why_question_from_alert([_|L1],Alert,L2):-
+	why_question_from_alert(L1,Alert,L2).
 
+why_question_from_alert_get_head([H|_],H).
 
+why_each_question([],_,[]).
+why_each_question([Question_Fact|L],Conclusions, [Conclusions2|FL]):-
+	why_each_conclusion(Conclusions, Question_Fact, Conclusions2),
+	why_each_question(L, Conclusions, FL).
 
+why_each_conclusion([],_,[]).
+why_each_conclusion([Conclusion|L1],Question_Fact,[Conclusion|L2]):-
+	is_it_conclusion(Conclusion, Question_Fact),
+	why_each_conclusion(L1, Question_Fact, L2).
+why_each_conclusion([_|L1],Question_Fact,L2):-
+	why_each_conclusion(L1,Question_Fact,L2).
 
+is_it_conclusion(Conclusion, Question_Fact):-
+	is_it_conclusion1(Conclusion, Question_Fact).
 
+is_it_conclusion1(Conclusion, Question_Fact):-
+	Conclusion =.. [_|P],
+	replace_last_non_null(P, Variables),
+	Fact =.. [alert | Variables],
+	Fact \= Question_Fact,!,
+	regra _ se [Fact] entao [cria_facto(questao(_,_,_,_))],
+	is_it_conclusion1(Fact, Question_Fact).
 
+is_it_conclusion1(Conclusion, _):-
+	Conclusion =.. [_|P],
+	replace_last_non_null(P, Variables),
+	Fact =.. [alert | Variables],!,
+	regra _ se [Fact] entao [cria_facto(questao(_,_,_,_))],!.
 
+is_it_conclusion1(_, _):-
+	false.
 
-
-
-
+all_conclusions_to_alert2(Alert, Conclusions):-
+	findall((LHS,Texto), (regra _ se [LHS] entao [cria_facto(conclusao(Texto))]), L),
+	all_conclusions_to_alert3(Alert, L, Conclusions).
 	
+all_conclusions_to_alert3(_, [],[]).
+all_conclusions_to_alert3(Alert, [(H,_)|L],[H|L1]):-
+	H =.. [_|P],
+	contains(Alert, P),
+	all_conclusions_to_alert3(Alert, L,L1).
+
+all_conclusions_to_alert3(Alert, [_|L], L1):-
+	all_conclusions_to_alert3(Alert, L,L1).
+
+get_conclusions_text([], []).
+get_conclusions_text([Conclusions_list|L1],[Response|L2]):-
+	get_conclusions_text1(Conclusions_list,Response),
+	get_conclusions_text(L1, L2).
+
+get_conclusions_text1([],[]).
+get_conclusions_text1([Conclusion_Fact|L1],[Conclusion|L2]):-
+	regra _ se [Conclusion_Fact] entao [cria_facto(conclusao(Conclusion))],
+	get_conclusions_text1(L1,L2).
