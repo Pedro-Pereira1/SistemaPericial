@@ -247,7 +247,7 @@ const fetchHowExplanation = async () => {
 const fetchWhyExplanation = async () => {
   if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
     try {
-      const explanationList = await AlertService.getWhyExplanation(alertResponse, expertSystem,"SLA");
+      const explanationList = await AlertService.getWhyExplanation(alertResponse,evidences, expertSystem,"CMF");
       if(expertSystem === 'Drools'){
         const explanation = alertResponse?.relevance;
         alert(`Why this question is relevant?\n${explanation}\n\nHow we reach this conclusion?\n${explanationList.join('\n')}`);
@@ -324,16 +324,15 @@ return (
         </button>
         {(expertSystem === 'Drools' || expertSystem === 'Prolog') && (
           <>
-            <button title="How was this conclusion made?" className="button" onClick={fetchHowExplanation}>
-              How?
-            </button>
-            <button title="Why this question is relevant?" className="button" onClick={fetchWhyExplanation}>
-              Why?
-            </button>
+          <button title="How was this conclusion made?" className="button" onClick={fetchHowExplanation}>
+            How?
+          </button>
+          { (expertSystem === 'Prolog')&&(
             <button title="Why was this option not chosen?" className="button" onClick={fetchWhyNotExplanation}>
-              Why Not?
-            </button>
-          </>
+            Why Not?
+          </button>
+          )}
+        </>
         )}
       </div>
     ) : (
