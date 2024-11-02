@@ -162,7 +162,7 @@ const startProcess = () => {
     return {
         fact_name: "alert",
         variables: [
-            1,
+            "MLF",
             data.user_known_1 ?? "null",
             data.was_the_user_1 ?? "null",
             data.are_there_multiple_ips ?? "null",
