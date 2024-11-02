@@ -10,10 +10,6 @@ public class AlertResponse {
     private String parameterNumber;
     private String relevance;
 
-
-    public AlertResponse() {
-    }
-
     public AlertResponse(String currentStep, Question question, Conclusion conclusion, Evidences evidences, String parameterNumber, String relevance) {
         this.currentStep = currentStep;
         this.question = question;
@@ -21,6 +17,9 @@ public class AlertResponse {
         this.evidences = evidences;
         this.parameterNumber = parameterNumber;
         this.relevance = relevance;
+    }
+
+    public AlertResponse() {
     }
 
     public String getCurrentStep() {

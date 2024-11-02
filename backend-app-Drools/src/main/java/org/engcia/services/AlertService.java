@@ -1,9 +1,10 @@
 package org.engcia.services;
 
+import org.drools.core.ClassObjectFilter;
 import org.engcia.Listener.CustomAgendaEventListener;
-import org.engcia.Utils.FuzzyHighRequests;
 import org.engcia.model.AlertResponse;
 import org.engcia.model.Evidences;
+import org.engcia.model.EvidencesSLA;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -14,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AlertService {
@@ -65,7 +65,6 @@ public class AlertService {
             firedRules.add("No rules were fired for the provided AlertResponse.");
             return firedRules;
         }
-
         List<String> sessionRules = new ArrayList<>(firedRules);
         sessionRules.add("\n\nThe decision was made based on these rules and the provided input.");
         sessionRules.add(0, "The following rules were triggered during the decision process:");
@@ -77,13 +76,30 @@ public class AlertService {
         agendaEventListener.getFiredRules().clear();
     }
 
-    public List<String> getConclusions(){
-        List<String> list = new ArrayList<>();
-        list.add("X");
-        list.add("Y");
-        list.add("Z");
-        return list;
+    public List<String> why(List<String> possibleAnswers) {
+        List<String> firedRules = agendaEventListener.getFiredRules();
+        if (firedRules.isEmpty()) {
+            firedRules.add("No rules were fired for the provided AlertResponse.");
+            return firedRules;
+        }
+        List<String> sessionRules = new ArrayList<>(firedRules);
+        int pssblAnswrsSize = possibleAnswers.size(); //2
+        int firedRulesSize = firedRules.size(); //3
+        int j = 1;
+        for (int i = pssblAnswrsSize; i != 0; i--) {
+            sessionRules.add(firedRulesSize-j, "If your answer was: " + possibleAnswers.get(i - 1) + ", then the following rules were triggered:");
+            j++;
+        }
+
+        for (int i = 0; i < pssblAnswrsSize; i++) {
+            firedRules.remove(firedRules.size() - 1);
+        }
+        return sessionRules;
     }
+
+
+
+
 
 
 

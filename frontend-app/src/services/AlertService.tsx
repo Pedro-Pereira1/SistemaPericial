@@ -19,7 +19,7 @@ const AlertService = {
   getHowExplanationDrools: async (alertContext: any) => {
     try {
         console.log("Submitting alert context:", alertContext);
-        const response = await axios.post('http://localhost:8080/api/alerts/process-alert-why', alertContext);
+        const response = await axios.post('http://localhost:8080/api/alerts/process-alert-how', alertContext );
         console.log("DATA" + response.data)
         return response.data; // Assuming API sends the next question or conclusion
     } catch (error) {
@@ -100,7 +100,7 @@ const AlertService = {
 
   getWhyNotExplanation : async (response: any, conclusion: String, expertSystem: String | null) => {
     if(expertSystem === "Drools"){
-      const response = await axios.post('http://localhost:8080/api/alerts/get-why-not-explanation', {conclusion: conclusion});
+        const response = await axios.post('http://localhost:8080/api/alerts/get-why-not-explanation', {conclusion: conclusion});
         console.log(response.data)
         return response.data;
     } else if(expertSystem === "Prolog"){
@@ -130,9 +130,11 @@ const AlertService = {
   },
 
 
-  getWhyExplanation : async (alertContext: any, expertSystem: String | null, alert: string) => {
+  getWhyExplanation : async (alertContext: any, evidences: any, expertSystem: String | null, alert: string) => {
     if(expertSystem === "Drools"){
-      return AlertService.getHowExplanationDrools(alertContext.evidences);
+      const response = await axios.post('http://localhost:8080/api/alerts/process-alert-why',{alertContext,evidences,alert});
+        console.log(response.data)
+        return response.data;
     } else if(expertSystem === "Prolog"){
       try {
         const response = await axios.post(config.prolog_ip + '/why?question=' + alertContext.question.text + "&alert=" + alert)
