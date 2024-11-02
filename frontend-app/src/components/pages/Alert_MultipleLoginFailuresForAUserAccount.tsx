@@ -99,6 +99,7 @@ const startProcess = () => {
   }
 
   AlertService.clearDrools(); // Clear the Drools session before starting
+  AlertService.reset_prolog(); 
   setMessages(prevMessages => [
     ...prevMessages,
     { sender: 'bot', text: "Starting process with system: " + props.expert_system }
@@ -162,7 +163,7 @@ const startProcess = () => {
     return {
         fact_name: "alert",
         variables: [
-            1,
+            "MLF",
             data.user_known_1 ?? "null",
             data.was_the_user_1 ?? "null",
             data.are_there_multiple_ips ?? "null",
@@ -260,7 +261,7 @@ const fetchHowExplanation = async () => {
 const fetchWhyExplanation = async () => {
   if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
     try {
-      const explanationList = await AlertService.getWhyExplanation(alertResponse, expertSystem,"SLA");
+      const explanationList = await AlertService.getWhyExplanation(alertResponse, expertSystem,"MLF");
       if(expertSystem === 'Drools'){
         const explanation = alertResponse?.relevance;
         alert(`Why this question is relevant?\n${explanation}\n\nHow we reach this conclusion?\n${explanationList.join('\n')}`);
