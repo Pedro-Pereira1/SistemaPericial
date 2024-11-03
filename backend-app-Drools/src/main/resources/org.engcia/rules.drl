@@ -787,7 +787,7 @@ then
     insert(output);
     end
 
-rule "1.Changes not made to the firewall"
+rule "Analyzing the change changes have been not detected"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="no",suspActivity=="null",activityType=="null",vulnerabExploited=="null")
 then
@@ -799,7 +799,7 @@ then
                                              ,"Determining if changes have been made to the firewall");
     insert(output);
     end
-rule"1.1 Changes made to the firewall"
+rule"Analyzing the logs, check for suspicious activity"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="null",activityType=="null",vulnerabExploited=="null")
 then
@@ -812,7 +812,7 @@ then
                                              ,"Changes made to the firewall, analyze logs for suspicious activity");
     insert(output);
     end
-rule "2 Suspicious activity detected"
+rule "Suspicious activity detected , check activity type"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="null",vulnerabExploited=="null")
 then
@@ -825,7 +825,7 @@ then
                                                  ,"Type of activity detected");
     insert(output);
     end
-rule"2.1 No suspicious activity detected"
+rule"Changes made to the firewall. Changes is not suspicious consider this legitim alteration"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="no",activityType=="null",vulnerabExploited=="null")
 then
@@ -839,7 +839,7 @@ then
     end
 
 
-rule "3 Malicious activity detected"
+rule "Suspicious activity detected. Malicious activity detected"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="malicious activity",vulnerabExploited=="null")
 then
@@ -851,7 +851,7 @@ then
                                              ,"Malicious activity detected,  apply security recommendations");
     insert(output);
     end
-rule "3 Security incident detected"
+rule "Suspicious acitivity detected. Security incident detected"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="security incident",vulnerabExploited=="null")
 then
@@ -866,7 +866,7 @@ then
     end
 
 
-rule "3.1 Security incidente detected and vulnerability exploited"
+rule "Suspicious acitivity detected. Security incidente detected and vulnerability exploited"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="security incident",vulnerabExploited=="yes")
 then
@@ -879,7 +879,7 @@ then
     insert(output);
     end
 
-rule "3.2 Security incidente detected and vulnerability not exploited"
+rule "Suspicious acitivity detected. Security incidente detected and vulnerability not exploited"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="security incident",vulnerabExploited=="no")
 then
@@ -891,7 +891,7 @@ then
                                              ,"No vulnerability exploited, apply security recommendations");
     insert(output);
     end
-rule "3.3 Misconfiguration detected"
+rule "Suspicious acitivity detected.Misconfiguration detected revert configurations"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="yes",suspActivity=="yes",activityType=="misconfiguration",vulnerabExploited=="null")
 then
