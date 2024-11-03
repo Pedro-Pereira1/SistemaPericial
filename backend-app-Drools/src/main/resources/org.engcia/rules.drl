@@ -787,7 +787,7 @@ then
     insert(output);
     end
 
-rule "Analyzing the change changes have been not detected"
+rule "Analyzing the logs, changes have been not detected"
 when
     $input: EvidencesCMF(alertId =="CMF",changesFirewall=="no",suspActivity=="null",activityType=="null",vulnerabExploited=="null")
 then
