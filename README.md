@@ -28,3 +28,13 @@ Drools
 Open the project in intelliJ
 Add the jFuzzyLogic.jar to the project structure
 Run the file DemoApplication
+
+Frontend
+
+Install dependencies
+
+    npm install
+
+Run the frontend
+
+    npm run dev

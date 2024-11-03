@@ -272,7 +272,7 @@ regra 45
 
 regra 46
 	se[alert("CMF","yes","yes","null","null")]
-	entao[cria_facto(questao("Type of activity detected?","multiple-choice",["Malicious activity","Security incident", "Misconfiguration"],"activityType"))].
+	entao[cria_facto(questao("Type of activity detected?","list-question",["Malicious activity","Security incident", "Misconfiguration"],"activityType"))].
 
 regra 47
 	se[alert("CMF","yes","no","null","null")]
