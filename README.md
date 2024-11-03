@@ -2,6 +2,10 @@
 
 ## 🔨 How to run
 
+Install Python dependencies
+
+    pip install -r requirements.txt
+
 Run Python backend
 
     python -m uvicorn start:app --reload --port 7000
@@ -17,8 +21,8 @@ Prolog commands
  
     swipl (executar o prolog)
     [router]. (Consult do ficheiro router.pl)
-    startServer(5000). (Começar o cenas)
+    startServer(5000). (Abrir o servidor no porto 5000)
  
 Drools
  
-Abrir o projeto no intelliJ e correr o DemoApplication
+Open the project in intelliJ and run the file DemoApplication
