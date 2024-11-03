@@ -428,7 +428,7 @@ when
 then
     AlertResponse output = new AlertResponse("question",
                                                  new Question("multiple-choice",
-                                                              "Were there many IPs??",
+                                                              "Were there multiple IPs?",
                                                               Arrays.asList("Yes", "No")),
                                                  null,
                                                  $inputMLF,
@@ -443,7 +443,7 @@ when
 then
     AlertResponse output = new AlertResponse("question",
                                                  new Question("multiple-choice",
-                                                              "Does the IPs ammount make sense",
+                                                              "Does the IPs ammount make sense?",
                                                               Arrays.asList("Yes", "No")),
                                                  null,
                                                  $inputMLF,
@@ -488,7 +488,7 @@ when
 then
     AlertResponse output = new AlertResponse("question",
                                                  new Question("multiple-choice",
-                                                              "Ask the user the origin of the IPs. Is the origin of the IPs justifiable?",
+                                                              "Ask the user the origin of the IPs.\nIs the origin of the IPs justifiable?",
                                                               Arrays.asList("Yes", "No")),
                                                  null,
                                                  $inputMLF,
@@ -711,7 +711,7 @@ when
 then
      AlertResponse output = new AlertResponse("question",
                                                       new Question("multiple-choice",
-                                                                   "Was it the user?",
+                                                                   "Was it an action made by the user?",
                                                                    Arrays.asList("Yes", "No")),
                                                       null,
                                                       $inputMLF,

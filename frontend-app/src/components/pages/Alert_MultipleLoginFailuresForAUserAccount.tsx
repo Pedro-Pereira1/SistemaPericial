@@ -99,6 +99,7 @@ const startProcess = () => {
   }
 
   AlertService.clearDrools(); // Clear the Drools session before starting
+  AlertService.reset_prolog();
   setMessages(prevMessages => [
     ...prevMessages,
     { sender: 'bot', text: "Starting process with system: " + props.expert_system }
