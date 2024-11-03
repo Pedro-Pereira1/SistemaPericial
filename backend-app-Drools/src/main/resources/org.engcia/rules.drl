@@ -366,7 +366,7 @@ then
 end
 //================================================================================================
 //Multiple login failures for a single account
-rule "MLF.1. Is the user known"
+rule "Start analysis for Multiple Login Failures. Check if the user is known"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="null", was_the_user_1=="null", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -377,11 +377,11 @@ AlertResponse output = new AlertResponse("question",
                                              null,
                                              $inputMLF,
                                              "user_known_1",
-                                             "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                             "If the user is known by the analyst, then it can be asked directly to the user.");
     insert(output);
 end
 
-rule "MLF.2. Is the user known"
+rule "The user is known , check if the action was made by the user"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1 == "yes", was_the_user_1=="null", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -391,12 +391,12 @@ AlertResponse output = new AlertResponse("question",
                                                           Arrays.asList("Yes", "No")),
                                              null,
                                              $inputMLF,
-                                             "user_known_1",
-                                             "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                             "was_the_user_1",
+                                             "After asking it needs to be actually validated if it was him or not, by himself.");
     insert(output);
 end
 
-rule "MLF.3. First False Positive"
+rule "The action was made by the user, then first false positive for the Multiple Login Failures"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="yes", was_the_user_1=="yes", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -405,11 +405,11 @@ then
                                              new Conclusion(Conclusion.CLASSIFY_FP),
                                              $inputMLF,
                                              "conclusion",
-                                             "The user confirmed the login, so the previous security actions (e.g., suspension) can be reversed.");
+                                             "Since the user made the action it's a false positive.");
     insert(output);
 end
 
-rule "MLF.4"
+rule "The action was not made by the user, then first conclusion of blocking the account and revert the changes"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="yes", was_the_user_1=="no", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -418,11 +418,11 @@ then
                                              new Conclusion(Conclusion.BLOCK_TEMP),
                                              $inputMLF,
                                              "conclusion",
-                                             "Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes");
+                                             "Temporarily lock an account\nReset a password\nReview controls and permissions\nImplement stronger authentication mechanisms.");
     insert(output);
 end
 
-rule "MLF.5"
+rule "The user is not known, check if are there many IPs."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="null", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -433,11 +433,11 @@ then
                                                  null,
                                                  $inputMLF,
                                                  "are_there_multiple_ips",
-                                                 "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                 "This will validate if the user account is compromised by the amount of IPs. If there are many IPs, it might be something wrong with the account.");
         insert(output);
 end
 
-rule "MLF.6"
+rule "The user is not known, does the amount of IPs make sense?"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -448,11 +448,11 @@ then
                                                  null,
                                                  $inputMLF,
                                                  "does_the_number_of_ips_make_sense",
-                                                 "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                 "When the IPs make sense by traveling, VPNs, etc. there's nothing wrong with the account.");
         insert(output);
 end
 
-rule "MLF.7"
+rule "The amount of IPs make sense, check if its justifiable."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -463,41 +463,41 @@ then
                                                  null,
                                                  $inputMLF,
                                                  "is_the_reccurence_just",
-                                                 "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                 "If the recurrence of the different IPs observed does not make sense, the account can be compromised.");
         insert(output);
 end
 
-rule "MLF.8"
+rule "The IPs are justifiable, escalate to the helpdesk and validate if the helpdesk knows them."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="yes", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
     AlertResponse output = new AlertResponse("question",
                                                  new Question("multiple-choice",
-                                                              "Is the user known?",
+                                                              "Escalate to the helpdesk by opening a case\nIs the user known by the helpdesk?",
                                                               Arrays.asList("Yes", "No")),
                                                  null,
                                                  $inputMLF,
                                                  "user_known_2",
-                                                 "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                 "The helpdesk, most probably, knows more people than the actually analyst, so they need to verify with the actual user.");
         insert(output);
 end
 
-rule "MLF.9"
+rule "The helpdesk knows the user, check if the IPs are justifiable by asking the user"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="yes", user_known_2=="yes", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
     AlertResponse output = new AlertResponse("question",
                                                  new Question("multiple-choice",
-                                                              "Is the origin of the IPs justifiable?",
+                                                              "Ask the user the origin of the IPs. Is the origin of the IPs justifiable?",
                                                               Arrays.asList("Yes", "No")),
                                                  null,
                                                  $inputMLF,
                                                  "origins_just",
-                                                 "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                 "If the IPs are justifiably, probably, there's nothing wrong with the actual user.");
         insert(output);
 end
 
-rule "MLF.10"
+rule "The IPs are justifiable, so close as false positive"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="yes", user_known_2=="yes", was_the_user_2=="null", origins_just=="yes", national_ip=="null")
 then
@@ -506,12 +506,12 @@ then
                                                  new Conclusion(Conclusion.CLASSIFY_FP),
                                                  $inputMLF,
                                                  "conclusion",
-                                                 "Falso Positivo");
+                                                 "Since the all the actions are verified it can be closed as false positive.");
         insert(output);
 end
 
 
-rule "MLF.11"
+rule "The IPs are not justifiable, so block the account and revert the last actions made to actually get the account back."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="yes", user_known_2=="yes", was_the_user_2=="null", origins_just=="no", national_ip=="null")
 then
@@ -520,11 +520,11 @@ then
                                                  new Conclusion(Conclusion.BLOCK_TEMP),
                                                  $inputMLF,
                                                  "conclusion",
-                                                 "Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes");
+                                                 "Temporarily lock an account\nReset a password\nReview controls and permissions\nImplement stronger authentication mechanisms.");
         insert(output);
 end
 
-rule "MLF.12"
+rule "The user is not known, permanently block the account."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="yes", user_known_2=="no", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -533,37 +533,37 @@ then
                                                      new Conclusion(Conclusion.BLOCK_ACCOUNT),
                                                      $inputMLF,
                                                      "conclusion",
-                                                     "Bloquear a conta.");
+                                                     "Permanently block the account.");
     insert(output);
 end
 
-rule "MLF.13"
+rule "The recurrence does not make sense, so check if the user is known"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="no", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
      AlertResponse output = new AlertResponse("question",
                                                       new Question("multiple-choice",
-                                                                   "Is the user known?",
+                                                                   "Escalate to the helpdesk by opening a case. Is the user known by the Helpdesk?",
                                                                    Arrays.asList("Yes", "No")),
                                                       null,
                                                       $inputMLF,
                                                       "user_known_2",
-                                                      "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                      "Since the recurrence does not make sense, it should be said in the case the real problem, so the helpdesk can ask the user that information.");
      insert(output);
 end
 
-rule "MLF.14"
+rule "The user is known, check if the action was made by him to justify the non-recurrence"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="no", user_known_2=="yes", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
      AlertResponse output = new AlertResponse("question",
                                                       new Question("multiple-choice",
-                                                                   "Was it the user?",
+                                                                   "Was the action made by user?",
                                                                    Arrays.asList("Yes", "No")),
                                                       null,
                                                       $inputMLF,
                                                       "was_the_user_2",
-                                                      "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                      "Validate if the action was made by the user will grant that the account is not compromised");
      insert(output);
 end
 
@@ -576,11 +576,11 @@ then
                                                       new Conclusion(Conclusion.CLASSIFY_FP),
                                                       $inputMLF,
                                                       "conclusion",
-                                                      "Falso Positivo");
+                                                      "Since the user made it, it can be closed as false positive.");
      insert(output);
 end
 
-rule "MLF.16"
+rule "The user is known, check if the action was made by himself"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="no", user_known_2=="yes", was_the_user_2=="no", origins_just=="null", national_ip=="null")
 then
@@ -589,11 +589,11 @@ then
                                                       new Conclusion(Conclusion.BLOCK_TEMP),
                                                       $inputMLF,
                                                       "conclusion",
-                                                      "Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes");
+                                                      "Temporarily lock the account\nReset the password\nReview controls and permissions\nImplement stronger authentication mechanisms.");
     insert(output);
 end
 
-rule "MLF.17"
+rule "The user is not known and the recurrnce is not justifiable, then block the account permanently."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="yes", is_the_reccurence_just=="no", user_known_2=="no", was_the_user_2=="no", origins_just=="null", national_ip=="null")
 then
@@ -602,11 +602,11 @@ then
                                                      new Conclusion(Conclusion.BLOCK_ACCOUNT),
                                                      $inputMLF,
                                                      "conclusion",
-                                                     "Bloquear a conta.");
+                                                     "Permanently block the account.");
     insert(output);
 end
 
-rule "MLF.18"
+rule "The number of IPs does not make sense, check if the user is known by the helpdesk"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="no", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -617,26 +617,26 @@ then
                                                       null,
                                                       $inputMLF,
                                                       "user_known_2",
-                                                      "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                      "Since the helpdesk, most probably, know more users, the helpdesk should verify if the user is known to contact them.");
      insert(output);
 end
 
-rule "MLF.19"
+rule "The user is known with a not valid number of IPs, ask him the reason and if it was him."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="no", is_the_reccurence_just=="null", user_known_2=="yes", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
      AlertResponse output = new AlertResponse("question",
                                                       new Question("multiple-choice",
-                                                                   "Was it the user?",
+                                                                   "Was the action made by the user?",
                                                                    Arrays.asList("Yes", "No")),
                                                       null,
                                                       $inputMLF,
                                                       "was_the_user_2",
-                                                      "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                      "If the user made the action, there's nothing wrong with the account.");
      insert(output);
 end
 
-rule "MLF.20"
+rule "The user made the action even with a suspicious number of IPs, but were validated by them"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="no", is_the_reccurence_just=="null", user_known_2=="yes", was_the_user_2=="yes", origins_just=="null", national_ip=="null")
 then
@@ -645,11 +645,11 @@ then
                                                       new Conclusion(Conclusion.CLASSIFY_FP),
                                                       $inputMLF,
                                                       "conclusion",
-                                                      "Falso Positivo");
+                                                      "False positive.");
      insert(output);
 end
 
-rule "MLF.21"
+rule "The user was contacted but the action was not made by them"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="no", is_the_reccurence_just=="null", user_known_2=="yes", was_the_user_2=="no", origins_just=="null", national_ip=="null")
 then
@@ -658,11 +658,11 @@ then
                                                       new Conclusion(Conclusion.BLOCK_TEMP),
                                                       $inputMLF,
                                                       "conclusion",
-                                                      "Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes");
+                                                      "Temporarily lock the account\nReset the password\nReview controls and permissions\nImplement stronger authentication mechanisms.");
     insert(output);
 end
 
-rule "MLF.22"
+rule "The user could not be contacted"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="yes", does_the_number_of_ips_make_sense=="no", is_the_reccurence_just=="null", user_known_2=="no", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
@@ -671,41 +671,41 @@ then
                                                      new Conclusion(Conclusion.BLOCK_ACCOUNT),
                                                      $inputMLF,
                                                      "conclusion",
-                                                     "Bloquear a conta.");
+                                                     "Permanently block the account.");
     insert(output);
 end
 
-rule "MLF.23"
+rule "There's not many IPs, is it a national IP?"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="no", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="null")
 then
      AlertResponse output = new AlertResponse("question",
                                                       new Question("multiple-choice",
-                                                                   "Is the IP national?",
+                                                                   "Is it a national IP?",
                                                                    Arrays.asList("Yes", "No")),
                                                       null,
                                                       $inputMLF,
                                                       "national_ip",
-                                                      "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                      "If the IP is national there's no need to block it as prevention from the start.");
      insert(output);
 end
 
-rule "MLF.24"
+rule "It is a national IP, escalate to the helpdesk to verify if the user is known."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="no", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="yes")
 then
      AlertResponse output = new AlertResponse("question",
                                                       new Question("multiple-choice",
-                                                                   "Is the user known?",
+                                                                   "Escalate to the helpdesk. Is the user known by the helpdesk?",
                                                                    Arrays.asList("Yes", "No")),
                                                       null,
                                                       $inputMLF,
                                                       "user_known_2",
-                                                      "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                      "If the user is known, they can be contacted to validate their action.");
      insert(output);
 end
 
-rule "MLF.25"
+rule "The IP is national and the user is known, check if the action was made by them."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="no", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="yes", was_the_user_2=="null", origins_just=="null", national_ip=="yes")
 then
@@ -716,11 +716,11 @@ then
                                                       null,
                                                       $inputMLF,
                                                       "was_the_user_2",
-                                                      "If MFA is not already enabled, enforcing MFA is crucial to securing the account while trying to validate the login with the user.");
+                                                      "If the action was made by them, there's nothing compromised on the account.");
      insert(output);
 end
 
-rule "MLF.26"
+rule "The IP is national and the user validated the action, so it's a false positive."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="no", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="yes", was_the_user_2=="yes", origins_just=="null", national_ip=="yes")
 then
@@ -729,11 +729,11 @@ then
                                                       new Conclusion(Conclusion.CLASSIFY_FP),
                                                       $inputMLF,
                                                       "conclusion",
-                                                      "Falso Positivo");
+                                                      "False positive.");
      insert(output);
 end
 
-rule "MLF.27"
+rule "The IP is not national, but the user did not take the action"
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="no", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="yes", was_the_user_2=="no", origins_just=="null", national_ip=="yes")
 then
@@ -742,11 +742,11 @@ then
                                                       new Conclusion(Conclusion.BLOCK_TEMP),
                                                       $inputMLF,
                                                       "conclusion",
-                                                      "Bloquear a conta temporariamente\nRedefinir a password\nRever os controlos e permissões\nImplementar mecanismos de autenticação mais fortes");
+                                                      "Temporarily lock the account\nReset the password\nReview controls and permissions\nImplement stronger authentication mechanisms.");
     insert(output);
 end
 
-rule "MLF.28"
+rule "The IP is national, but the user could not be contacted at all and does not exist."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="no", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="no", was_the_user_2=="null", origins_just=="null", national_ip=="yes")
 then
@@ -755,11 +755,11 @@ then
                                                      new Conclusion(Conclusion.BLOCK_ACCOUNT),
                                                      $inputMLF,
                                                      "conclusion",
-                                                     "Bloquear a conta.");
+                                                     "Permanently block the account.");
     insert(output);
 end
 
-rule "MLF.29"
+rule "The user is not known and the IP is not national, so block the IP."
 when
     $inputMLF: EvidencesMLF(alertId == "MLF", user_known_1=="no", was_the_user_1=="null", are_there_multiple_ips=="no", does_the_number_of_ips_make_sense=="null", is_the_reccurence_just=="null", user_known_2=="null", was_the_user_2=="null", origins_just=="null", national_ip=="no")
 then
@@ -768,7 +768,7 @@ then
                                                      new Conclusion(Conclusion.REVERSE_TRANSACTION),
                                                      $inputMLF,
                                                      "conclusion",
-                                                     "Abrir caso\nBloquear o IP.");
+                                                     "Open case\nBlock the IP.");
     insert(output);
 end
 
