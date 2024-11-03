@@ -906,7 +906,7 @@ then
 
 //================================================================================================
 //New user account
-rule "Step 1 - Start Analysis for New user account"
+rule "Start Analysis for New user account"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "null", userContacted == "null", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
 then
@@ -921,7 +921,7 @@ then
     insert(output);
 end
 
-rule "Step 2 - Username in permitted access list"
+rule "Username in permitted access list"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "yes", userContacted == "null", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
 then
@@ -936,7 +936,7 @@ then
     insert(output);
 end
 
-rule "Step 3 - Contact User"
+rule "Try Contact With User"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "yes", userContacted == "yes", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
 then
@@ -949,7 +949,7 @@ then
     insert(output);
 end
 
-rule "Step 4 - Failed Contact"
+rule "Failed Contact"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "yes", userContacted == "no", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
 then
@@ -962,7 +962,7 @@ then
     insert(output);
 end
 
-rule "Step 5 - Account Creation Policy Check"
+rule "Account Creation Policy Check"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "null", userResponse == "null", userProblemResolved == "null")
 then
@@ -977,7 +977,7 @@ then
     insert(output);
 end
 
-rule "Step 6 - Account Creation Policy Valid"
+rule "Account Creation Policy Valid"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "yes", userResponse == "null", userProblemResolved == "null")
 then
@@ -990,7 +990,7 @@ then
     insert(output);
 end
 
-rule "Step 7 - Revoke Access Privileges"
+rule "Revoke Access Privileges"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "null", userProblemResolved == "null")
 then
@@ -1005,7 +1005,7 @@ then
     insert(output);
 end
 
-rule "Step 8 - Issue Resolved After Revocation"
+rule "Issue Resolved After Revocation"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "yes", userProblemResolved == "null")
 then
@@ -1018,7 +1018,7 @@ then
     insert(output);
 end
 
-rule "Step 9 - Deactivate Account"
+rule "Deactivate Account"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "null")
 then
@@ -1033,7 +1033,7 @@ then
     insert(output);
 end
 
-rule "Step 10 - Issue Resolved After Deactivation"
+rule "Issue Resolved After Deactivation"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "yes")
 then
@@ -1046,7 +1046,7 @@ then
     insert(output);
 end
 
-rule "Step 11 - Eliminate Account"
+rule "Eliminate Account"
 when
     $input: EvidencesNUA(alertId == "NUA", permittedUser == "no", userContacted == "null", accordingPolicy == "no", userResponse == "no", userProblemResolved == "no")
 then
