@@ -25,4 +25,6 @@ Prolog commands
  
 Drools
  
-Open the project in intelliJ and run the file DemoApplication
+Open the project in intelliJ
+Add the jFuzzyLogic.jar to the project structure
+Run the file DemoApplication
