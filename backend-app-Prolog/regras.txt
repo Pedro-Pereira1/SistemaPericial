@@ -29,7 +29,7 @@ facto_dispara_regras(alert("MLF", "no", "null", "no", "null", "null", "yes", "nu
 facto_dispara_regras(alert("MLF", "no", "null", "no", "null", "null", "yes", "yes", "null", "yes"), [26]). % Regra 26
 facto_dispara_regras(alert("MLF", "no", "null", "no", "null", "null", "yes", "no", "null", "yes"), [27]). % Regra 27
 facto_dispara_regras(alert("MLF", "no", "null", "no", "null", "null", "no", "null", "null", "yes"), [28]). % Regra 28
-facto_dispara_regras(alert("MLF", "no", "null", "no", "null", "null", "no", "null", "null", "no"), [29]). % Regra 29
+facto_dispara_regras(alert("MLF", "no", "null", "no", "null", "null", "null", "null", "null", "no"), [29]). % Regra 29
 
 facto_dispara_regras(alert("SLA", "null", "null", "null", "null", "null"), [30]).
 facto_dispara_regras(alert("SLA", "yes", "null", "null", "null", "null"), [31]).
@@ -203,7 +203,7 @@ regra 28
 	entao [cria_facto(conclusao("Permanently block the account."))].
 
 regra 29
-	se [alert("MLF", "no", "null", "no", "null", "null", "no", "null", "null", "no")]
+	se [alert("MLF", "no", "null", "no", "null", "null", "null", "null", "null", "no")]
 	entao [cria_facto(conclusao("Open case\nBlock the IP."))].
 
 regra 30

@@ -765,7 +765,7 @@ when
 then
      AlertResponse output = new AlertResponse("conclusion",
                                                      null,
-                                                     new Conclusion(Conclusion.REVERSE_TRANSACTION),
+                                                     new Conclusion(Conclusion.BLOCK_IP),
                                                      $inputMLF,
                                                      "conclusion",
                                                      "Open case\nBlock the IP.");
