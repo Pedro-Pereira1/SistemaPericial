@@ -4,7 +4,7 @@ import 'boxicons/css/boxicons.min.css'; // Import Boxicons for the icons.
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'; // Importing react-router-dom
 
 import Dashboard from './components/pages/Dashboard';
-import AlertPage_MultipleLoginFailuresForAUserAccount from './components/pages/Alert_MultipleLoginFailuresForAUserAccount';
+import AlertPage_MultipleLoginFailuresForAUserAccount from './components/pages/AlertPage_MLF';
 import AlertPage_CMF from './components/pages/AlertPage_CMF';
 import AlertPage_SLA from './components/pages/AlertPage_SLA';
 import AlertPage_NUA from './components/pages/AlertPage_NUA';
