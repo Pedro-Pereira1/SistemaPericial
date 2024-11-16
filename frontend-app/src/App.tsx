@@ -22,7 +22,6 @@ const App: React.FC = () => {
   const [isSidebarClosed, setSidebarClosed] = useState(false);
   const [isSubMenuOpen, setSubMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [expertSystemState, setExpertSystemState] = useState('');
 
   useEffect(() => {
     const savedMode = localStorage.getItem('darkMode');
@@ -36,6 +35,9 @@ const App: React.FC = () => {
   };
   const toggleSubMenu = () => setSubMenuOpen(!isSubMenuOpen);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value);
+  const [expertSystem, setExpertSystem] = useState<string>(
+    localStorage.getItem('expertSystem') || 'Drools'
+  );
 
   // List of alert categories
   const alertCategories = [
@@ -78,7 +80,7 @@ const App: React.FC = () => {
 
                 {isSubMenuOpen && (
                   <>
-                    <DualButton left_button_text='Drools' right_button_text='Prolog' setState={setExpertSystemState}/>
+                    <DualButton left_button_text='Drools' right_button_text='Prolog' setState={setExpertSystem}/>
                     <div className="search-container">
                       <input
                         type="text"
@@ -125,12 +127,12 @@ const App: React.FC = () => {
               <Route path="/website" element={<Website />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/cybermentor" element={<CyberMentor />} />
-              <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystemState}/>} />
-              <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF expert_system={expertSystemState}/>} />
-              <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA expert_system={expertSystemState}/>} />
-              <Route path="/alerts/new-user-account" element={<AlertPage_NUA expert_system={expertSystemState}/>} />
-              <Route path="/alerts/user-data-has-been-changed" element={<AlertPage_UDC expert_system={expertSystemState}/>} />
-              <Route path="/alerts/port-scan" element={<AlertPage_PS expert_system={expertSystemState}/>} />
+              <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystem}/>} />
+              <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF expert_system={expertSystem}/>} />
+              <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA expert_system={expertSystem}/>} />
+              <Route path="/alerts/new-user-account" element={<AlertPage_NUA expert_system={expertSystem}/>} />
+              <Route path="/alerts/user-data-has-been-changed" element={<AlertPage_UDC expert_system={expertSystem}/>} />
+              <Route path="/alerts/port-scan" element={<AlertPage_PS expert_system={expertSystem}/>} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
