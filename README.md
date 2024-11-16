@@ -58,7 +58,7 @@ CyberMentor is an AI-driven expert system designed to empower Security Operation
 
 ---
 
-### 🚀 How to Start CyberMentor
+### CyberMentor: The Intelligent SOC Assistant
 
 #### Backend  
 1. **Install Python dependencies**:
@@ -87,9 +87,9 @@ Start the Prolog server with the following commands:
     ```
 
 5. **Run Drools Server**:
-    1.Open the project in IntelliJ.
-    2.Add jFuzzyLogic.jar to the project structure.
-    3.Run the DemoApplication file.
+    - Open the project in IntelliJ.
+    - Add jFuzzyLogic.jar to the project structure.
+    - Run the DemoApplication file.
 
 #### Frontend 
 1. **Install dependencies**:
