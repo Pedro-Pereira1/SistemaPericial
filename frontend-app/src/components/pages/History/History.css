@@ -67,11 +67,6 @@
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Add custom focus outline */
 }
 
-
-/* HistoryPage.css */
-
-/* Existing styles */
-
 .loading-container {
     display: flex;
     justify-content: center;
@@ -139,4 +134,22 @@
     background-color: #dff3ff;
     border: 1px solid #b8e2f7;
     padding: 15px;
+}
+
+
+.dark-mode .history-container{
+    background: #333;
+    color: white;
+}
+
+.dark-mode .history-item:hover {
+    background-color: #444;
+}
+
+.dark-mode .timestamp {
+    color: white;
+}
+
+.dark-mode .sub-history-item {
+    color: #ccc;
 }

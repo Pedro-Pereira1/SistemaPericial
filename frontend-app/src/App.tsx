@@ -1,41 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css'; // Ensure that you have the CSS in the same file or directory
 import 'boxicons/css/boxicons.min.css'; // Import Boxicons for the icons.
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'; // Importing react-router-dom
-
-import Dashboard from './components/pages/Dashboard';
-import AlertPage_MultipleLoginFailuresForAUserAccount from './components/pages/AlertPage_MLF';
-import AlertPage_CMF from './components/pages/AlertPage_CMF';
-import AlertPage_SLA from './components/pages/AlertPage_SLA';
-import AlertPage_NUA from './components/pages/AlertPage_NUA';
-import AlertPage_UDC from './components/pages/AlertPage_UDC';
-import AlertPage_PS from './components/pages/AlertPage_PS';
-import History from './components/pages/History';
-import Settings from './components/pages/Settings';
-import Profile from './components/pages/Profile';
-import NotFoundPage from './components/pages/NotFoundPage';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate  } from 'react-router-dom'; // Importing react-router-dom
+import Dashboard from './components/pages/Dashboard/Dashboard';
+import CyberMentor from './components/pages/CyberMentor/CyberMentor';
+import AlertPage_MultipleLoginFailuresForAUserAccount from './components/pages/CyberMentor/AlertPage_MLF';
+import AlertPage_CMF from './components/pages/CyberMentor/AlertPage_CMF';
+import AlertPage_SLA from './components/pages/CyberMentor/AlertPage_SLA';
+import AlertPage_NUA from './components/pages/CyberMentor/AlertPage_NUA';
+import AlertPage_UDC from './components/pages/CyberMentor/AlertPage_UDC';
+import AlertPage_PS from './components/pages/CyberMentor/AlertPage_PS';
+import History from './components/pages/History/History';
+import Settings from './components/pages/Settings/Settings';
+import Profile from './components/pages/Profile/Profile';
+import NotFoundPage from './components/pages/NotFoundPage/NotFoundPage';
 import DualButton from './components/dual_button/DualButton';
-import Website from './components/pages/Website'; 
-import Reports from './components/pages/Reports'; 
+import Website from './components/pages/Website/Website'; 
+import Reports from './components/pages/Reports/Reports'; 
 
 const App: React.FC = () => {
-  const [isSidebarClosed, setSidebarClosed] = useState(false); // Sidebar toggle
-  const [isSubMenuOpen, setSubMenuOpen] = useState(false); // Submenu toggle
-  const [searchTerm, setSearchTerm] = useState(''); // Search term state for filtering submenu
-  const [expertSystemState, setExpertSystemState] = useState(''); // Add state for the expertise systems
+  const [isSidebarClosed, setSidebarClosed] = useState(false);
+  const [isSubMenuOpen, setSubMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expertSystemState, setExpertSystemState] = useState('');
+
+  useEffect(() => {
+    const savedMode = localStorage.getItem('darkMode');
+    const darkMode = savedMode ? JSON.parse(savedMode) : false;
+    document.body.classList.toggle('dark-mode', darkMode);
+  }, []);
 
   const toggleSidebar = () => {
-    setSidebarClosed(!isSidebarClosed);
+    setSidebarClosed(!isSidebarClosed)
+    if (isSubMenuOpen) setSubMenuOpen(false);
   };
-
-  const toggleSubMenu = () => {
-    setSubMenuOpen(!isSubMenuOpen);
-  };
-
-  // Handle search input change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value); // Update the search term
-  };
+  const toggleSubMenu = () => setSubMenuOpen(!isSubMenuOpen);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value);
 
   // List of alert categories
   const alertCategories = [
@@ -47,119 +47,84 @@ const App: React.FC = () => {
     { name: 'Port Scan', path: '/alerts/port-scan' },
   ];
 
-  // Filter alert categories based on the search term
   const filteredCategories = alertCategories.filter((category) =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <Router>
-      <div>
+      <div className='test'>
         {/* Sidebar Section */}
-        <div className={`sidebar ${isSidebarClosed ? 'close' : ''}`}>
-          <div className="logo-details">
-            <i className='bx bx-shield-alt-2'></i>
-            <span className="logo_name">Shield AI</span>
-          </div>    
-    
-          <ul className="nav-links">
-            <li>
-              <Link to="/">
-                <i className='bx bx-home'></i>
-                <span className="link_name">Dashboard</span>
-              </Link>
-            </li>
+        { (
+          <div className={`sidebar ${isSidebarClosed ? 'close' : ''}`}>
+            <div className="logo-details">
+              <i className='bx bx-shield-alt-2'></i>
+              <span className="logo_name">Shield AI</span>
+            </div>    
 
-            <li>
-              <Link to="/website">
-                <i className='bx bx-globe'></i>
-                <span className="link_name">Website</span>
-              </Link>
-            </li>
-
-            <li>
-              <Link to="/reports">
-                <i className='bx bxs-report'></i>
-                <span className="link_name">Reports</span>
-              </Link>
-            </li>
-
-            <li className={isSubMenuOpen ? 'showMenu' : ''}>
-              <div className="iocn-link">
-                <Link to="/alerts">
-                  <i className='bx bx-alarm-exclamation'></i>
-                  <span className="link_name">Alerts</span>
-                </Link>
-                <i className={`bx bxs-chevron-down arrow`} onClick={toggleSubMenu}></i>
-              </div>
-
-              {/* Search bar for filtering alerts */}
-              {isSubMenuOpen && 
-              (
-                <>
-                <DualButton left_button_text='Drools' right_button_text='Prolog' setState={setExpertSystemState}/>
-                <div className="search-container">
-                  <input
-                    type="text"
-                    className="search-bar"
-                    placeholder="Search Alerts"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                  />
+            <ul className="nav-links">
+              <li><Link to="/"><i className='bx bx-home'></i><span className="link_name">Dashboard</span></Link></li>
+              <li><Link to="/website"><i className='bx bx-globe'></i><span className="link_name">Website</span></Link></li>
+              <li><Link to="/reports"><i className='bx bxs-report'></i><span className="link_name">Reports</span></Link></li>
+              
+              <li className={isSubMenuOpen ? 'showMenu' : ''}>
+                <div className="iocn-link">
+                  <Link to="/cybermentor">
+                    <i className='bx bx-alarm-exclamation'></i>
+                    <span className="link_name">CyberMentor</span>
+                  </Link>
+                  <i className={`bx bxs-chevron-down arrow`} onClick={toggleSubMenu}></i>
                 </div>
-                </>
-              )}
 
-              {/* Submenu */}
-              <ul className="sub-menu">
-                {filteredCategories.length > 0 ? (
-                  filteredCategories.map((category, index) => (
-                    <li key={index}>
-                      <Link to={category.path} title={category.name}>{category.name}</Link>
-                    </li>
-                  ))
-                ) : (
-                  <li>No categories found</li>
+                {isSubMenuOpen && (
+                  <>
+                    <DualButton left_button_text='Drools' right_button_text='Prolog' setState={setExpertSystemState}/>
+                    <div className="search-container">
+                      <input
+                        type="text"
+                        className="search-bar"
+                        placeholder="Search Alerts"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                      />
+                    </div>
+                  </>
                 )}
-              </ul>
-            </li>
 
-            <li>
-              <Link to="/history">
-                <i className='bx bx-history'></i>
-                <span className="link_name">History</span>
-              </Link>
-            </li>
+                <ul className="sub-menu">
+                  {filteredCategories.length > 0 ? (
+                    filteredCategories.map((category, index) => (
+                      <li key={index}>
+                        <Link to={category.path} title={category.name}>{category.name}</Link>
+                      </li>
+                    ))
+                  ) : (
+                    <li>No categories found</li>
+                  )}
+                </ul>
+              </li>
 
-            <li>
-              <Link to="/settings">
-                <i className='bx bx-cog'></i>
-                <span className="link_name">Settings</span>
-              </Link>
-            </li>
+              <li><Link to="/history"><i className='bx bx-history'></i><span className="link_name">History</span></Link></li>
+              <li><Link to="/settings"><i className='bx bx-cog'></i><span className="link_name">Settings</span></Link></li>
+              <li><Link to="/profile"><i className='bx bx-user'></i><span className="link_name">Profile</span></Link></li>
+            </ul>
+          </div>
+        )}
 
-            <li>
-              <Link to="/profile">
-                <i className='bx bx-user'></i>
-                <span className="link_name">Profile</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Home Section */}
+        {/* Main Section */}
         <div className={`home-section ${isSidebarClosed ? 'close' : ''}`}>
           <div className="home-content">
-            <i className='bx bx-menu' onClick={toggleSidebar}></i>
+            {<i className='bx bx-menu' onClick={toggleSidebar}></i>}
             <span className="text">Home</span>
           </div>
 
-          {/* Routes will be rendered here */}
+          {/* Routes */}
           <div className="main-content">
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/website" element={<Website />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/cybermentor" element={<CyberMentor />} />
               <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystemState}/>} />
               <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF expert_system={expertSystemState}/>} />
               <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA expert_system={expertSystemState}/>} />

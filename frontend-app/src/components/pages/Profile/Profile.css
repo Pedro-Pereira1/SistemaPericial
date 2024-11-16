@@ -8,7 +8,7 @@ body {
 }
 
 .profile-container {
-    max-width: 600px;
+    max-width: 90%;
     margin: auto;
     background: white;
     border-radius: 8px;
@@ -81,4 +81,19 @@ body {
 
 .logout-button:hover {
     background-color: #c82333; /* Darker red */
+}
+
+/* Additional dark mode styles */
+body.dark-mode .profile-container {
+    background: #333;
+    color: #f1f1f1;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .profile-bio {
+    color: #f1f1f1;
+}
+
+.dark-mode .text {
+    color: #f1f1f1;
 }

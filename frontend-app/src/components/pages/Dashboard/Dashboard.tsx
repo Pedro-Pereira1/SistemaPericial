@@ -9,7 +9,7 @@ const Dashboard: React.FC = () => {
     return (
         <div className="dashboard-container">
             <h1>Shield App Dashboard</h1>
-            <p>Welcome to the Shield App - your expert system for SOC alert detection and classification.</p>
+            <p className="pp">Welcome to the Shield App - your expert system for SOC alert detection and classification.</p>
             <div className="dashboard-cards">
                 <div className="dashboard-card">
                     <FontAwesomeIcon icon={faShieldAlt} size="2x" className="card-icon" />

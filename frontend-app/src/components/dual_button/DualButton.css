@@ -74,3 +74,10 @@
     color: #fff;
   }
   
+  .dark-mode .dual-button-container {
+    background: #161616;
+  }
+
+  .dark-mode .dual-button-container .switch-button-label::before{
+    background: #282828;
+  }

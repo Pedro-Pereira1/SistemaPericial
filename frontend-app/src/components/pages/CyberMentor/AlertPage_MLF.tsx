@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService";
-import HistoryService from "../../services/historyService";
-import generalService from "../../services/generalService";
+import AlertService from "../../../services/AlertService";
+import HistoryService from "../../../services/historyService";
 import 'boxicons/css/boxicons.min.css';
 import './AlertPage.css';
 interface Question {
-  type: 'multiple-choice' | 'text' | 'ip-quest' | 'list-question' | 'fuzzy-input';
+  type: 'multiple-choice' | 'text' | 'ip-quest' | 'list-question';
   text: string;
   possibleAnswers?: string[];
 }
@@ -15,12 +14,16 @@ interface Conclusion {
 }
 
 interface Evidences {
-    alertId: string;
-    highRequests: string | null;
-    maliciousIP: string | null;
-    permitedRequest: string | null;
-    nationalIP: string | null;
-    geoPolicy: string | null;
+  alertId: string;
+  user_known_1: string | null;
+  was_the_user_1: string | null;
+  are_there_multiple_ips: string | null;
+  does_the_number_of_ips_make_sense: string | null;
+  is_the_reccurence_just: string | null;
+  user_known_2: string | null;
+  was_the_user_2: string | null;
+  origins_just: string | null;
+  national_ip: string | null;
 }
 
 interface AlertResponse {
@@ -37,12 +40,16 @@ interface Message {
   text: string;
 }
 const base:Evidences = {
-  alertId: "PS",
-  highRequests: "null",
-  maliciousIP: "null",
-  permitedRequest: "null",
-  nationalIP: "null",
-  geoPolicy: "null"
+  alertId:"MLF",
+  user_known_1: "null",
+  was_the_user_1: "null",
+  are_there_multiple_ips: "null",
+  does_the_number_of_ips_make_sense: "null",
+  is_the_reccurence_just: "null",
+  user_known_2: "null",
+  was_the_user_2: "null",
+  origins_just: "null",
+  national_ip: "null"
 }
 
 interface AlertProps {
@@ -91,13 +98,8 @@ const startProcess = () => {
     return;
   }
 
-  if(props.expert_system === "Prolog"){
-    setErrorMessage("Prolog is not supported for this process.");
-    return;
-  }
-
   AlertService.clearDrools(); // Clear the Drools session before starting
-  AlertService.reset_prolog(); // Clear the Prolog session before starting
+  AlertService.reset_prolog();
   setMessages(prevMessages => [
     ...prevMessages,
     { sender: 'bot', text: "Starting process with system: " + props.expert_system }
@@ -121,7 +123,7 @@ const startProcess = () => {
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
-      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());
+      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
     }
 
     // Handle IP-quest validation
@@ -130,20 +132,9 @@ const startProcess = () => {
       if (!ipRegex.test(message)) {
         setErrorMessage("Please enter a valid IP address.");
         return;
-      }else{
-        try {
-          const result = await generalService.isMalicious(message);
-          console.log("Is malicious:", result);
-          if(result){
-            update(alertResponse?.parameterNumber as keyof Evidences, "no");
-          }else{
-            update(alertResponse?.parameterNumber as keyof Evidences, "yes");
-          }  
-      } catch (error) {
-          console.error("Error checking if IP is malicious:", error);
       }
+      update(alertResponse?.parameterNumber as keyof Evidences, message);
     }
-  }
 
     // Handle list-question input
     if (currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers) {
@@ -153,16 +144,6 @@ const startProcess = () => {
         return;
       }
       update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());
-    }
-
-    if(currentQuestion?.type === 'fuzzy-input'){
-    if(isNaN(Number(message))){
-      setErrorMessage("Please enter a valid number");
-      return;
-    }
-    message = await AlertService.fuzzyInput(Number(message));
-    console.log(message)
-    update(alertResponse?.parameterNumber as keyof Evidences, message);
     }
     
     setMessages(prevMessages => [...prevMessages, { sender: 'user', text: message }]);
@@ -182,19 +163,23 @@ const startProcess = () => {
     return {
         fact_name: "alert",
         variables: [
-            "PS",
-            data.highRequests ?? "null",
-            data.maliciousIP ?? "null",
-            data.permitedRequest ?? "null",
-            data.nationalIP ?? "null",
-            data.geoPolicy ?? "null"            
+            "MLF",
+            data.user_known_1 ?? "null",
+            data.was_the_user_1 ?? "null",
+            data.are_there_multiple_ips ?? "null",
+            data.does_the_number_of_ips_make_sense ?? "null",
+            data.is_the_reccurence_just ?? "null",
+            data.user_known_2 ?? "null",
+            data.was_the_user_2 ?? "null",
+            data.origins_just ?? "null",
+            data.national_ip ?? "null",
         ]
     };
   }
   // Fetch the next question or conclusion from the backend
   const fetchNextQuestionOrConclusion = async (userResponse: string) => {
     const alertContext = {
-      alertId: "PS",
+      alertId: "MLF",
       expertSystem: expertSystem!,
       userResponse,
       input: evidences
@@ -224,10 +209,10 @@ const startProcess = () => {
           ...prevMessages,
           { sender: 'bot', text: `Conclusion: ${result.conclusion?.description}` }
         ]);
+        
         setIsProcessComplete(true); // Mark process as complete
-      
         const explanationList = await AlertService.getHowExplanationDrools(alertContext);
-        HistoryService.postHistory({ alertType: "PS",rules: explanationList });
+        HistoryService.postHistory({ alertType: "MLF",rules: explanationList });
       }
     } catch (error) {
       console.error("Error processing alert:", error);
@@ -251,75 +236,75 @@ const startProcess = () => {
 };
 
 
-  const fetchHowExplanation = async () => {
-    const alertContext = {
-      alertId: "PS",
-      input: evidences
-    };
-  
-    if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
-      try {
-        const explanationList = await AlertService.getHowExplanation(alertContext, expertSystem);
-        if (Array.isArray(explanationList)) {
-          const formattedExplanation = explanationList.join('\n'); // Join the list into a single string, separated by newlines
-          alert(`How we reach this conclusion?\n${formattedExplanation}`);
-        } else {
-          alert("Explanation is not in the expected format.");
-        }
-      } catch (error) {
-        console.error("Error fetching how explanation:", error);
-        alert("Unable to fetch the reason for this question.");
-      }
-    }
+const fetchHowExplanation = async () => {
+  const alertContext = {
+    alertId: "MLF",
+    input: evidences
   };
 
-  const fetchWhyExplanation = async () => {
-    if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
-      try {
-        const explanationList = await AlertService.getWhyExplanation(alertResponse,evidences, expertSystem,"PS");
-        if(expertSystem === 'Drools'){
-          const explanation = alertResponse?.relevance;
-          alert(`Why this question is relevant?\n${explanation}\n\nHow we reach this conclusion?\n${explanationList.join('\n')}`);
-        }else{
-          alert(`Why this question is relevant?\n${explanationList}`);
-        }
-      } catch (error) {
-        console.error("Error fetching why explanation:", error);
-        alert("Unable to fetch the reason for this question.");
+  if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
+    try {
+      const explanationList = await AlertService.getHowExplanation(alertContext, expertSystem);
+      if (Array.isArray(explanationList)) {
+        const formattedExplanation = explanationList.join('\n'); // Join the list into a single string, separated by newlines
+        alert(`How we reach this conclusion?\n${formattedExplanation}`);
+      } else {
+        alert("Explanation is not in the expected format.");
       }
+    } catch (error) {
+      console.error("Error fetching how explanation:", error);
+      alert("Unable to fetch the reason for this question.");
     }
-  };
+  }
+};
 
-  const fetchWhyNotExplanation = async () => {
-    if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
-      try {
-        const conclusions = await AlertService.getPossibleConclusions(expertSystem, "PS");
-        setPossibleConclusions(conclusions);
-        setShowWhyNotDropdown(true); // Show dropdown for selection
-      } catch (error) {
-        console.error("Error fetching possible conclusions:", error);
-        alert("Unable to fetch possible conclusions.");
+const fetchWhyExplanation = async () => {
+  if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
+    try {
+      const explanationList = await AlertService.getWhyExplanation(alertResponse,evidences, expertSystem,"MLF");
+      if(expertSystem === 'Drools'){
+        const explanation = alertResponse?.relevance;
+        alert(`Why this question is relevant?\n${explanation}\n\nHow we reach this conclusion?\n${explanationList.join('\n')}`);
+      }else{
+        alert(`Why this question is relevant?\n${explanationList}`);
       }
+    } catch (error) {
+      console.error("Error fetching why explanation:", error);
+      alert("Unable to fetch the reason for this question.");
     }
-  };
+  }
+};
 
-  const handleWhyNotExplanation = async () => {
-    if (selectedConclusion) {
-      try {
-        const explanation = await AlertService.getWhyNotExplanation(alertResponse?.evidences as Evidences, selectedConclusion, expertSystem);
-        alert(`Why was this conclusion not reached?\n${explanation}`);
-      } catch (error) {
-        console.error("Error fetching why-not explanation:", error);
-        alert("Unable to fetch the reason why this conclusion was not reached.");
-      } finally {
-        setShowWhyNotDropdown(false);
-      }
+const fetchWhyNotExplanation = async () => {
+  if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
+    try {
+      const conclusions = await AlertService.getPossibleConclusions(expertSystem,"MLF");
+      setPossibleConclusions(conclusions);
+      setShowWhyNotDropdown(true); // Show dropdown for selection
+    } catch (error) {
+      console.error("Error fetching possible conclusions:", error);
+      alert("Unable to fetch possible conclusions.");
     }
-  };
+  }
+};
+
+const handleWhyNotExplanation = async () => {
+  if (selectedConclusion) {
+    try {
+      const explanation = await AlertService.getWhyNotExplanation(alertResponse?.evidences as Evidences, selectedConclusion, expertSystem);
+      alert(`Why was this conclusion not reached?\n${explanation}`);
+    } catch (error) {
+      console.error("Error fetching why-not explanation:", error);
+      alert("Unable to fetch the reason why this conclusion was not reached.");
+    } finally {
+      setShowWhyNotDropdown(false);
+    }
+  }
+};
 
 return (
   <div className="container">
-    <h1>Port Scan Activity</h1>
+    <h1>Multiple login failures for a single account</h1>
     <div className="message-list">
       {messages.map((message, index) => (
         <div
@@ -331,7 +316,7 @@ return (
           )}
           <div className={`message-bubble ${message.sender}`}>
             <strong>{message.sender === 'user' ? 'You' : 'Bot'}:</strong>
-            <p style={{ whiteSpace: 'pre-line', margin: 0 }}>{message.text}</p>
+            <p className ="mimi" style={{ whiteSpace: 'pre-line', margin: 0 }}>{message.text}</p>
           </div>
           {message.sender === 'user' && (
             <i className="bx bx-user icon user"></i>

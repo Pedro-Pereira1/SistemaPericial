@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService";
-import HistoryService from "../../services/historyService";
+import AlertService from "../../../services/AlertService";
+import HistoryService from "../../../services/historyService";
 import 'boxicons/css/boxicons.min.css';
 import './AlertPage.css';
 interface Question {
@@ -302,7 +302,7 @@ return (
           )}
           <div className={`message-bubble ${message.sender}`}>
             <strong>{message.sender === 'user' ? 'You' : 'Bot'}:</strong>
-            <p style={{ whiteSpace: 'pre-line', margin: 0 }}>{message.text}</p>
+            <p className ="mimi" style={{ whiteSpace: 'pre-line', margin: 0 }}>{message.text}</p>
           </div>
           {message.sender === 'user' && (
             <i className="bx bx-user icon user"></i>

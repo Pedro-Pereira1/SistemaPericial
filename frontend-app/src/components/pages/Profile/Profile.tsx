@@ -20,8 +20,8 @@ const Profile: React.FC = () => {
             </div>
             <div className="profile-contact">
                 <h2>Contact Information</h2>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Phone:</strong> {user.phone}</p>
+                <p className="text"><strong>Email:</strong> {user.email}</p>
+                <p className="text"><strong>Phone:</strong> {user.phone}</p>
             </div>
             <div className="profile-actions">
                 <button className="edit-button">Edit Profile</button>

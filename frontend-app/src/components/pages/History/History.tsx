@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import historyService from './../../services/historyService';
+import historyService from './../../../services/historyService';
 import './History.css';
 
 interface HistoryItem {
@@ -80,7 +80,7 @@ const History: React.FC = () => {
                     <li key={item.id} className="history-item">
                         <div className="history-header">
                             <span>{item.alertTypes}</span>
-                            <span className="timestamp">{item.timestamp}</span>
+                            <span className="timestamp">{new Date(item.timestamp).toLocaleString()}</span>
                             <button 
                                 className="history-toggle-button" 
                                 onClick={() => toggleHistory(item.id)}>

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService";
-import HistoryService from "../../services/historyService";
+import AlertService from "../../../services/AlertService";
+import HistoryService from "../../../services/historyService";
+import generalService from "../../../services/generalService";
 import 'boxicons/css/boxicons.min.css';
 import './AlertPage.css';
+
 interface Question {
   type: 'multiple-choice' | 'text' | 'ip-quest' | 'list-question';
   text: string;
@@ -14,16 +16,12 @@ interface Conclusion {
 }
 
 interface Evidences {
-  alertId: string;
-  user_known_1: string | null;
-  was_the_user_1: string | null;
-  are_there_multiple_ips: string | null;
-  does_the_number_of_ips_make_sense: string | null;
-  is_the_reccurence_just: string | null;
-  user_known_2: string | null;
-  was_the_user_2: string | null;
-  origins_just: string | null;
-  national_ip: string | null;
+    alertId: string;
+    userKnown: string | null;
+    legitimateAction: string | null;
+    ipCollected: string | null;
+    helpdeskVerified: string | null;
+    reversalPossible: string | null;
 }
 
 interface AlertResponse {
@@ -40,16 +38,12 @@ interface Message {
   text: string;
 }
 const base:Evidences = {
-  alertId:"MLF",
-  user_known_1: "null",
-  was_the_user_1: "null",
-  are_there_multiple_ips: "null",
-  does_the_number_of_ips_make_sense: "null",
-  is_the_reccurence_just: "null",
-  user_known_2: "null",
-  was_the_user_2: "null",
-  origins_just: "null",
-  national_ip: "null"
+  alertId: "UDC",
+  userKnown: "null",
+  legitimateAction: "null",
+  ipCollected: "null",
+  helpdeskVerified: "null",
+  reversalPossible: "null"
 }
 
 interface AlertProps {
@@ -99,7 +93,7 @@ const startProcess = () => {
   }
 
   AlertService.clearDrools(); // Clear the Drools session before starting
-  AlertService.reset_prolog();
+  AlertService.reset_prolog(); // Clear the Prolog session before starting
   setMessages(prevMessages => [
     ...prevMessages,
     { sender: 'bot', text: "Starting process with system: " + props.expert_system }
@@ -123,7 +117,7 @@ const startProcess = () => {
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
-      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
+      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());
     }
 
     // Handle IP-quest validation
@@ -132,9 +126,20 @@ const startProcess = () => {
       if (!ipRegex.test(message)) {
         setErrorMessage("Please enter a valid IP address.");
         return;
+      }else{
+        try {
+          const result = await generalService.isMalicious(message);
+          console.log("Is malicious:", result);
+          if(result){
+            update(alertResponse?.parameterNumber as keyof Evidences, "no");
+          }else{
+            update(alertResponse?.parameterNumber as keyof Evidences, "yes");
+          }  
+      } catch (error) {
+          console.error("Error checking if IP is malicious:", error);
       }
-      update(alertResponse?.parameterNumber as keyof Evidences, message);
     }
+  }
 
     // Handle list-question input
     if (currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers) {
@@ -163,23 +168,19 @@ const startProcess = () => {
     return {
         fact_name: "alert",
         variables: [
-            "MLF",
-            data.user_known_1 ?? "null",
-            data.was_the_user_1 ?? "null",
-            data.are_there_multiple_ips ?? "null",
-            data.does_the_number_of_ips_make_sense ?? "null",
-            data.is_the_reccurence_just ?? "null",
-            data.user_known_2 ?? "null",
-            data.was_the_user_2 ?? "null",
-            data.origins_just ?? "null",
-            data.national_ip ?? "null",
+            "UDC",
+            data.userKnown ?? "null",
+            data.legitimateAction ?? "null",
+            data.ipCollected ?? "null",
+            data.helpdeskVerified ?? "null",
+            data.reversalPossible ?? "null"
         ]
     };
   }
   // Fetch the next question or conclusion from the backend
   const fetchNextQuestionOrConclusion = async (userResponse: string) => {
     const alertContext = {
-      alertId: "MLF",
+      alertId: "UDC",
       expertSystem: expertSystem!,
       userResponse,
       input: evidences
@@ -209,10 +210,10 @@ const startProcess = () => {
           ...prevMessages,
           { sender: 'bot', text: `Conclusion: ${result.conclusion?.description}` }
         ]);
-        
         setIsProcessComplete(true); // Mark process as complete
+      
         const explanationList = await AlertService.getHowExplanationDrools(alertContext);
-        HistoryService.postHistory({ alertType: "MLF",rules: explanationList });
+        HistoryService.postHistory({ alertType: "UDC",rules: explanationList });
       }
     } catch (error) {
       console.error("Error processing alert:", error);
@@ -238,7 +239,7 @@ const startProcess = () => {
 
 const fetchHowExplanation = async () => {
   const alertContext = {
-    alertId: "MLF",
+    alertId: "UDC",
     input: evidences
   };
 
@@ -261,7 +262,7 @@ const fetchHowExplanation = async () => {
 const fetchWhyExplanation = async () => {
   if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
     try {
-      const explanationList = await AlertService.getWhyExplanation(alertResponse,evidences, expertSystem,"MLF");
+      const explanationList = await AlertService.getWhyExplanation(alertResponse,evidences, expertSystem,"UDC");
       if(expertSystem === 'Drools'){
         const explanation = alertResponse?.relevance;
         alert(`Why this question is relevant?\n${explanation}\n\nHow we reach this conclusion?\n${explanationList.join('\n')}`);
@@ -278,7 +279,7 @@ const fetchWhyExplanation = async () => {
 const fetchWhyNotExplanation = async () => {
   if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
     try {
-      const conclusions = await AlertService.getPossibleConclusions(expertSystem,"MLF");
+      const conclusions = await AlertService.getPossibleConclusions(expertSystem,"UDC");
       setPossibleConclusions(conclusions);
       setShowWhyNotDropdown(true); // Show dropdown for selection
     } catch (error) {
@@ -304,7 +305,7 @@ const handleWhyNotExplanation = async () => {
 
 return (
   <div className="container">
-    <h1>Multiple login failures for a single account</h1>
+    <h1>User data has been changed</h1>
     <div className="message-list">
       {messages.map((message, index) => (
         <div
@@ -316,7 +317,7 @@ return (
           )}
           <div className={`message-bubble ${message.sender}`}>
             <strong>{message.sender === 'user' ? 'You' : 'Bot'}:</strong>
-            <p style={{ whiteSpace: 'pre-line', margin: 0 }}>{message.text}</p>
+            <p className ="mimi" style={{ whiteSpace: 'pre-line', margin: 0 }}>{message.text}</p>
           </div>
           {message.sender === 'user' && (
             <i className="bx bx-user icon user"></i>

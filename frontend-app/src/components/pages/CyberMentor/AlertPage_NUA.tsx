@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import AlertService from "../../services/AlertService";
-import HistoryService from "../../services/historyService";
-import generalService from "../../services/generalService";
+import AlertService from "../../../services/AlertService";
+import HistoryService from "../../../services/historyService";
 import 'boxicons/css/boxicons.min.css';
 import './AlertPage.css';
-
 interface Question {
   type: 'multiple-choice' | 'text' | 'ip-quest' | 'list-question';
   text: string;
@@ -16,12 +14,12 @@ interface Conclusion {
 }
 
 interface Evidences {
-    alertId: string;
-    userKnown: string | null;
-    legitimateAction: string | null;
-    ipCollected: string | null;
-    helpdeskVerified: string | null;
-    reversalPossible: string | null;
+  alertId: string;
+  permittedUser: string | null;
+  userContacted: string | null;
+  accordingPolicy: string | null;
+  userResponse: string | null;
+  userProblemResolved: string | null;
 }
 
 interface AlertResponse {
@@ -37,13 +35,14 @@ interface Message {
   sender: 'bot' | 'user';
   text: string;
 }
+
 const base:Evidences = {
-  alertId: "UDC",
-  userKnown: "null",
-  legitimateAction: "null",
-  ipCollected: "null",
-  helpdeskVerified: "null",
-  reversalPossible: "null"
+  alertId:"NUA",
+  permittedUser: "null",
+  userContacted: "null",
+  accordingPolicy: "null",
+  userResponse: "null",
+  userProblemResolved: "null",
 }
 
 interface AlertProps {
@@ -117,7 +116,7 @@ const startProcess = () => {
         setErrorMessage(`Please select a valid answer: ${currentQuestion.possibleAnswers.join(", ")}`);
         return;
       }
-      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());
+      update(alertResponse?.parameterNumber as keyof Evidences, message.toLowerCase());      
     }
 
     // Handle IP-quest validation
@@ -126,20 +125,9 @@ const startProcess = () => {
       if (!ipRegex.test(message)) {
         setErrorMessage("Please enter a valid IP address.");
         return;
-      }else{
-        try {
-          const result = await generalService.isMalicious(message);
-          console.log("Is malicious:", result);
-          if(result){
-            update(alertResponse?.parameterNumber as keyof Evidences, "no");
-          }else{
-            update(alertResponse?.parameterNumber as keyof Evidences, "yes");
-          }  
-      } catch (error) {
-          console.error("Error checking if IP is malicious:", error);
       }
+      update(alertResponse?.parameterNumber as keyof Evidences, message);
     }
-  }
 
     // Handle list-question input
     if (currentQuestion?.type === 'list-question' && currentQuestion.possibleAnswers) {
@@ -168,19 +156,19 @@ const startProcess = () => {
     return {
         fact_name: "alert",
         variables: [
-            "UDC",
-            data.userKnown ?? "null",
-            data.legitimateAction ?? "null",
-            data.ipCollected ?? "null",
-            data.helpdeskVerified ?? "null",
-            data.reversalPossible ?? "null"
+            "NUA",
+            data.permittedUser ?? "null",
+            data.userContacted ?? "null",
+            data.accordingPolicy ?? "null",
+            data.userResponse ?? "null",
+            data.userProblemResolved ?? "null"
         ]
     };
   }
   // Fetch the next question or conclusion from the backend
   const fetchNextQuestionOrConclusion = async (userResponse: string) => {
     const alertContext = {
-      alertId: "UDC",
+      alertId: "NUA",
       expertSystem: expertSystem!,
       userResponse,
       input: evidences
@@ -210,10 +198,10 @@ const startProcess = () => {
           ...prevMessages,
           { sender: 'bot', text: `Conclusion: ${result.conclusion?.description}` }
         ]);
+        
         setIsProcessComplete(true); // Mark process as complete
-      
         const explanationList = await AlertService.getHowExplanationDrools(alertContext);
-        HistoryService.postHistory({ alertType: "UDC",rules: explanationList });
+        HistoryService.postHistory({ alertType: "NUA",rules: explanationList });
       }
     } catch (error) {
       console.error("Error processing alert:", error);
@@ -239,7 +227,7 @@ const startProcess = () => {
 
 const fetchHowExplanation = async () => {
   const alertContext = {
-    alertId: "UDC",
+    alertId: "NUA",
     input: evidences
   };
 
@@ -262,7 +250,7 @@ const fetchHowExplanation = async () => {
 const fetchWhyExplanation = async () => {
   if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
     try {
-      const explanationList = await AlertService.getWhyExplanation(alertResponse,evidences, expertSystem,"UDC");
+      const explanationList = await AlertService.getWhyExplanation(alertResponse,evidences, expertSystem,"NUA");
       if(expertSystem === 'Drools'){
         const explanation = alertResponse?.relevance;
         alert(`Why this question is relevant?\n${explanation}\n\nHow we reach this conclusion?\n${explanationList.join('\n')}`);
@@ -279,7 +267,7 @@ const fetchWhyExplanation = async () => {
 const fetchWhyNotExplanation = async () => {
   if ((expertSystem === 'Drools' || expertSystem === 'Prolog') && currentQuestion) {
     try {
-      const conclusions = await AlertService.getPossibleConclusions(expertSystem,"UDC");
+      const conclusions = await AlertService.getPossibleConclusions(expertSystem,"NUA");
       setPossibleConclusions(conclusions);
       setShowWhyNotDropdown(true); // Show dropdown for selection
     } catch (error) {
@@ -305,7 +293,7 @@ const handleWhyNotExplanation = async () => {
 
 return (
   <div className="container">
-    <h1>User data has been changed</h1>
+    <h1>New user account</h1>
     <div className="message-list">
       {messages.map((message, index) => (
         <div
@@ -317,7 +305,7 @@ return (
           )}
           <div className={`message-bubble ${message.sender}`}>
             <strong>{message.sender === 'user' ? 'You' : 'Bot'}:</strong>
-            <p style={{ whiteSpace: 'pre-line', margin: 0 }}>{message.text}</p>
+            <p className ="mimi" style={{ whiteSpace: 'pre-line', margin: 0 }}>{message.text}</p>
           </div>
           {message.sender === 'user' && (
             <i className="bx bx-user icon user"></i>
