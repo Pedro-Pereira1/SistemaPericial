@@ -63,6 +63,12 @@ class Router:
     async def get_all_alerts():
         alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
         return await alert_controller.delete_all()
+    
+    @router.get("/alert/user/{id}")
+    async def get_alert_for_user_by_id(id:str):
+        alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        return await alert_controller.find_alerts_by_user_id(id)
+
 
 
         

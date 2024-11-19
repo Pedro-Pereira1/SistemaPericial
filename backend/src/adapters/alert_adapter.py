@@ -25,3 +25,14 @@ class AlertAdapter:
 
     async def delete_all(self):
         self.db["alerts"].delete_many({})
+
+    async def find_by_assignTo(self, id:str):
+        cursor = self.db["alerts"].find({"assignedTo":id})
+
+        documents = []
+        for document in cursor:
+            document["_id"] = str(document["_id"]) 
+            print(document)
+            documents.append(document)
+
+        return documents
