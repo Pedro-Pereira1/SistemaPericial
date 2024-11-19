@@ -5,8 +5,10 @@ from src.dto.rules_dto import RulesDto
 from src.controllers.rules_controller import RulesController
 from src.controllers.general_controller import GeneralController
 from src.controllers.user_controller import UserController
+from src.controllers.alert_controller import AlertController
 from src.dto.user_dto import UserDto
 from src.dto.user_login_dto import UserLoginDto
+from src.dto.alert_dto import AlertDto
 
 router = APIRouter()
 
@@ -47,6 +49,20 @@ class Router:
         user_controller:UserController = loader.resolve(config.user_controller["name"])
         return await user_controller.delete_all()
     
+    @router.post("/alert")
+    async def create_alert(alert_dto:AlertDto):
+        alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        return await alert_controller.create_alert(alert_dto)
+    
+    @router.get("/alert")
+    async def get_all_alerts():
+        alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        return await alert_controller.get_all_alerts()
+    
+    @router.delete("/alert")
+    async def get_all_alerts():
+        alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        return await alert_controller.delete_all()
 
 
         

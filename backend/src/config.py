@@ -19,6 +19,11 @@ general_controller = {
     "path":"src.controllers.general_controller"
 }
 
+alert_controller = {
+    "name":"AlertController",
+    "path":"src.controllers.alert_controller"
+}
+
 rules_service = {
     "name":"RulesService",
     "path":"src.services.rules_service"
@@ -34,6 +39,11 @@ general_service = {
     "path":"src.services.general_service"
 }
 
+alert_service = {
+    "name":"AlertService",
+    "path":"src.services.alert_service"
+}
+
 rules_adapter = {
     "name":"RulesAdapter",
     "path":"src.adapters.rules_adapter"
@@ -47,6 +57,11 @@ user_adapter = {
 general_adapter = {
     "name":"GeneralAdapter",
     "path":"src.adapters.general_adapter"
+}
+
+alert_adapter = {
+    "name":"AlertAdapter",
+    "path":"src.adapters.alert_adapter"
 }
 
 
