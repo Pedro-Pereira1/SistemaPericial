@@ -9,6 +9,10 @@ rules_controller = {
     "name":"RulesController",
     "path":"src.controllers.rules_controller"
 }
+user_controller = {
+    "name":"UserController",
+    "path":"src.controllers.user_controller"
+}
 
 general_controller = {
     "name":"GeneralController",
@@ -20,6 +24,11 @@ rules_service = {
     "path":"src.services.rules_service"
 }
 
+user_service = {
+    "name":"UserService",
+    "path":"src.services.user_service"
+}
+
 general_service = {
     "name":"GeneralService",
     "path":"src.services.general_service"
@@ -28,6 +37,11 @@ general_service = {
 rules_adapter = {
     "name":"RulesAdapter",
     "path":"src.adapters.rules_adapter"
+}
+
+user_adapter = {
+    "name":"UserAdapter",
+    "path":"src.adapters.user_adapter"
 }
 
 general_adapter = {
