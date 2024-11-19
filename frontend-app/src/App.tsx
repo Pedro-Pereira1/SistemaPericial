@@ -18,13 +18,16 @@ import DualButton from './components/dual_button/DualButton';
 import Website from './components/pages/Website/Website'; 
 import Reports from './components/pages/Reports/Reports'; 
 import AuthPage from './components/pages/Auth-Register/AuthPage';
+import AlertGenerator from './components/pages/AlertGenerator/AlertGenerator';
+import AlertsToResolve from './components/pages/AlertsToResolve/AlertsToResolve';
+import AllAlertsPage from './components/pages/Alerts/AllAlertsPage';
 
 const App: React.FC = () => {
   const [isSidebarClosed, setSidebarClosed] = useState(false);
   const [isSubMenuOpen, setSubMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
   useEffect(() => {
     const savedMode = localStorage.getItem('darkMode');
     const darkMode = savedMode ? JSON.parse(savedMode) : false;
@@ -74,10 +77,20 @@ const App: React.FC = () => {
                 <li><Link to="/website"><i className='bx bx-globe'></i><span className="link_name">Website</span></Link></li>
                 <li><Link to="/reports"><i className='bx bxs-report'></i><span className="link_name">Reports</span></Link></li>
                 
+              {user.role === 'SOC Manager' ? (
+                <>
+                  <li><Link to="/alert-generator"><i className='bx bxs-show'></i><span className="link_name">Alert Generator</span></Link></li>
+                  <li><Link to="/all-alerts"><i className='bx bxs-data'></i><span className="link_name">All Alerts</span></Link></li>
+                </>
+              ) : (
+                <li><Link to="/my-alerts"><i className='bx bx-alarm-exclamation'></i><span className="link_name">My Alerts</span></Link></li>
+              )}
+
+
                 <li className={isSubMenuOpen ? 'showMenu' : ''}>
                   <div className="iocn-link">
                     <Link to="/cybermentor">
-                      <i className='bx bx-alarm-exclamation'></i>
+                      <i className='bx bx-pencil'></i>
                       <span className="link_name">CyberMentor</span>
                     </Link>
                     <i className={`bx bxs-chevron-down arrow`} onClick={toggleSubMenu}></i>
@@ -132,6 +145,9 @@ const App: React.FC = () => {
                 <Route path="/website" element={<Website />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/cybermentor" element={<CyberMentor />} />
+                <Route path="/alert-generator" element={<AlertGenerator />} />
+                <Route path="/all-alerts" element={<AllAlertsPage />} />
+                <Route path="/my-alerts" element={<AlertsToResolve />} />
                 <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystem}/>} />
                 <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF expert_system={expertSystem}/>} />
                 <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA expert_system={expertSystem}/>} />

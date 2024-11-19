@@ -1,13 +1,21 @@
 // services/UserService.ts
 export type User = {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-    phone: string;
-    role: string;
-    picture: string;
-  };
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  role: string;
+  picture: string;
+};
+
+interface Alert {
+  id: string;
+  type: string;
+  origin: string;
+  assignedTo: string;
+  status: string;
+}
   
   class UserService {
     private users: User[] = [
@@ -28,6 +36,7 @@ export type User = {
         phone: '1234567893',
         role: 'SOC Tier1',
         picture: '/images/profile7.png',
+        
       },
       {
         id: 'UID-10003',
@@ -49,6 +58,29 @@ export type User = {
       },
     ];
   
+    private alerts: Alert[] = [
+      {
+        id: 'ALERT-10001',
+        type: 'Multiple Login Failures',
+        origin: 'United States',
+        assignedTo: 'UID-10002',
+        status: 'Open',
+      },
+      {
+        id: 'ALERT-10002',
+        type: 'Firewall Changes',
+        origin: 'Canada',
+        assignedTo: 'UID-10003',
+        status: 'Open',
+      },
+      {
+        id: 'ALERT-10003',
+        type: 'Port Scan',
+        origin: 'United Kingdom',
+        assignedTo: 'UID-10004',
+        status: 'Open',
+      },
+    ];
     // Mock repository methods
     login(email: string, password: string): User | null {
       const user = this.users.find((u) => u.email === email && u.password === password);
@@ -67,6 +99,35 @@ export type User = {
     getAllUsers(): User[] {
       return this.users;
     }
+
+    getUserById(id: string): User | null {
+      return this.users.find((u) => u.id === id) || null;
+    }
+
+    //UserService.updateAlertStatus(user.id, alertId, 'Closed');
+    updateAlertStatus(userId: string, alertId: string, status: string): void {
+      const alert = this.alerts.find((a) => a.id === alertId);
+      if (alert) {
+        alert.status = status;
+      }
+    }
+
+    getAlertsByUserId(userId: string): Alert[] {
+      return this.alerts.filter((a) => a.assignedTo === userId);
+    }
+
+    getAlerts(): Alert[] {
+      return this.alerts;
+    }
+
+    //UserService.assignAlert(selectedUser.id, newAlert);
+    assignAlert(userId: string, alert: Alert): void {
+      const existingAlert = this.alerts.find((a) => a.id === alert.id);
+      if (!existingAlert) {
+        this.alerts.push(alert);
+      }
+    }
+
   }
   
   export default new UserService();

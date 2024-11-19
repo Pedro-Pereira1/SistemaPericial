@@ -1,0 +1,118 @@
+import React, { useState, useEffect } from 'react';
+import './AlertGenerator.css';
+import UserService from '../../../services/UserService';
+import { User } from '../../../services/UserService';
+interface Alert {
+    id: string;
+    type: string;
+    origin: string;
+    assignedTo: string;
+    status: string;
+}
+
+const AlertGenerator: React.FC = () => {
+    const [alerts, setAlerts] = useState<Alert[]>([]);
+    const [form, setForm] = useState({
+        type: '',
+        origin: '',
+        assignedTo: '',
+    });
+
+    const [users, setUsers] = useState<User[]>([]);
+    const alertTypes = ['Multiple Login Failures', 'Firewall Changes', 'Port Scan', 'Unauthorized Access'];
+
+    useEffect(() => {
+        // Fetch all users from UserService
+        const socUsers = UserService.getAllUsers().filter(
+            (user) => user.role === 'SOC Tier1' || user.role === 'SOC Tier2' || user.role === 'SOC Tier3'
+        );
+        setUsers(socUsers);
+    }, []);
+
+    const generateId = () => `ALERT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
+    };
+
+    const handleGenerateAlert = () => {
+        const newAlert: Alert = {
+            id: generateId(),
+            status: 'Open',
+            ...form,
+        };
+
+        setAlerts([...alerts, newAlert]);
+
+        // Assign alert to the selected user in UserService
+        const selectedUser = users.find((user) => user.id === form.assignedTo);
+        if (selectedUser) {
+            UserService.assignAlert(selectedUser.id, newAlert); 
+        }
+
+        // Clear form
+        setForm({ type: '', origin: '', assignedTo: '' });
+    };
+
+    return (
+        <div className="alert-generator-container">
+            <h1>Alert Generator (SOC Manager)</h1>
+            <div className="form-container">
+                <div className="form-field">
+                    <label>Type</label>
+                    <select name="type" value={form.type} onChange={handleChange}>
+                        <option value="">Select Alert Type</option>
+                        {alertTypes.map((type, index) => (
+                            <option key={index} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="form-field">
+                    <label>Origin</label>
+                    <input
+                        type="text"
+                        name="origin"
+                        value={form.origin}
+                        onChange={handleChange}
+                        placeholder="Alert Origin (e.g., IP Address)"
+                    />
+                </div>
+                <div className="form-field">
+                    <label>Assign To</label>
+                    <select name="assignedTo" value={form.assignedTo} onChange={handleChange}>
+                        <option value="">Select User</option>
+                        {users.map((user, index) => (
+                            <option key={index} value={user.id}>
+                                {user.name} ({user.role})
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <button onClick={handleGenerateAlert} disabled={!form.type || !form.origin || !form.assignedTo}>
+                    Generate Alert
+                </button>
+            </div>
+
+            <div className="alerts-list">
+                <h2>Generated Alerts</h2>
+                {alerts.length === 0 ? (
+                    <p>No alerts generated yet.</p>
+                ) : (
+                    <ul>
+                        {alerts.map((alert) => (
+                            <li key={alert.id}>
+                                <strong>ID:</strong> {alert.id} | <strong>Type:</strong> {alert.type} |{' '}
+                                <strong>Origin:</strong> {alert.origin} | <strong>Assigned To:</strong> {alert.assignedTo}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default AlertGenerator;
