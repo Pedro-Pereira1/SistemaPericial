@@ -1,3 +1,5 @@
+import axios from "axios";
+
 // services/UserService.ts
 export type User = {
   id: string;
@@ -81,11 +83,22 @@ interface Alert {
         status: 'Open',
       },
     ];
+
     // Mock repository methods
-    login(email: string, password: string): User | null {
-      const user = this.users.find((u) => u.email === email && u.password === password);
-      return user || null;
+  async login(email: string, password: string): Promise<User | null> {
+    try {
+      const response = await axios.post('http://localhost:7000/login', {
+        email: email,
+        password: password,
+      });
+      const user: User = response.data;
+      return user;
+    } catch (error) {
+      console.error("Error posting history:", error);
+      throw error; // Rethrow the error to be handled by the caller
     }
+  }
+
   
     register(user: Omit<User, 'id'>): User {
       const newUser = {

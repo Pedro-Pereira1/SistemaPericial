@@ -27,8 +27,9 @@ const AuthPage: React.FC = () => {
 
   const roles = ['SOC Manager', 'SOC Tier1', 'SOC Tier2', 'SOC Tier3'];
 
-  const handleLogin = () => {
-    const user = UserService.login(loginDetails.email, loginDetails.password);
+  const handleLogin = async () => {
+    const user = await UserService.login(loginDetails.email, loginDetails.password);
+    console.log(user)
     if (user) {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('user', JSON.stringify(user));
