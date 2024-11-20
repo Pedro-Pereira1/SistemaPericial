@@ -98,7 +98,7 @@ const AuthPage: React.FC = () => {
             value={loginDetails.password}
             onChange={handleInputChange}
           />
-          <button onClick={handleLogin}>Login</button>
+          <button className='auth' onClick={handleLogin}>Login</button>
           <p>
             Don't have an account?{' '}
             <span onClick={() => setIsLogin(false)}>Register</span>

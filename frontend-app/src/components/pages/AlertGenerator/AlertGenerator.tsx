@@ -3,24 +3,21 @@ import './AlertGenerator.css';
 import UserService from '../../../services/UserService';
 import { User } from '../../../services/UserService';
 import Alert from '../../../domain/Alert';
-
-interface AlertDTO{
-    type: string;
-    origin: string;
-    assignedTo: string;
-    status: string;
-}
+import AlertDTO from '../../../domain/AlertDTO';
 
 const AlertGenerator: React.FC = () => {
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [form, setForm] = useState({
-        type: '',
+        category: '',
+        subCategory: '',
         origin: '',
         assignedTo: '',
+        description: '',
     });
 
     const [users, setUsers] = useState<User[]>([]);
-    const alertTypes = ['Multiple Login Failures', 'Firewall Changes', 'Port Scan', 'Unauthorized Access'];
+    const categories = ['Network Security', 'Application Security', 'Endpoint Security', 'Other'];
+    const subCategories = ['Multiple Login Failures', 'Firewall Changes', 'Port Scan', 'Unauthorized Access'];
 
     useEffect(() => {
         // Fetch all users from UserService
@@ -34,26 +31,33 @@ const AlertGenerator: React.FC = () => {
         fetchUsers();
     }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setForm({ ...form, [name]: value });
     };
 
     const handleGenerateAlert = async () => {
+        const currentTime = new Date().toISOString();
         const newAlert: AlertDTO = {
+            category: form.category,
+            subCategory: form.subCategory,
+            origin: form.origin,
+            assignedTo: form.assignedTo,
+            description: form.description,
             status: 'Open',
-            ...form,
+            creationTime: currentTime,
+            conclusionTime: '',
+            resolution: [],
         };
 
-        
         const selectedUser = users.find((user) => user.email === form.assignedTo);
         if (selectedUser) {
-            const alertNew: Alert = await UserService.assignAlert(newAlert); 
+            const alertNew = await UserService.assignAlert(newAlert); 
             setAlerts([...alerts, alertNew]);
         }
 
         // Clear form
-        setForm({ type: '', origin: '', assignedTo: '' });
+        setForm({ category: '', subCategory: '', origin: '', assignedTo: '', description: '' });
     };
 
     return (
@@ -61,12 +65,23 @@ const AlertGenerator: React.FC = () => {
             <h1>Alert Generator (SOC Manager)</h1>
             <div className="form-container">
                 <div className="form-field">
-                    <label>Type</label>
-                    <select name="type" value={form.type} onChange={handleChange}>
-                        <option value="">Select Alert Type</option>
-                        {alertTypes.map((type, index) => (
-                            <option key={index} value={type}>
-                                {type}
+                    <label>Category</label>
+                    <select name="category" value={form.category} onChange={handleChange}>
+                        <option value="">Select Category</option>
+                        {categories.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="form-field">
+                    <label>Sub-Category</label>
+                    <select name="subCategory" value={form.subCategory} onChange={handleChange}>
+                        <option value="">Select Sub-Category</option>
+                        {subCategories.map((subCategory, index) => (
+                            <option key={index} value={subCategory}>
+                                {subCategory}
                             </option>
                         ))}
                     </select>
@@ -92,7 +107,19 @@ const AlertGenerator: React.FC = () => {
                         ))}
                     </select>
                 </div>
-                <button onClick={handleGenerateAlert} disabled={!form.type || !form.origin || !form.assignedTo}>
+                <div className="form-field">
+                    <label>Description</label>
+                    <textarea
+                        name="description"
+                        value={form.description}
+                        onChange={handleChange}
+                        placeholder="Provide a brief description of the alert"
+                    />
+                </div>
+                <button
+                    onClick={handleGenerateAlert}
+                    disabled={!form.category || !form.subCategory || !form.origin || !form.assignedTo || !form.description}
+                >
                     Generate Alert
                 </button>
             </div>
@@ -105,8 +132,10 @@ const AlertGenerator: React.FC = () => {
                     <ul>
                         {alerts.map((alert) => (
                             <li key={alert.id}>
-                                <strong>ID:</strong> {alert.id} | <strong>Type:</strong> {alert.type} |{' '}
-                                <strong>Origin:</strong> {alert.origin} | <strong>Assigned To:</strong> {alert.assignedTo}
+                                <strong>ID:</strong> {alert.id} | <strong>Category:</strong> {alert.category} |{' '}
+                                <strong>Sub-Category:</strong> {alert.subCategory} | <strong>Origin:</strong> {alert.origin} |{' '}
+                                <strong>Assigned To:</strong> {alert.assignedTo} | <strong>Status:</strong> {alert.status} |{' '}
+                                <strong>Description:</strong> {alert.description}
                             </li>
                         ))}
                     </ul>

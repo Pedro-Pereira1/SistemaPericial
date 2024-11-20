@@ -1,4 +1,6 @@
 import axios from "axios";
+import Alert from "../domain/Alert";
+import AlertDTO from "../domain/AlertDTO";
 
 // services/UserService.ts
 export type User = {
@@ -10,21 +12,6 @@ export type User = {
   role: string;
   picture: string;
 };
-
-interface Alert {
-  id: string;
-  type: string;
-  origin: string;
-  assignedTo: string;
-  status: string;
-}
-
-interface AlertDTO {
-  type: string;
-  origin: string;
-  assignedTo: string;
-  status: string;
-} 
   
   class UserService {
     // Mock repository methods
@@ -78,12 +65,17 @@ interface AlertDTO {
     //UserService.updateAlertStatus(user.id, alertId, 'Closed');
     async updateAlertStatus(alertId:string, newAlert: Alert): Promise<void> {
       try {
-        console.log(newAlert)
         const AlertDTO = {
-          type: newAlert.type,
+          category: newAlert.category,
+          subCategory: newAlert.subCategory,
           origin: newAlert.origin,
           assignedTo: newAlert.assignedTo,
-          status: newAlert.status}
+          status: newAlert.status,
+          creationTime: newAlert.creationTime,
+          conclusionTime: newAlert.conclusionTime,
+          description: newAlert.description,
+          resolution: newAlert.resolution,
+        }
 
         const response = await axios.put('http://localhost:7000/updateAlert/' + alertId, AlertDTO)
         return;

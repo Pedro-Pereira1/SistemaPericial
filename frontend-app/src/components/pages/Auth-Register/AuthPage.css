@@ -15,7 +15,7 @@
     border-top-right-radius: 10px;
 }
 
-.form-container {
+.auth-container .form-container {
   display: flex;
   flex-direction: column;
   width: 300px;
@@ -25,20 +25,21 @@
   border-bottom-left-radius: 10px;
 }
 
-input, select, button {
+.auth-container input, select, button {
   margin: 10px 0;
   padding: 10px;
   font-size: 16px;
+  max-width: 100%;
 }
 
-button {
+.auth-container button {
   background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
 }
 
-button:hover {
+.auth-container button:hover {
   background-color: #0056b3;
 }
 

@@ -1,5 +1,4 @@
-interface Alert {
-    id: string;
+interface AlertDTO {
     category: string;
     subCategory: string;
     origin: string;
@@ -10,5 +9,4 @@ interface Alert {
     description: string;
     resolution: string[];
 }
-
-export default Alert;
+export default AlertDTO;
