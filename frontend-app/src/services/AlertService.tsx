@@ -165,6 +165,16 @@ const AlertService = {
       console.error("Error processing alert:", error);
       throw error;
     }
+  },
+
+  getAlertById: async (id:string):Promise<Alert> => {
+    return {
+      id: "string",
+      type: "string",
+      origin: "string",
+      assignedTo: "string",
+      status: "string"
+    }
   }
 };
 

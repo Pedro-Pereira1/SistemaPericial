@@ -3,6 +3,7 @@ import './AllAlertsPage.css';
 import UserService, { User } from '../../../services/UserService';
 import Alert from '../../../domain/Alert';
 import AlertService from '../../../services/AlertService';
+import { Link } from 'react-router-dom';
 
 interface AlertWithUser {
     id: string;
@@ -112,7 +113,10 @@ const AllAlertsPage: React.FC = () => {
                     <tbody>
                         {alerts.map((alert) => (
                             <tr key={alert.id}>
-                                <td>{alert.type}</td>
+                                <td>
+                                    <Link to={`/alert/${alert.id}`} className="alert-link">
+                                        {alert.type}
+                                    </Link></td>
                                 <td>{alert.origin}</td>
                                 <td>
                                     <select

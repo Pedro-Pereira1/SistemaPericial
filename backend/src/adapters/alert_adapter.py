@@ -33,15 +33,12 @@ class AlertAdapter:
         documents = []
         for document in cursor:
             document["_id"] = str(document["_id"]) 
-            Logger.print_info(document)
             documents.append(document)
 
         return documents
     
     async def update_alert(self, alertId: str, newAlert: dict):
-        Logger.print_info(f"Updating Alert with id {alertId}")
         self.db["alerts"].update_one({"id": alertId}, {"$set": newAlert})
         Logger.print_info(f"Alert with id {alertId} was updated.")
-        Logger.print_info(newAlert)
         return newAlert
         

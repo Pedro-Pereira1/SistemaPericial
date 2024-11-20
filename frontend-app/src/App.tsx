@@ -21,6 +21,7 @@ import AuthPage from './components/pages/Auth-Register/AuthPage';
 import AlertGenerator from './components/pages/AlertGenerator/AlertGenerator';
 import AlertsToResolve from './components/pages/AlertsToResolve/AlertsToResolve';
 import AllAlertsPage from './components/pages/Alerts/AllAlertsPage';
+import AlertPage from './components/pages/Alert/Alert';
 
 const App: React.FC = () => {
   const [isSidebarClosed, setSidebarClosed] = useState(false);
@@ -158,6 +159,7 @@ const App: React.FC = () => {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<NotFoundPage />} />
+                <Route path="/alert/:id" element={<AlertPage/>} />
               </Routes>
             </div>
           </div>

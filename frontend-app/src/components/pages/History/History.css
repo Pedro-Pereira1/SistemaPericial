@@ -1,7 +1,7 @@
 /* HistoryPage.css */
 
 .history-container {
-    max-width: 90%; /* Set a max width for better responsiveness */
+    max-width: 90%;
     margin: auto;
     padding: 20px;
     background: white;
@@ -15,9 +15,8 @@
 }
 
 .history-item {
-    padding: 15px; /* Increased padding for better spacing */
     border-bottom: 1px solid #ddd;
-    transition: background-color 0.3s; /* Smooth background transition */
+    transition: background-color 0.3s;
 }
 
 .history-item:hover {
@@ -27,7 +26,7 @@
 .history-header {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Center align items vertically */
+    align-items: center;
 }
 
 .timestamp {
@@ -152,4 +151,9 @@
 
 .dark-mode .sub-history-item {
     color: #ccc;
+}
+
+.history-container h1 {
+    border-bottom: #333 1px solid;
+    padding-bottom: 1.5%;
 }

@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './AlertGenerator.css';
 import UserService from '../../../services/UserService';
 import { User } from '../../../services/UserService';
-interface Alert {
-    id: string;
-    type: string;
-    origin: string;
-    assignedTo: string;
-    status: string;
-}
+import Alert from '../../../domain/Alert';
 
 interface AlertDTO{
     type: string;
@@ -39,8 +33,6 @@ const AlertGenerator: React.FC = () => {
         };
         fetchUsers();
     }, []);
-
-    const generateId = () => `ALERT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
