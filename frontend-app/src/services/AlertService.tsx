@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../config';
+import Alert from '../domain/Alert';
 
 
 const AlertService = {
@@ -156,6 +157,15 @@ const AlertService = {
     }
   },
 
+  updateAlert: async (alert: Alert):Promise<Alert> => {
+    try {
+      const response = await axios.put(`${config.python}/updateAlert/${alert.id}`, alert)
+      return response.data
+    }catch(error) {
+      console.error("Error processing alert:", error);
+      throw error;
+    }
+  }
 };
 
 export default AlertService;
