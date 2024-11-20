@@ -29,3 +29,6 @@ class UserController:
 
     async def delete_all(self):
         return await self.user_service.delete_users()
+    
+    async def find_by_id(self, user_id:str):
+        return await self.user_service.find_by_id(user_id)

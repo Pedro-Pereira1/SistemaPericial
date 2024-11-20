@@ -18,6 +18,13 @@ interface Alert {
   assignedTo: string;
   status: string;
 }
+
+interface AlertDTO {
+  type: string;
+  origin: string;
+  assignedTo: string;
+  status: string;
+} 
   
   class UserService {
     // Mock repository methods
@@ -36,22 +43,16 @@ interface Alert {
   }
 
   
-    /*async register(user: Omit<User, 'id'>): Promise<User | null> {
-      const newUser = {
-        ...user
-      };
-      // http://localhost:7000/user
-      /*
-      {
-        "name": "Frode Brigitta",
-        "email": "tier3@shield-ai.com",
-        "password": "password123",
-        "phone": "1234567891",
-        "role": "SOC Tier3",
-        "picture": "/images/profile5.png"
+    async register(user: Omit<User, 'id'>): Promise<User | null> {
+      try {
+        const response = await axios.post('http://localhost:7000/user/sign_in', user);
+        const newUser: User = response.data;
+        return newUser;
+      } catch (error) {
+        console.error("Error posting history:", error);
+        throw error; // Rethrow the error to be handled by the caller
       }
-      
-    }*/
+    }
   
     async getAllUsers(): Promise<User[]> {
       try {
@@ -63,17 +64,34 @@ interface Alert {
         throw error; // Rethrow the error to be handled by the caller
       }    }
 
-    /*async getUserById(id: string): User | null {
-      return this.users.find((u) => u.id === id) || null;
-    }*/
+    async getUserById(id: string): Promise<User> {
+      try {
+        const response = await axios.get('http://localhost:7000/userById/' + id)
+        const user: User = response.data;
+        return user;
+      } catch (error) {
+        console.error("Error posting history:", error);
+        throw error; // Rethrow the error to be handled by the caller
+      }
+    }
 
     //UserService.updateAlertStatus(user.id, alertId, 'Closed');
-    /*updateAlertStatus(userId: string, alertId: string, status: string): void {
-      const alert = this.alerts.find((a) => a.id === alertId);
-      if (alert) {
-        alert.status = status;
+    async updateAlertStatus(alertId:string, newAlert: Alert): Promise<void> {
+      try {
+        console.log(newAlert)
+        const AlertDTO = {
+          type: newAlert.type,
+          origin: newAlert.origin,
+          assignedTo: newAlert.assignedTo,
+          status: newAlert.status}
+
+        const response = await axios.put('http://localhost:7000/updateAlert/' + alertId, AlertDTO)
+        return;
+      } catch (error) {
+        console.error("Error posting history:", error);
+        throw error; // Rethrow the error to be handled by the caller
       }
-    }*/
+    }
 
     async getAlertsByUserId(userEmail: string): Promise<Alert[]> {
       try {
@@ -98,12 +116,16 @@ interface Alert {
     }
 
     //UserService.assignAlert(selectedUser.id, newAlert);
-    /*assignAlert(userId: string, alert: Alert): void {
-      const existingAlert = this.alerts.find((a) => a.id === alert.id);
-      if (!existingAlert) {
-        this.alerts.push(alert);
+    async assignAlert(alert: AlertDTO): Promise<Alert> {
+      try {
+        console.log(alert)
+        const response = await axios.post('http://localhost:7000/alert/', alert)
+        return response.data;
+      } catch (error) {
+        console.error("Error posting history:", error);
+        throw error; // Rethrow the error to be handled by the caller
       }
-    }*/
+    }
 
   }
   

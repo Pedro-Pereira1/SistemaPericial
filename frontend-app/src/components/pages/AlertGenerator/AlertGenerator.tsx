@@ -10,6 +10,13 @@ interface Alert {
     status: string;
 }
 
+interface AlertDTO{
+    type: string;
+    origin: string;
+    assignedTo: string;
+    status: string;
+}
+
 const AlertGenerator: React.FC = () => {
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [form, setForm] = useState({
@@ -23,10 +30,14 @@ const AlertGenerator: React.FC = () => {
 
     useEffect(() => {
         // Fetch all users from UserService
-        const socUsers = UserService.getAllUsers().filter(
-            (user) => user.role === 'SOC Tier1' || user.role === 'SOC Tier2' || user.role === 'SOC Tier3'
-        );
-        setUsers(socUsers);
+        const fetchUsers = async () => {
+            const allUsers = await UserService.getAllUsers();
+            const socUsers = allUsers.filter(
+                (user: User) => user.role === 'SOC Tier1' || user.role === 'SOC Tier2' || user.role === 'SOC Tier3'
+            );
+            setUsers(socUsers);
+        };
+        fetchUsers();
     }, []);
 
     const generateId = () => `ALERT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
@@ -36,19 +47,17 @@ const AlertGenerator: React.FC = () => {
         setForm({ ...form, [name]: value });
     };
 
-    const handleGenerateAlert = () => {
-        const newAlert: Alert = {
-            id: generateId(),
+    const handleGenerateAlert = async () => {
+        const newAlert: AlertDTO = {
             status: 'Open',
             ...form,
         };
 
-        setAlerts([...alerts, newAlert]);
-
-        // Assign alert to the selected user in UserService
-        const selectedUser = users.find((user) => user.id === form.assignedTo);
+        
+        const selectedUser = users.find((user) => user.email === form.assignedTo);
         if (selectedUser) {
-            UserService.assignAlert(selectedUser.id, newAlert); 
+            const alertNew: Alert = await UserService.assignAlert(newAlert); 
+            setAlerts([...alerts, alertNew]);
         }
 
         // Clear form
@@ -85,7 +94,7 @@ const AlertGenerator: React.FC = () => {
                     <select name="assignedTo" value={form.assignedTo} onChange={handleChange}>
                         <option value="">Select User</option>
                         {users.map((user, index) => (
-                            <option key={index} value={user.id}>
+                            <option key={index} value={user.email}>
                                 {user.name} ({user.role})
                             </option>
                         ))}

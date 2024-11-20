@@ -14,24 +14,35 @@ interface AlertWithUser {
     status: string;
 }
 
+interface Alert {
+    id: string;
+    type: string;
+    origin: string;
+    assignedTo: string;
+    status: string;
+}
+
 const AllAlertsPage: React.FC = () => {
     const [alerts, setAlerts] = useState<AlertWithUser[]>([]);
 
     useEffect(() => {
         // Fetch all users and aggregate alerts
-        const users = UserService.getAllUsers();
-        const alerts = UserService.getAlerts();
-        const aggregatedAlerts: AlertWithUser[] = alerts.map((alert) => {
-            const assignedUser = users.find((user) => user.id === alert.assignedTo);
-            return {
-                ...alert,
-                userName: assignedUser?.name || '',
-                userRole: assignedUser?.role || '',
-                userEmail: assignedUser?.email || '',
-                userPhone: assignedUser?.phone || '',
-            };
-        });
-        setAlerts(aggregatedAlerts);
+        const fetchData = async () => {
+            const users: User[] = await UserService.getAllUsers();
+            const alerts: Alert[] = await UserService.getAlerts();
+            const aggregatedAlerts: AlertWithUser[] = alerts.map((alert: Alert) => {
+                const assignedUser = users.find((user: User) => user.email === alert.assignedTo);
+                return {
+                    ...alert,
+                    userName: assignedUser?.name || '',
+                    userRole: assignedUser?.role || '',
+                    userEmail: assignedUser?.email || '',
+                    userPhone: assignedUser?.phone || '',
+                };
+            });
+            setAlerts(aggregatedAlerts);
+        };
+        fetchData();
     }, []);
 
     return (

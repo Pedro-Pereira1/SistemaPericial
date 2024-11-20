@@ -39,7 +39,7 @@ const AuthPage: React.FC = () => {
     }
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!registerDetails.email.endsWith('@shield-ai.com')) {
       alert('Email must be @shield-ai.com');
       return;
@@ -56,9 +56,14 @@ const AuthPage: React.FC = () => {
       return;
     }
 
-    const newUser = UserService.register(registerDetails);
+    const newUser = await UserService.register(registerDetails);
 
-    alert(`Registration successful! Your User ID: ${newUser.id}`);
+    if (newUser) {
+      alert(`Registration successful! Your User ID: ${newUser.id}`);
+      setIsLogin(true);
+    } else {
+      alert('Registration failed. Please try again.');
+    }
     setIsLogin(true);
   };
 

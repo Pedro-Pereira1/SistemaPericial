@@ -31,3 +31,9 @@ class AlertService :
     
     async def find_alert_by_user_id(self, id:str):
         return await self.alert_adapter.find_by_assignTo(id)
+    
+    async def update_alert(self, alertId:str, newAlert:AlertDto):
+        return await self.alert_adapter.update_alert(alertId,newAlert)
+    
+    async def assign_alert(self, userId:str, alert:AlertDto):
+        return await self.alert_adapter.save(alert)

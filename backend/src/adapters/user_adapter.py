@@ -29,4 +29,7 @@ class UserAdapter:
     async def find_by_email(self, email:str):
         Logger.print_info(email)
         return self.db["users"].find_one({"email":email})
+    
+    async def find_by_id(self, user_id:str):
+        return self.db["users"].find_one({"id":user_id})
 

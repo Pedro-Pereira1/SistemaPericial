@@ -29,7 +29,7 @@ class Router:
     async def is_malicious(ip:str):
         general_controller:GeneralController = loader.resolve(config.general_controller["name"])
         return await general_controller.is_malicious(ip)
-    @router.post("/user")
+    @router.post("/user/sign_in")
     async def sign_in(userDto:UserDto):
         user_controller:UserController = loader.resolve(config.user_controller["name"])
         return await user_controller.create_user(userDto)
@@ -68,7 +68,20 @@ class Router:
     async def get_alert_for_user_by_id(id:str):
         alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
         return await alert_controller.find_alerts_by_user_id(id)
+    
+    @router.get("/userById/{id}")
+    async def get_user_by_id(id:str):
+        user_controller:UserController = loader.resolve(config.user_controller["name"])
+        return await user_controller.find_by_id(id)
+    
+    @router.put("/updateAlert/{id}")
+    async def update_alert(id:str, newAlert:AlertDto):
+        alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        return await alert_controller.update_alert(id,newAlert)
 
-
-
+    @router.post("/alert/assign/{userId}")
+    async def assign_alert(userId:str, alert:AlertDto):
+        alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        return await alert_controller.assign_alert(userId, alert)
+    
         

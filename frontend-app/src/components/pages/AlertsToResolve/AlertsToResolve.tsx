@@ -15,9 +15,11 @@ const AlertsToResolve: React.FC = () => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     useEffect(() => {
-        // Fetch the current user's alerts
-        const me = UserService.getUserById(user.id);
-        setAlerts(UserService.getAlertsByUserId(me?.id || ''));
+        const fetchAlerts = async () => {
+            const alerts = await UserService.getAlertsByUserId(user.email);
+            setAlerts(alerts);
+        };
+        fetchAlerts();
     }, [user.id]);
 
     const handleCloseAlert = (alertId: string) => {
@@ -26,9 +28,13 @@ const AlertsToResolve: React.FC = () => {
             alert.id === alertId ? { ...alert, status: 'Closed' } : alert
         );
         setAlerts(updatedAlerts);
+        const newAlert = alerts.find((alert) => alert.id === alertId);
 
         // Update the alert status in the UserService (mock backend)
-        UserService.updateAlertStatus(user.id, alertId, 'Closed');
+        if (newAlert) {
+            newAlert.status = 'Closed';
+            UserService.updateAlertStatus(alertId, newAlert);
+        }
     };
 
     return (

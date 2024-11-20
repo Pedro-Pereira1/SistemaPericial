@@ -66,3 +66,6 @@ class UserService:
     
     async def delete_users(self):
         return await self.user_adapter.delete_all()
+    
+    async def find_by_id(self, user_id:str):
+        return await self.user_adapter.find_by_id(user_id)

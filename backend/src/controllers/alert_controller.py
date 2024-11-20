@@ -29,4 +29,14 @@ class AlertController:
         if not user:
            return {"message":"This user does not exist."}
         return await self.service.find_alert_by_user_id(id)
+    
+    async def update_alert(self, alertId:str,newAlert:AlertDto):
+        return await self.service.update_alert(alertId,newAlert)
+    
+    async def assign_alert(self, userId:str, alert:AlertDto):
+        user = await self.user_service.find_by_email(userId)
+        if not user:
+            return {"message":"This user does not exist."}
+        alert = await self.service.create_alert(alert)
+        return await self.service.save_alert(alert)
         
