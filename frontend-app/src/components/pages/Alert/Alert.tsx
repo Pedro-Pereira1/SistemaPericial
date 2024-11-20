@@ -9,9 +9,9 @@ interface AlertPageProps {
 }
 
 const AlertPage: React.FC<AlertPageProps> = () => {
-    const { id } = useParams<{ id: string }>();  // Get the 'id' from the URL
+    const { id } = useParams<{ id: string }>();
     const [alert, setAlert] = useState<Alert | null>(null);
-    // Example categories and sub-categories mapping
+
     const categories = {
         "Código Malicioso": [
             "Sistema Infetado",
@@ -75,14 +75,19 @@ const AlertPage: React.FC<AlertPageProps> = () => {
     type Category = keyof typeof categories;
 
     const [selectedCategory, setSelectedCategory] = useState<Category | undefined>();
-    const [selectedSubCategory, setSelectedSubCategory] = useState<string | undefined>(alert?.type);
+    const [selectedSubCategory, setSelectedSubCategory] = useState<string | undefined>();
+
     useEffect(() => {
         const fetchAlert = async () => {
             if (id) {
                 try {
-                    // Fetch the alert using the id
-                    const fetchedAlert = await AlertService.getAlertById(id); // Assuming this service fetches the alert by id
+                    const fetchedAlert = await AlertService.getAlertById(id); 
                     setAlert(fetchedAlert);
+
+                    if (fetchedAlert.category) {
+                        setSelectedCategory(fetchedAlert.category as Category);
+                        setSelectedSubCategory(fetchedAlert.subCategory);
+                    }
                 } catch (error) {
                     console.error("Error fetching alert:", error);
                 }
@@ -93,25 +98,26 @@ const AlertPage: React.FC<AlertPageProps> = () => {
     }, [id]);
 
     if (!alert) {
-        return <p>Loading...</p>;  // Show loading message while fetching the alert
+        return <p>Loading...</p>;
     }
 
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const category = e.target.value as Category;
         setSelectedCategory(category);
-        setSelectedSubCategory(''); // Reset sub-category when category changes
+        setSelectedSubCategory('');
     };
 
     const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedSubCategory(e.target.value);
     };
+
     return (
         <div className="alert-container">
             <div className="alert-box">
                 <div className="alert-item">
-                    <strong>Category:</strong>
+                    <strong>Category:</strong><br/>
                     <select value={selectedCategory} onChange={handleCategoryChange}>
-                        <option value="">Select a Category</option>
+                        <option value={alert.category}>{alert.category}</option>
                         {Object.keys(categories).map((category) => (
                             <option key={category} value={category}>
                                 {category}
@@ -122,7 +128,7 @@ const AlertPage: React.FC<AlertPageProps> = () => {
                 <div className="alert-item">
                     <strong>Sub-Category:</strong>
                     <select value={selectedSubCategory} onChange={handleSubCategoryChange} disabled={!selectedCategory}>
-                        <option value="">Select a Sub-Category</option>
+                        <option value={alert.subCategory}>{alert.subCategory}</option>
                         {selectedCategory && categories[selectedCategory].map((subCategory) => (
                             <option key={subCategory} value={subCategory}>
                                 {subCategory}
@@ -141,8 +147,24 @@ const AlertPage: React.FC<AlertPageProps> = () => {
                 </div>
             </div>
 
+            <div className="alert-box">
+                <div className="alert-item">
+                    <strong>Status:</strong><br/> {alert.status}
+                </div>
+                <div className="alert-item">
+                    <strong>Created At:</strong><br/> {alert.creationTime || 'Not Available'}
+                </div>
+                <div className="alert-item">
+                    <strong>Conclusion Time:</strong><br/> {alert.conclusionTime || 'Not Available'}
+                </div>
+            </div>
+
             <div className="alert-box description-box">
-                <strong>Description:</strong> {alert.status}
+                <strong>Description:</strong><br/><textarea value={'No Description Available'}></textarea>
+            </div>
+
+            <div className="alert-box">
+                <strong>Resolution:</strong> {alert.resolution || 'Not Resolved'}
             </div>
 
             <button className="close-button">Close</button>

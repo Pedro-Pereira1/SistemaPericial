@@ -168,12 +168,13 @@ const AlertService = {
   },
 
   getAlertById: async (id:string):Promise<Alert> => {
-    return {
-      id: "string",
-      type: "string",
-      origin: "string",
-      assignedTo: "string",
-      status: "string"
+    try {
+      const response = await axios.get(`${config.python}/alert/${id}`)
+      console.log(response.data)
+      return response.data
+    }catch(error) {
+      console.error("Error processing alert:", error);
+      throw error;
     }
   }
 };

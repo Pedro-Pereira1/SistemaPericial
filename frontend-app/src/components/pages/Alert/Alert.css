@@ -1,46 +1,60 @@
 .alert-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-  
-  .alert-box {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  
-  .alert-item {
-    width: 48%;
-  }
-  
-  .description-box {
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  
-  strong {
-    font-weight: bold;
-  }
-  
-  .close-button {
-    display: block;
-    margin: 20px auto 0;
-    padding: 10px 20px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .close-button:hover {
-    background-color: #d32f2f;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.alert-box {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.alert-item {
+  width: 50%;
+}
+
+.description-box {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+strong {
+  font-weight: bold;
+}
+
+.close-button {
+  margin-top: auto; /* Push the button to the bottom */
+  align-self: flex-end; /* Align button to the right */
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: #335;
+  transition: 0.5s;
+}
+
+.alert-item select {
+  padding: 2px;
+  margin-left: 1%;
+  background-color: white;
+  border: 0px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.alert-item select:hover {
+  background-color: rgb(232, 232, 232);
+  transition: 0.5s;
+}

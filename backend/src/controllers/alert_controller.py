@@ -39,4 +39,7 @@ class AlertController:
             return {"message":"This user does not exist."}
         alert = await self.service.create_alert(alert)
         return await self.service.save_alert(alert)
+    
+    async def get_alert_by_id(self, alertId:str):
+        return await self.service.find_by_id(alertId)
         

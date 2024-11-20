@@ -41,4 +41,9 @@ class AlertAdapter:
         self.db["alerts"].update_one({"id": alertId}, {"$set": newAlert})
         Logger.print_info(f"Alert with id {alertId} was updated.")
         return newAlert
-        
+    
+    async def find_by_id(self, alertId:str):
+        document = self.db["alerts"].find_one({"id":alertId})
+        Logger.print_info(f"Found the alert: {alertId}.")
+        document.pop("_id")
+        return document

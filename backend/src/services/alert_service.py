@@ -37,3 +37,6 @@ class AlertService :
     
     async def assign_alert(self, userId:str, alert:AlertDto):
         return await self.alert_adapter.save(alert)
+    
+    async def find_by_id(self, alertId:str):
+        return await self.alert_adapter.find_by_id(alertId)

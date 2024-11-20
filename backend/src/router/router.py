@@ -84,4 +84,7 @@ class Router:
         alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
         return await alert_controller.assign_alert(userId, alert)
     
-        
+    @router.get("/alert/{alertId}")
+    async def get_alert_by_id(alertId:str):
+        alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        return await alert_controller.get_alert_by_id(alertId)
