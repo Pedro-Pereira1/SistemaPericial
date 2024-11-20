@@ -15,7 +15,7 @@ class AlertService :
         user = await self.user_service.find_by_email(alert_dto["assignedTo"])
         if not user:
             raise ModuleNotFoundError(f"You cannot assign this alert to the user: {alert_dto["assignedTo"]}")
-        alert = Alert(alert_dto["type"], alert_dto["origin"], 
+        alert = Alert(alert_dto["category"], alert_dto["subCategory"], alert_dto["origin"], 
                       alert_dto["assignedTo"], alert_dto["status"])
         return alert
 

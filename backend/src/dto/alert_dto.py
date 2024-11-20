@@ -1,16 +1,13 @@
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict, NotRequired
 
 class AlertDto(TypedDict):
-    type:str
+    id:NotRequired[str]
+    category:str
+    subCategory:str
     origin:str
     assignedTo:str
     status:str
-
-
-def to_dict(self):
-    return {
-        "type": alert["type"],
-        "origin": alert["origin"],
-        "assignedTo": alert["assignedTo"],
-        "status": alert["status"]
-    }
+    creationTime:NotRequired[str]
+    conclusionTime:NotRequired[str]
+    description:NotRequired[str]
+    resolution:NotRequired[str]
