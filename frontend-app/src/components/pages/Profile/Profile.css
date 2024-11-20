@@ -57,28 +57,29 @@ strong {
     justify-content: space-between;
 }
 
-.edit-button, .logout-button {
+.profile-container .edit-button, .logout-button {
     padding: 10px 20px;
     font-size: 16px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     color: #fff;
+    width: 45%;
 }
 
-.edit-button {
+.profile-container .edit-button {
     background-color: #007bff;
 }
 
-.logout-button {
+.profile-container .logout-button {
     background-color: #dc3545;
 }
 
-.edit-button:hover {
+.profile-container .edit-button:hover {
     background-color: #0056b3;
 }
 
-.logout-button:hover {
+.profile-container .logout-button:hover {
     background-color: #b21f2d;
 }
 
