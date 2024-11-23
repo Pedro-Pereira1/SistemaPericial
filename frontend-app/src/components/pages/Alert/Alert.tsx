@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AlertService from '../../../services/AlertService';
+import UserService from '../../../services/UserService';
 import Alert from '../../../domain/Alert';
 import './Alert.css'
 
@@ -11,6 +12,33 @@ interface AlertPageProps {
 const AlertPage: React.FC<AlertPageProps> = () => {
     const { id } = useParams<{ id: string }>();
     const [alert, setAlert] = useState<Alert | null>(null);
+
+    const availableCategories =[
+        {
+            name: "Tentativa de Login",
+            path: "/alerts/multiple-login-failures"
+        },
+        {
+            name: "Scanning",
+            path: "/alerts/changes-made-to-the-firewall"
+        },
+        {
+            name: "Comprometimento de Sistema",
+            path: "/alerts/simultaneous-login-activity"
+        },
+        {
+            name:  "Comprometimento de Conta Privilegiada",
+            path: "/alerts/new-user-account"
+        },
+        {
+            name: "Modificação não autorizada",
+            path: "/alerts/user-data-has-been-changed"
+        },
+        {
+            name: "Exploração de Vulnerabilidade",
+            path: "/alerts/port-scan"
+        }
+    ]
 
     const categories = {
         "Código Malicioso": [
@@ -111,12 +139,34 @@ const AlertPage: React.FC<AlertPageProps> = () => {
         setSelectedSubCategory(e.target.value);
     };
 
+    const handleCloseAlert = async (alertId: string) => {
+        const alertToUpdate = alert;
+        alertToUpdate.status = 'Closed';
+        alertToUpdate.resolution = ['Alert Closed Manually']
+        const actualTime = new Date().toISOString().slice(0, 19);
+        alertToUpdate.conclusionTime = actualTime
+        await UserService.updateAlertStatus(alertId, alertToUpdate);
+        setAlert(alertToUpdate);
+        window.location.href = '/my-alerts';
+    };
+
+    const handleResolveAlert = async () => {
+        const category = availableCategories.find(cat => cat.name === alert.subCategory);
+        if (!category) {
+            window.alert("Not supported yet!");
+        } else {
+            const targetPath = `${category.path}?alertId=${alert.id}`;
+            window.location.href = targetPath;
+        }
+    };
+    
+
     return (
         <div className="alert-container">
             <div className="alert-box">
                 <div className="alert-item">
                     <strong>Category:</strong><br/>
-                    <select value={selectedCategory} onChange={handleCategoryChange}>
+                    <select className='silect' value={selectedCategory} onChange={handleCategoryChange}>
                         <option value={alert.category}>{alert.category}</option>
                         {Object.keys(categories).map((category) => (
                             <option key={category} value={category}>
@@ -127,7 +177,7 @@ const AlertPage: React.FC<AlertPageProps> = () => {
                 </div>
                 <div className="alert-item">
                     <strong>Sub-Category:</strong>
-                    <select value={selectedSubCategory} onChange={handleSubCategoryChange} disabled={!selectedCategory}>
+                    <select className='silect' value={selectedSubCategory} onChange={handleSubCategoryChange} disabled={!selectedCategory}>
                         <option value={alert.subCategory}>{alert.subCategory}</option>
                         {selectedCategory && categories[selectedCategory].map((subCategory) => (
                             <option key={subCategory} value={subCategory}>
@@ -160,14 +210,27 @@ const AlertPage: React.FC<AlertPageProps> = () => {
             </div>
 
             <div className="alert-box description-box">
-                <strong>Description:</strong><br/><textarea value={'No Description Available'}></textarea>
+                <strong>Description:</strong>{alert.description || 'No Description'}
             </div>
 
             <div className="alert-box">
-                <strong>Resolution:</strong> {alert.resolution || 'Not Resolved'}
+                <strong>Resolution:</strong>
+                <ul>
+                    {alert.resolution && alert.resolution.length > 0 ? (
+                        alert.resolution.map((resolution, index) => (
+                            <li key={index}>{resolution}</li>
+                        ))
+                    ) : (
+                        <li>Not Resolved</li>
+                    )}
+                </ul>
             </div>
-
-            <button className="close-button">Close</button>
+            <div className='AlertasDiV'>
+            <button className="close-button"
+                    onClick={() => handleResolveAlert()}>Resolve Alert</button>
+            <button className="close-button"
+            onClick={() => handleCloseAlert(alert.id)}>Close Alert</button>
+            </div>        
         </div>
     );
 };

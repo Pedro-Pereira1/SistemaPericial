@@ -77,6 +77,7 @@ class Router:
     @router.put("/updateAlert/{id}")
     async def update_alert(id:str, newAlert:AlertDto):
         alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        print(f"Updating alert with id: {id}")
         return await alert_controller.update_alert(id,newAlert)
 
     @router.post("/alert/assign/{userId}")

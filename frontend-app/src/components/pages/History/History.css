@@ -1,28 +1,47 @@
-/* HistoryPage.css */
-
+/* Container Styles */
 .history-container {
-    max-width: 90%;
-    margin: auto;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 95%;
+    margin: 20px auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
 }
 
+.history-container h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+/* History List Styles */
 .history-list {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .history-item {
-    border-bottom: 1px solid #ddd;
-    transition: background-color 0.3s;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eaeaea;
+    transition: background-color 0.3s, transform 0.2s;
+    }
+
+.history-item:last-child {
+    border-bottom: none;
 }
 
 .history-item:hover {
-    background-color: #f9f9f9; /* Light grey background on hover */
+    background-color: #f6f6f6;
+    transform: scale(1.01);
 }
 
+/* Header and Timestamp */
 .history-header {
     display: flex;
     justify-content: space-between;
@@ -30,56 +49,68 @@
 }
 
 .timestamp {
-    color: #888; /* Darker grey for better readability */
-    font-size: 0.9em;
-    margin-left: 10px; /* Add spacing from the alert type */
+    color: #777;
+    font-size: 0.9rem;
+    margin-left: 10px;
 }
 
+/* Sub-List Styles */
 .sub-history-list {
     list-style: none;
-    padding: 10px 0 0 20px; /* Indentation for sub-history */
+    padding: 10px 0 0 25px;
+    margin-top: 10px;
+    border-left: 3px solid #4caf50; /* Visual indicator for nested items */
 }
 
 .sub-history-item {
-    padding: 5px 0;
-    color: #333; /* Darker text for better visibility */
+    padding: 8px 0;
+    color: #555;
+    font-size: 0.95rem;
+    transition: color 0.3s;
 }
 
+.sub-history-item:hover {
+    color: #007BFF;
+}
+
+/* Toggle Button */
 .history-toggle-button {
-    padding: 6px 12px; /* Custom padding for buttons */
-    margin-left: 10px; /* Space between alert type and button */
+    padding: 8px 14px;
+    margin-left: 10px;
     border: none;
-    border-radius: 4px;
-    background-color: #007BFF; /* Primary button color */
+    border-radius: 6px;
+    background-color: #4caf50;
     color: white;
     cursor: pointer;
-    transition: background-color 0.3s ease; /* Smooth transition on hover */
-    font-size: 0.9em; /* Adjust button text size */
+    font-size: 0.9rem;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .history-toggle-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #43a047;
+    transform: scale(1.05);
 }
 
 .history-toggle-button:focus {
-    outline: none; /* Remove default focus outline */
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Add custom focus outline */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.4);
 }
 
+/* Loading and Spinner */
 .loading-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 200px; /* Adjust height as needed */
+    height: 200px;
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border: 4px solid rgba(0, 0, 0, 0.1);
-    border-top: 4px solid #007BFF; /* Primary color for the spinner */
+    border-top: 4px solid #007BFF;
     border-radius: 50%;
-    animation: spin 0.6s linear infinite; /* Faster animation */
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -87,7 +118,7 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Optional: Bounce spinner */
+/* Bounce Animation */
 .spinner::after {
     content: "";
     display: block;
@@ -95,65 +126,104 @@
     height: 100%;
     border-radius: 50%;
     background-color: #007BFF;
-    opacity: 0.6;
+    opacity: 0.3;
     animation: bounce 1.5s infinite ease-in-out;
 }
 
 @keyframes bounce {
-    0%, 100% {
-        transform: scale(0.0);
-    } 
-    50% {
-        transform: scale(1.0);
-    }
+    0%, 100% { transform: scale(0); }
+    50% { transform: scale(1); }
 }
 
+/* Message Containers */
 .message-container {
     text-align: center;
     color: #666;
-    margin-top: 20px;
-    font-size: 1.1em;
+    margin: 20px auto;
+    font-size: 1rem;
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 600px;
 }
 
 .error-message {
-    color: #d9534f; /* Red color for error */
+    color: #d9534f;
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
     padding: 15px;
+    border-radius: 8px;
 }
 
 .empty-message {
-    color: #007BFF; /* Primary color for empty message */
+    color: #007BFF;
     background-color: #dff3ff;
     border: 1px solid #b8e2f7;
     padding: 15px;
+    border-radius: 8px;
 }
 
-
-.dark-mode .history-container{
-    background: #333;
-    color: white;
+/* Dark Mode */
+.dark-mode .history-container {
+    background: #222;
+    color: #f1f1f1;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
 .dark-mode .history-item:hover {
-    background-color: #444;
+    background-color: #333;
 }
 
 .dark-mode .timestamp {
-    color: white;
-}
-
-.dark-mode .sub-history-item {
     color: #ccc;
 }
 
-.history-container h1 {
-    border-bottom: #333 1px solid;
-    padding-bottom: 1.5%;
+.dark-mode .sub-history-item {
+    color: #ddd;
+}
+
+.dark-mode .sub-history-item:hover {
+    color: #4caf50;
+}
+
+.dark-mode .history-toggle-button {
+    background-color: #4caf50;
+    color: #f1f1f1;
+}
+
+.dark-mode .history-toggle-button:hover {
+    background-color: #43a047;
+}
+
+.dark-mode .message-container {
+    background-color: #333;
+    color: #f1f1f1;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .history-container {
+        padding: 15px;
+    }
+
+    .history-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .history-item {
+        padding: 10px 15px;
+    }
+
+    .history-toggle-button {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .timestamp {
+        font-size: 0.8rem;
+    }
+
+    .message-container {
+        font-size: 0.95rem;
+    }
 }

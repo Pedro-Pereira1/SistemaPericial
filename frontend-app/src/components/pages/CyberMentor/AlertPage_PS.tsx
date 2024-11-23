@@ -4,6 +4,10 @@ import HistoryService from "../../../services/historyService";
 import generalService from "../../../services/generalService";
 import 'boxicons/css/boxicons.min.css';
 import './AlertPage.css';
+import { useLocation } from 'react-router-dom';
+import UserService from "../../../services/UserService";
+import Alert from "../../../domain/Alert";
+
 interface Question {
   type: 'multiple-choice' | 'text' | 'ip-quest' | 'list-question' | 'fuzzy-input';
   text: string;
@@ -46,7 +50,8 @@ const base:Evidences = {
 }
 
 interface AlertProps {
-  expert_system: string 
+  expert_system: string
+  alertId?: string; 
 }
 
 const Alert_Evidences: React.FC<AlertProps> = (props:AlertProps) => {
@@ -62,6 +67,11 @@ const Alert_Evidences: React.FC<AlertProps> = (props:AlertProps) => {
   const [possibleConclusions, setPossibleConclusions] = useState<string[]>([]); // List of possible conclusions
   const [selectedConclusion, setSelectedConclusion] = useState<string>(""); // Track selected conclusion for "Why Not"
   const [showWhyNotDropdown, setShowWhyNotDropdown] = useState<boolean>(false); // Track if dropdown is shown
+
+  const location = useLocation(); // Hook to access the URL
+  const queryParams = new URLSearchParams(location.search); // Parse query parameters
+  const alertIdFromQuery = queryParams.get('alertId'); // Get 'alertId' from query
+  const [alertId, setAlertId] = useState<string | null>(alertIdFromQuery ?? props.alertId ?? null);
   
 
 
@@ -226,8 +236,17 @@ const startProcess = () => {
         ]);
         setIsProcessComplete(true); // Mark process as complete
       
-        const explanationList = await AlertService.getHowExplanationDrools(alertContext);
-        HistoryService.postHistory({ alertType: "PS",rules: explanationList });
+        const explanationList = await AlertService.getHowExplanation(alertContext, expertSystem);
+        const alert: Alert[] = await UserService.getAlerts();
+        const alertToUpdate = alert.find(alert => alert.id === alertId);
+        if (alertToUpdate && alertId) {
+          alertToUpdate.resolution = explanationList;
+          alertToUpdate.status = "Closed";
+          const actualTime = new Date().toISOString().slice(0, 19);
+          alertToUpdate.conclusionTime = actualTime;
+          await UserService.updateAlertStatus(alertId, alertToUpdate);
+          window.location.href = '/my-alerts';
+        }
       }
     } catch (error) {
       console.error("Error processing alert:", error);
@@ -319,7 +338,7 @@ const startProcess = () => {
 
 return (
   <div className="container">
-    <h1>Port Scan Activity</h1>
+    <h1>Port Scan Activity - #{alertId}</h1>
     <div className="message-list">
       {messages.map((message, index) => (
         <div

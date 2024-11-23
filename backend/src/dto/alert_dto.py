@@ -10,4 +10,4 @@ class AlertDto(TypedDict):
     creationTime:NotRequired[str]
     conclusionTime:NotRequired[str]
     description:NotRequired[str]
-    resolution:NotRequired[str]
+    resolution:NotRequired[list[str]]

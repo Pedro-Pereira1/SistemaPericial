@@ -124,11 +124,7 @@ const AllAlertsPage: React.FC = () => {
                         {alerts.map((alert) => (
                             <tr key={alert.id}>
                                 <td>{alert.category}</td>
-                                <td>
-                                    <Link to={`/alert/${alert.id}`} className="alert-link">
-                                        {alert.subCategory}
-                                    </Link>
-                                </td>
+                                <td>{alert.subCategory}</td>
                                 <td>{alert.origin}</td>
                                 <td>
                                     <select

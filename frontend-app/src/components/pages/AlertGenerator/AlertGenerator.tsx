@@ -2,22 +2,82 @@ import React, { useState, useEffect } from 'react';
 import './AlertGenerator.css';
 import UserService from '../../../services/UserService';
 import { User } from '../../../services/UserService';
-import Alert from '../../../domain/Alert';
-import AlertDTO from '../../../domain/AlertDTO';
+import AlertCreationDTO from '../../../domain/AlertCreationDTO';
+
+const categories = {
+    "Código Malicioso": [
+        "Sistema Infetado",
+        "Distribuição de Malware",
+        "Servidor C2",
+        "Configuração de Malware"
+    ],
+    "Disponibilidade": [
+        "Negação de Serviço",
+        "Negação de Serviço Distribuída",
+        "Configuração incorreta",
+        "Sabotagem",
+        "Interrupção"
+    ],
+    "Recolha de Informação": [
+        "Scanning",
+        "Sniffing",
+        "Engenharia Social"
+    ],
+    "Intrusão": [
+        "Comprometimento de Conta Privilegiada",
+        "Comprometimento de Conta Não Privilegiada",
+        "Comprometimento de Aplicação",
+        "Comprometimento de Sistema",
+        "Arrombamento"
+    ],
+    "Tentativa de Intrusão": [
+        "Exploração de Vulnerabilidade",
+        "Tentativa de Login",
+        "Nova assinatura de ataque"
+    ],
+    "Segurança da Informação": [
+        "Acesso não autorizado",
+        "Modificação não autorizada",
+        "Perda de dados",
+        "Exfiltração de Informação"
+    ],
+    "Fraude": [
+        "Utilização indevida ou não autorizada de recursos",
+        "Direitos de autor",
+        "Utilização ilegítima de nome de terceiros",
+        "Phishing"
+    ],
+    "Conteúdo Abusivo": [
+        "SPAM",
+        "Discurso Nocivo",
+        "Exploração sexual de menores, racismo e apologia da violência"
+    ],
+    "Vulnerabilidade": [
+        "Criptografia fraca",
+        "Amplificador DDoS",
+        "Serviços acessíveis potencialmente indesejados",
+        "Revelação de informação",
+        "Sistema vulnerável"
+    ],
+    "Outro": [
+        "Sem tipo",
+        "Indeterminado"
+    ]
+} as const;
+
+type Category = keyof typeof categories;
 
 const AlertGenerator: React.FC = () => {
-    const [alerts, setAlerts] = useState<Alert[]>([]);
+    const [alerts, setAlerts] = useState<AlertCreationDTO[]>([]);
     const [form, setForm] = useState({
         category: '',
         subCategory: '',
         origin: '',
         assignedTo: '',
-        description: '',
     });
 
     const [users, setUsers] = useState<User[]>([]);
-    const categories = ['Network Security', 'Application Security', 'Endpoint Security', 'Other'];
-    const subCategories = ['Multiple Login Failures', 'Firewall Changes', 'Port Scan', 'Unauthorized Access'];
+    const [availableSubCategories, setAvailableSubCategories] = useState<string[]>([]);
 
     useEffect(() => {
         // Fetch all users from UserService
@@ -33,31 +93,31 @@ const AlertGenerator: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
+
+        if (name === 'category') {
+            // Update subcategories dynamically based on selected category
+            setAvailableSubCategories((categories[value as Category] || []).slice());
+            setForm({ ...form, category: value, subCategory: '' }); // Reset subcategory
+        } else {
+            setForm({ ...form, [name]: value });
+        }
     };
 
     const handleGenerateAlert = async () => {
-        const currentTime = new Date().toISOString();
-        const newAlert: AlertDTO = {
+        const newAlert: AlertCreationDTO = {
             category: form.category,
             subCategory: form.subCategory,
             origin: form.origin,
             assignedTo: form.assignedTo,
-            description: form.description,
             status: 'Open',
-            creationTime: currentTime,
-            conclusionTime: '',
-            resolution: [],
         };
 
-        const selectedUser = users.find((user) => user.email === form.assignedTo);
-        if (selectedUser) {
-            const alertNew = await UserService.assignAlert(newAlert); 
-            setAlerts([...alerts, alertNew]);
-        }
+        const alertNew = await UserService.assignAlert(newAlert);
+        setAlerts([...alerts, alertNew]);
 
         // Clear form
-        setForm({ category: '', subCategory: '', origin: '', assignedTo: '', description: '' });
+        setForm({ category: '', subCategory: '', origin: '', assignedTo: '' });
+        setAvailableSubCategories([]);
     };
 
     return (
@@ -68,7 +128,7 @@ const AlertGenerator: React.FC = () => {
                     <label>Category</label>
                     <select name="category" value={form.category} onChange={handleChange}>
                         <option value="">Select Category</option>
-                        {categories.map((category, index) => (
+                        {Object.keys(categories).map((category, index) => (
                             <option key={index} value={category}>
                                 {category}
                             </option>
@@ -77,9 +137,9 @@ const AlertGenerator: React.FC = () => {
                 </div>
                 <div className="form-field">
                     <label>Sub-Category</label>
-                    <select name="subCategory" value={form.subCategory} onChange={handleChange}>
+                    <select name="subCategory" value={form.subCategory} onChange={handleChange} disabled={!form.category}>
                         <option value="">Select Sub-Category</option>
-                        {subCategories.map((subCategory, index) => (
+                        {availableSubCategories.map((subCategory, index) => (
                             <option key={index} value={subCategory}>
                                 {subCategory}
                             </option>
@@ -93,7 +153,7 @@ const AlertGenerator: React.FC = () => {
                         name="origin"
                         value={form.origin}
                         onChange={handleChange}
-                        placeholder="Alert Origin (e.g., IP Address)"
+                        placeholder="Alert Origin (e.g., Country, IP Address)"
                     />
                 </div>
                 <div className="form-field">
@@ -107,18 +167,9 @@ const AlertGenerator: React.FC = () => {
                         ))}
                     </select>
                 </div>
-                <div className="form-field">
-                    <label>Description</label>
-                    <textarea
-                        name="description"
-                        value={form.description}
-                        onChange={handleChange}
-                        placeholder="Provide a brief description of the alert"
-                    />
-                </div>
                 <button
                     onClick={handleGenerateAlert}
-                    disabled={!form.category || !form.subCategory || !form.origin || !form.assignedTo || !form.description}
+                    disabled={!form.category || !form.subCategory || !form.origin || !form.assignedTo}
                 >
                     Generate Alert
                 </button>
@@ -130,12 +181,11 @@ const AlertGenerator: React.FC = () => {
                     <p>No alerts generated yet.</p>
                 ) : (
                     <ul>
-                        {alerts.map((alert) => (
-                            <li key={alert.id}>
-                                <strong>ID:</strong> {alert.id} | <strong>Category:</strong> {alert.category} |{' '}
-                                <strong>Sub-Category:</strong> {alert.subCategory} | <strong>Origin:</strong> {alert.origin} |{' '}
-                                <strong>Assigned To:</strong> {alert.assignedTo} | <strong>Status:</strong> {alert.status} |{' '}
-                                <strong>Description:</strong> {alert.description}
+                        {alerts.map((alert, index) => (
+                            <li key={index}>
+                                <strong>Category:</strong> {alert.category} | <strong>Sub-Category:</strong>{' '}
+                                {alert.subCategory} | <strong>Origin:</strong> {alert.origin} | <strong>Assigned To:</strong>{' '}
+                                {alert.assignedTo} | <strong>Status:</strong> {alert.status}
                             </li>
                         ))}
                     </ul>

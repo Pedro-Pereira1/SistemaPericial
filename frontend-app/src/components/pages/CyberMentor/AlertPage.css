@@ -85,12 +85,14 @@
   }
   
   /* Button styles */
-  .button-group {
+  .container .button-group {
     display: flex;
     margin-top: 10px;
   }
   
-  .button {
+  .container .button {
+    width: 10%;
+    height: 40px;
     padding: 10px;
     margin-left: 10px;
     border-radius: 5px;
@@ -106,8 +108,10 @@
   }
   
   /* Input styles */
-  .input {
+  .container .input {
     flex: 1;
+    height: 42px;
+    margin-top: 10px;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;

@@ -2,7 +2,6 @@
     max-width: 90%;
     margin: 50px auto;
     padding: 20px;
-    background-color: #ff0909;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -62,4 +61,9 @@ button:disabled {
 
 .alerts-list h2 {
     padding-left: 1%;
+}
+
+.dark-mode .alert-generator-container {
+    background-color: #333;
+    color: #fff;
 }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import Alert from "../domain/Alert";
 import AlertDTO from "../domain/AlertDTO";
+import AlertCreationDTO from "../domain/AlertCreationDTO";
 
 // services/UserService.ts
 export type User = {
@@ -66,6 +67,7 @@ export type User = {
     async updateAlertStatus(alertId:string, newAlert: Alert): Promise<void> {
       try {
         const AlertDTO = {
+          id: newAlert.id,
           category: newAlert.category,
           subCategory: newAlert.subCategory,
           origin: newAlert.origin,
@@ -74,7 +76,7 @@ export type User = {
           creationTime: newAlert.creationTime,
           conclusionTime: newAlert.conclusionTime,
           description: newAlert.description,
-          resolution: newAlert.resolution,
+          resolution: newAlert.resolution
         }
 
         const response = await axios.put('http://localhost:7000/updateAlert/' + alertId, AlertDTO)
@@ -108,7 +110,7 @@ export type User = {
     }
 
     //UserService.assignAlert(selectedUser.id, newAlert);
-    async assignAlert(alert: AlertDTO): Promise<Alert> {
+    async assignAlert(alert: AlertCreationDTO): Promise<Alert> {
       try {
         console.log(alert)
         const response = await axios.post('http://localhost:7000/alert/', alert)

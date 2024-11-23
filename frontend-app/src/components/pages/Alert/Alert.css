@@ -58,3 +58,45 @@ strong {
   background-color: rgb(232, 232, 232);
   transition: 0.5s;
 }
+
+.dark-mode .alert-container {
+  border: 1px solid #333;
+  background-color: #333;
+  color: white;
+}
+
+.dark-mode .alert-box {
+  background-color: #333;
+}
+
+.dark-mode .description-box {
+  background-color: #333;
+}
+
+.dark-mode .close-button {
+  background-color: #ccc;
+  color: black;
+}
+
+.dark-mode .close-button:hover {
+  background-color: #335;
+}
+
+.dark-mode .silect{
+  background-color: #333;
+  color: white;
+}
+
+.dark-mode .alert-item select:hover {
+  background-color: #333;
+}
+
+.AlertasDiV{
+  align-items: center;
+  justify-content:space-evenly;
+  display: flex;
+}
+
+.alert-box description-box p{
+  align-items: center;
+}
