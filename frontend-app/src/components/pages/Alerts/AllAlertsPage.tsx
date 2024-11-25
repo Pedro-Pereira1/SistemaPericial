@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 
 interface AlertWithUser {
     id: string;
+    title:string;
     category: string;
     subCategory: string;
     origin: string;
@@ -71,6 +72,7 @@ const AllAlertsPage: React.FC = () => {
             // Prepare the updated alert payload
             const updatedAlert: Alert = {
                 id: alertId,
+                title:currentAlert.title,
                 category: currentAlert.category,
                 subCategory: currentAlert.subCategory,
                 origin: currentAlert.origin,
@@ -113,6 +115,7 @@ const AllAlertsPage: React.FC = () => {
                 <table className="alerts-table">
                     <thead>
                         <tr>
+                            <th>Title</th>
                             <th>Category</th>
                             <th>Sub-Category</th>
                             <th>Origin</th>
@@ -123,6 +126,7 @@ const AllAlertsPage: React.FC = () => {
                     <tbody>
                         {alerts.map((alert) => (
                             <tr key={alert.id}>
+                                <td>{alert.title}</td>
                                 <td>{alert.category}</td>
                                 <td>{alert.subCategory}</td>
                                 <td>{alert.origin}</td>

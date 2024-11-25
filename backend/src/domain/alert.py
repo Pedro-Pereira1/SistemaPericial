@@ -2,8 +2,9 @@ import uuid
 from datetime import datetime
 
 class Alert:
-    def __init__(self, category:str, subCategory:str, origin:str, assignedTo:str, status:str):
+    def __init__(self, category:str, subCategory:str, origin:str, assignedTo:str, status:str, last_case:int):
         self.id = uuid.uuid4()
+        self.title = f'[Case#{last_case}] {category}: {subCategory}'
         self.category = category
         self.subCategory = subCategory
         self.origin = origin
@@ -17,6 +18,7 @@ class Alert:
     def to_dict(self):
         return {
             "id": str(self.id),
+            "title": self.title,
             "category": self.category,
             "subCategory": self.subCategory,
             "origin": self.origin,

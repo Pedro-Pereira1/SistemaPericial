@@ -47,3 +47,6 @@ class AlertAdapter:
         Logger.print_info(f"Found the alert: {alertId}.")
         document.pop("_id")
         return document
+    
+    async def num_rows(self):
+        return self.db["alerts"].count_documents({})

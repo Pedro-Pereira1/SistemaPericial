@@ -1,4 +1,5 @@
 interface AlertDTO {
+    title: string;
     category: string;
     subCategory: string;
     origin: string;

@@ -27,6 +27,7 @@ const AlertsToResolve: React.FC = () => {
                 <table className="alerts-table">
                     <thead>
                         <tr>
+                            <th>Title</th>
                             <th>Category</th>
                             <th>Sub-Category</th>
                             <th>Origin</th>
@@ -38,18 +39,16 @@ const AlertsToResolve: React.FC = () => {
                     <tbody>
                         {alerts.map((alert) => (
                             <tr key={alert.id}>
-                                <td>{alert.category}</td>
-                                <td> 
-                                    {alert.status === 'Open' ?(
+                                <td>{alert.status === 'Open' ?(
                                         <Link to={`/alert/${alert.id}`} className="alert-link">
-                                        {alert.subCategory}
+                                        {alert.title}
                                     </Link>
                                     ) : (
-                                        alert.subCategory
+                                        alert.title
                                     )
-                                    }
-                                    
-                                </td>
+                                    }</td>
+                                <td>{alert.category}</td>
+                                <td>{alert.subCategory}</td>
                                 <td>{alert.origin}</td>
                                 <td>{new Date(alert.creationTime).toLocaleString()}</td>
                                 <td>

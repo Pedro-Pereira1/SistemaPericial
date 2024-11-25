@@ -1,5 +1,6 @@
 interface Alert {
     id: string;
+    title: string;
     category: string;
     subCategory: string;
     origin: string;

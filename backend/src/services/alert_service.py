@@ -13,10 +13,11 @@ class AlertService :
 
     async def create_alert(self, alert_dto:AlertDto):
         user = await self.user_service.find_by_email(alert_dto["assignedTo"])
+        last_case = await self.num_rows()+1
         if not user:
             raise ModuleNotFoundError(f"You cannot assign this alert to the user: {alert_dto["assignedTo"]}")
         alert = Alert(alert_dto["category"], alert_dto["subCategory"], alert_dto["origin"], 
-                      alert_dto["assignedTo"], alert_dto["status"])
+                      alert_dto["assignedTo"], alert_dto["status"], last_case)
         return alert
 
     async def get_all_alerts(self):
@@ -40,3 +41,6 @@ class AlertService :
     
     async def find_by_id(self, alertId:str):
         return await self.alert_adapter.find_by_id(alertId)
+    
+    async def num_rows(self):
+        return await self.alert_adapter.num_rows()

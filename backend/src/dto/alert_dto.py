@@ -2,6 +2,7 @@ from typing_extensions import TypedDict, NotRequired
 
 class AlertDto(TypedDict):
     id:NotRequired[str]
+    title: NotRequired[str]
     category:str
     subCategory:str
     origin:str
