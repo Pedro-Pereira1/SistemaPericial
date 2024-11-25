@@ -47,7 +47,7 @@ const Metrics: React.FC = () => {
                 <div className='metrics-container-grid-bottom'>
                     <div className='generated-alerts-div'>
                         <ul>
-                            <li>A</li>
+                            <li>Category: Disponibilidade | Sub-Category: Negação de Serviço | Origin: ds | Assigned To: tier3@shield-ai.com | Status: Open</li>
                             <li>B</li>
                         </ul>
                     </div>
