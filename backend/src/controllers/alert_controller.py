@@ -42,4 +42,7 @@ class AlertController:
     
     async def get_alert_by_id(self, alertId:str):
         return await self.service.find_by_id(alertId)
+    
+    async def generate_random_alerts(self, alert_nums:int):
+        return await self.service.generate_random_alerts(alert_nums)
         

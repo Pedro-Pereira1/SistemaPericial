@@ -50,3 +50,6 @@ class AlertAdapter:
     
     async def num_rows(self):
         return self.db["alerts"].count_documents({})
+    
+    async def ask_for_category(self):
+        return "DDoS"

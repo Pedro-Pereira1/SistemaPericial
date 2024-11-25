@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 class Alert:
-    def __init__(self, category:str, subCategory:str, origin:str, assignedTo:str, status:str, last_case:int):
+    def __init__(self, category:str, subCategory:str, origin:str, assignedTo:str, status:str, last_case:int, start_date: str = None):
         self.id = uuid.uuid4()
         self.title = f'[Case#{last_case}] {category}: {subCategory}'
         self.category = category
@@ -10,7 +10,7 @@ class Alert:
         self.origin = origin
         self.assignedTo = assignedTo
         self.status = status
-        self.creationTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        self.creationTime = start_date if start_date else datetime.now().strftime("%Y-%m-%dT%H:%M:%S")        
         self.conclusionTime = ""
         self.description = "Automatically Generated hehe"
         self.resolution = []

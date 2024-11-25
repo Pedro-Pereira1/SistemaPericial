@@ -89,3 +89,8 @@ class Router:
     async def get_alert_by_id(alertId:str):
         alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
         return await alert_controller.get_alert_by_id(alertId)
+
+    @router.post("/alerts/random/{alert_nums}")
+    async def generate_random_alerts(alert_nums:int):
+        alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        return await alert_controller.generate_random_alerts(alert_nums)
