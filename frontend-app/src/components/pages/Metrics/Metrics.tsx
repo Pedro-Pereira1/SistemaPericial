@@ -2,6 +2,21 @@ import React, { useEffect, useState } from 'react';
 import './Metrics.css';
 
 const Metrics: React.FC = () => {
+    const [numAlerts, setNumAlerts] = useState<number>(0);
+    const [alerts, setAlerts] = useState<string[]>([]);
+    // Handle input change
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(event.target.value, 10);
+        setNumAlerts(isNaN(value) ? 0 : value); // Handle invalid input
+    };
+
+    // Handle button click
+    const handleGenerateAlerts = () => {
+        const newAlerts = Array.from({ length: numAlerts }, (_, index) => 
+            `Alert ${index + 1}: Example alert content`
+        );
+        setAlerts(newAlerts);
+    };
     return (
         <>
             <div className='metrics-container'>
@@ -9,11 +24,15 @@ const Metrics: React.FC = () => {
                     Number of alerts: 
                     <input 
                         type='number' 
-                        className='generate-random-alerts-input'>
-                    </input>
+                        className='generate-random-alerts-input'
+                        value={numAlerts || ''}
+                        onChange={handleInputChange} 
+                    />
                     <button 
-                        className='generate-random-alerts-btn'>
-                            Generate
+                        className='generate-random-alerts-btn'
+                        onClick={handleGenerateAlerts}
+                    >
+                        Generate
                     </button>
                 </div>
                 <div className='metrics-container-grid-top'>
@@ -47,8 +66,10 @@ const Metrics: React.FC = () => {
                 <div className='metrics-container-grid-bottom'>
                     <div className='generated-alerts-div'>
                         <ul>
-                            <li>Category: Disponibilidade | Sub-Category: Negação de Serviço | Origin: ds | Assigned To: tier3@shield-ai.com | Status: Open</li>
-                            <li>B</li>
+                            <li>Exemplo</li>
+                            {alerts.map((alert, index) => (
+                                <li key={index}>{alert}</li>
+                            ))}
                         </ul>
                     </div>
                     <div className='explicable-container'>
