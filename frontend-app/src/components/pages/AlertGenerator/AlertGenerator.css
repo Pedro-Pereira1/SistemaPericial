@@ -34,7 +34,7 @@
     border-radius: 4px;
 }
 
-button {
+.alert-generator-btn {
     padding: 10px 15px;
     background-color: #007bff;
     color: white;
@@ -44,7 +44,7 @@ button {
     width: 300px;
 }
 
-button:disabled {
+.alert-generator-btn:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }

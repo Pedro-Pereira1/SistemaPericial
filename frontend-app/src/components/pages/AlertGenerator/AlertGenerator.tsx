@@ -167,7 +167,7 @@ const AlertGenerator: React.FC = () => {
                         ))}
                     </select>
                 </div>
-                <button
+                <button className='alert-generator-btn'
                     onClick={handleGenerateAlert}
                     disabled={!form.category || !form.subCategory || !form.origin || !form.assignedTo}
                 >

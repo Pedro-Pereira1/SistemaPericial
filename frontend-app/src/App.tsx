@@ -22,6 +22,7 @@ import AlertGenerator from './components/pages/AlertGenerator/AlertGenerator';
 import AlertsToResolve from './components/pages/AlertsToResolve/AlertsToResolve';
 import AllAlertsPage from './components/pages/Alerts/AllAlertsPage';
 import AlertPage from './components/pages/Alert/Alert';
+import Metrics from './components/pages/Metrics/Metrics';
 
 const App: React.FC = () => {
   const [isSidebarClosed, setSidebarClosed] = useState(false);
@@ -160,6 +161,7 @@ const App: React.FC = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<NotFoundPage />} />
                 <Route path="/alert/:id" element={<AlertPage/>} />
+                <Route path="/metrics" element={<Metrics/>} />
               </Routes>
             </div>
           </div>
