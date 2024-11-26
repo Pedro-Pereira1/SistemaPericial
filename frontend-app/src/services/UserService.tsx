@@ -23,7 +23,7 @@ export type User = {
         password: password,
       });
 
-      if(response.data.message == "Invalid email or password."){
+      if(response.data.message === "Invalid email or password." || response.data.message === "The login is invalid"){
         throw new Error("")
       }
       

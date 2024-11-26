@@ -3,6 +3,14 @@ import './Metrics.css';
 import axios from 'axios';
 import UserService from '../../../services/UserService';
 import Alert from '../../../domain/Alert';
+import { Pie } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    ArcElement,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Metrics: React.FC = () => {
     const [selectedModel, setSelectedModel] = useState<string>('Model 1');
@@ -13,7 +21,7 @@ const Metrics: React.FC = () => {
         { label: 'Recall', value: 60 },
         { label: 'Accuracy', value: 95 },
     ]);
-
+    const [progress, setProgress] = useState<number>(0); // State for progress
     const [alerts, setAlerts] = useState<Alert[]>([]);
 
     // Example data for different models
@@ -38,6 +46,10 @@ const Metrics: React.FC = () => {
         ],
     };
 
+    const darkMode = JSON.parse(localStorage.getItem('darkMode') || '{}');
+    const [selectedGraph, setSelectedGraph] = useState<'Category' | 'AssignedUser' | 'Origin'>('Category');
+
+
     // Handle model selection change
     const handleModelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const model = event.target.value;
@@ -53,20 +65,81 @@ const Metrics: React.FC = () => {
         setNumAlerts(value);
     };
 
+    const processAlertsData = (key: keyof Alert) => {
+        const counts: Record<string, number> = {};
+        // Count occurrences for the given key (e.g., 'category', 'assignedTo', 'origin')
+        alerts.forEach((alert) => {
+            const value = (alert[key] as string) || 'Unknown';
+            counts[value] = (counts[value] || 0) + 1;
+        });
+
+        const colors = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', 
+            '#FF595E', '#F1A7A7', '#9B59B6', '#2ECC71', '#FF6F61', '#1F77B4', 
+            '#8E44AD', '#F39C12', '#3498DB', '#E74C3C', '#2ECC71', '#9B59B6', 
+            '#F1C40F', '#2C3E50', '#16A085', '#D35400', '#E67E22', '#8E44AD', 
+            '#1ABC9C', '#7F8C8D', '#9B59B6', '#F39C12', '#D5DBDB', '#27AE60', 
+            '#34495E', '#E74C3C', '#F39C12', '#2980B9', '#FF6347', '#7D3C98', 
+            '#9C27B0', '#FF9800', '#CDDC39', '#3F51B5', '#2196F3', '#FFC107', 
+            '#FF5722', '#00BCD4', '#4CAF50', '#FFEB3B', '#9E9E9E', '#795548', 
+            '#607D8B', '#8BC34A', '#CDDC39', '#FF4081', '#03A9F4', '#8D6E63', 
+            '#4CAF50', '#FF9800', '#009688', '#673AB7', '#F44336', '#FFEB3B', 
+            '#795548', '#9E9E9E', '#607D8B', '#8BC34A', '#E91E63', '#03A9F4', 
+            '#FF7043', '#00BCD4', '#8BC34A', '#9E9E9E', '#FFEB3B', '#FF5722', 
+            '#9C27B0', '#03A9F4', '#8D6E63', '#4CAF50', '#FF9800', '#3F51B5', 
+            '#4CAF50', '#CDDC39', '#FF5722', '#FF9800', '#FF4081', '#8BC34A', 
+            '#00BCD4', '#FF6347', '#4CAF50', '#FFEB3B', '#673AB7', '#E91E63', 
+            '#9E9E9E', '#FF5722', '#F44336', '#795548', '#4CAF50', '#FF9800'
+        ]
+        
+        // Prepare the chart data
+        return {
+            labels: Object.keys(counts),
+            datasets: [
+                {
+                    data: Object.values(counts),
+                    backgroundColor: colors,
+                    hoverBackgroundColor: colors,
+                },
+            ],
+        };
+    };
+
+    const getChartData = () => {
+        switch (selectedGraph) {
+            case 'Category':
+                return processAlertsData('category');
+            case 'AssignedUser':
+                return processAlertsData('assignedTo');
+            case 'Origin':
+                return processAlertsData('origin');
+            default:
+                return { labels: [], datasets: [] };
+        }
+    };
+
     // Handle generating random alerts
     const handleGenerateAlerts = async () => {
+        setProgress(0); // Reset progress
         try {
-            const response = await axios.post('http://localhost:7000/alerts/random/' + numAlerts + '/' + selectedModel);
-            if(response.status != 200){
-                throw new Error("");
+            // Simulate progress
+            for (let i = 1; i <= 100; i++) {
+                await new Promise((resolve) => setTimeout(resolve, 20)); // Simulate delay
+                setProgress(i);
             }
-            let data: Alert[] = await UserService.getAlerts();
-            data = data.slice(data.length - numAlerts);
-            setAlerts(data);
+            // Call the API to generate alerts
+            const response = await axios.post('http://localhost:7000/alerts/random/' + numAlerts + '/' + selectedModel);
+            if (response.status !== 200) {
+                throw new Error("Failed to generate alerts");
+            }
+            const data: Alert[] = await UserService.getAlerts();
+            setAlerts(data.slice(data.length - numAlerts));
         } catch (error) {
-            console.error('Error generating random alerts:', error)
-            window.alert(error)
-        }   
+            console.error('Error generating random alerts:', error);
+            window.alert(error);
+        } finally {
+            setProgress(100); // Ensure progress reaches 100% at the end
+        }
     };
 
     // Navigate to manual alert generation page
@@ -117,10 +190,13 @@ const Metrics: React.FC = () => {
                         Generate Alerts Manually
                     </button>
                 </div>
-
-                
             </div>
-            
+            <div className="progress-bar-container">
+                <div
+                    className="progress-bar"
+                    style={{ width: `${progress}%` }}
+                ></div>
+            </div>
             
             <div className="bottom-grid">
                 {/* Model Metrics Section */}
@@ -197,14 +273,40 @@ const Metrics: React.FC = () => {
                 <div className="grid-item graphs-container">
                     <h3 className="grid-title">Graphs</h3>
                     <div className="graph-div">
-                        <select className="graph-div-select">
-                            <option>Pie</option>
+                        {/* Dropdown to select the graph type */}
+                        <select
+                            className="graph-div-select"
+                            value={selectedGraph}
+                            onChange={(e) =>
+                                setSelectedGraph(e.target.value as 'Category' | 'AssignedUser' | 'Origin')
+                            }
+                        >
+                            <option value="Category">Pie Chart by Category</option>
+                            <option value="AssignedUser">Pie Chart by Assigned User</option>
+                            <option value="Origin">Pie Chart by Origin</option>
                         </select>
-                        <img
-                            className="graph"
-                            src="/images/pie_graph_exampls.svg"
-                            alt="Pie Chart"
+
+                        {/* Render the pie chart */}
+                        {alerts.length > 0 ? (
+                            <Pie
+                            data={getChartData()}
+                            options={{
+                                plugins: {
+                                    legend: {
+                                        labels: {
+                                           color: darkMode ? 'white' : 'black',
+                                        },
+                                    },
+                                    tooltip: {
+                                        bodyColor: darkMode ? 'white' : 'black', // Tooltip text color
+                                        backgroundColor: darkMode ? '#333' : '#fff', // Tooltip text color
+                                    },
+                                },
+                            }}
                         />
+                        ) : (
+                            <p className='NoAlertsYet'>No data to display. Generate some alerts first!</p>
+                        )}
                     </div>
                 </div>
 
