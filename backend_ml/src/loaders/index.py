@@ -1,22 +1,13 @@
 from src import config
 
 controllers = [
-    config.rules_controller,
-    config.general_controller,
-    config.user_controller,
-    config.alert_controller
+    config.ml_controller
 ]
 
 services = [
-    config.rules_service,
-    config.general_service,
-    config.user_service,
-    config.alert_service
+    config.ml_service
 ]
 
 adapters = [
-    config.rules_adapter,
-    config.general_adapter,
-    config.user_adapter,
-    config.alert_adapter
+    config.ml_adapter
 ]

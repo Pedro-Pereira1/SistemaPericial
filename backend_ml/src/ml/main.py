@@ -53,9 +53,6 @@ def graphic_data(df):
 def count(file):
     return file.ClassLabel.value_counts()
 
-
-
-
 if __name__ == '__main__':
     df = importfile()
     print(count(df))
