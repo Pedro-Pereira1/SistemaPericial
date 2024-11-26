@@ -3,6 +3,7 @@ from src.loaders.load_database import load_database
 from src.domain.alert import Alert
 from src.dto.alert_dto import AlertDto
 import random
+import requests
 
 class AlertAdapter:
 
@@ -115,7 +116,10 @@ class AlertAdapter:
         return self.db["alerts"].count_documents({})
     
     async def ask_for_category(self):
-        return random.choice(list(self.categories.keys()))
+        try:
+            return requests.get("http://localhost:6500/predict/").json()["prediction"]
+        except:
+            return "Could not categorize the alert"
     
     async def ask_for_subCategory(self, category):
         return random.choice(self.categories[category]) if category in self.categories else "Indeterminado"

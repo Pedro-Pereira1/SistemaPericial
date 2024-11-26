@@ -15,7 +15,7 @@ class MachineLearningService:
         Logger.print_info(result)
         random_line_dict = random_line.iloc[0].to_dict()   
         random_line_dict = {key: self._to_serializable(value) for key, value in random_line_dict.items()}
-        random_line_dict["prediction"] = self._to_serializable(result[0])
+        random_line_dict["prediction"] = config.model_categories[result[0]]
         return random_line_dict
 
     async def import_random_line(self):
