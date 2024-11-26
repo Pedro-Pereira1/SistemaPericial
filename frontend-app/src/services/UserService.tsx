@@ -22,11 +22,16 @@ export type User = {
         email: email,
         password: password,
       });
+
+      if(response.data.message == "Invalid email or password."){
+        throw new Error("")
+      }
+      
+
       const user: User = response.data;
       return user;
     } catch (error) {
-      console.error("Error posting history:", error);
-      throw error; // Rethrow the error to be handled by the caller
+      return null;
     }
   }
 

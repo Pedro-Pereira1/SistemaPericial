@@ -27,7 +27,6 @@ const History: React.FC = () => {
                 let historyData: Alert[] = await UserService.getAlerts();
                 historyData = historyData.filter(alert => alert.status === 'Closed');                
 
-
                 if (historyData.length === 0) {
                     setError('No history available.');
                 } else {

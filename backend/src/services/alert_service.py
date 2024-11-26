@@ -59,14 +59,14 @@ class AlertService :
     async def num_rows(self):
         return await self.alert_adapter.num_rows()
     
-    async def generate_random_alerts(self, alert_nums):
+    async def generate_random_alerts(self, alert_nums,model):
         users = await self.user_service.get_all_users()
         alerts: list[Alert] = []
         for i in range(0, alert_nums):
             category = await self.alert_adapter.ask_for_category()
             origin = random.choice(countries)
             user = random.choice(users)
-            subCategory = "DDoS-X"
+            subCategory = await self.alert_adapter.ask_for_subCategory(category)
             alert = await self.create_alert_with_date({
                 "category": category,
                 "subCategory": subCategory,

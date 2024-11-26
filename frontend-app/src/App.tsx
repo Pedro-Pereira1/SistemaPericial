@@ -147,7 +147,8 @@ const App: React.FC = () => {
                 <Route path="/website" element={<Website />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/cybermentor" element={<CyberMentor />} />
-                <Route path="/alert-generator" element={<AlertGenerator />} />
+                <Route path="/alert-generator" element={<Metrics />} />
+                <Route path="/manual-alerts" element={<AlertGenerator/>} />
                 <Route path="/all-alerts" element={<AllAlertsPage />} />
                 <Route path="/my-alerts" element={<AlertsToResolve />} />
                 <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystem}/>} />
@@ -161,7 +162,7 @@ const App: React.FC = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<NotFoundPage />} />
                 <Route path="/alert/:id" element={<AlertPage/>} />
-                <Route path="/metrics" element={<Metrics/>} />
+                
               </Routes>
             </div>
           </div>

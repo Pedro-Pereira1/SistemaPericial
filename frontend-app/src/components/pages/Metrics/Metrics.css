@@ -1,117 +1,269 @@
-.metrics-container-grid-top {
+/* General container styling */
+.metrics-container {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-top: 20px;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
 }
 
-.metrics-container-grid-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-top: 20px;
+/* Top-wide container styles */
+.top-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
 .generate-random-alerts-container {
-    overflow: hidden;
-    border-bottom: 2px solid black;
-    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
+
 .generate-random-alerts-input {
-    width: 50px;
-    margin: 0 20px;
+    width: 80px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
+
 .generate-random-alerts-btn {
-    height: 25px;
-    margin: 0;
-    padding: 0 5px;
-    font-size: 14px;
-    background-color: black;
+    padding: 5px 10px;
+    background-color: #007bff;
     color: white;
-    border: 0;
-    border-radius: 5px;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
 }
 
 .generate-random-alerts-btn:hover {
-    background-color: #007bff;
-    transition: 0.2s;
+    background-color: #0056b3;
 }
 
-.model-metrics-container {
-    width: 50%;
-    height: 50%;
+/* Bottom grid layout */
+.bottom-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 200px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    grid-template-columns: repeat(2, 1fr); /* Two equal-width columns */
+    gap: 20px;
+    align-items: stretch; /* Ensure items stretch to the same height */
 }
 
-.model-metrics {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-} 
-
-.graphs-container {
-    height: 50%;
-    overflow: scroll;
-}
-.graph-div {
+/* General grid item styles */
+.grid-item {
+    background-color: #ffffff;
     padding: 20px;
-    overflow: scroll;
-}
-.graph-div img {
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-between; /* Spread content evenly */
     align-items: center;
+}
+
+/* Title styling for grid items */
+.grid-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Model Metrics Container */
+.model-metrics-container .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns of metrics */
+    gap: 20px;
+    width: 100%; /* Ensure full width of container */
+    justify-items: center; /* Center metrics horizontally */
+    align-items: center; /* Align metrics vertically */
+}
+
+.metric-item {
+    text-align: center;
+}
+
+/* Circular metrics */
+.circular-metric {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
     width: 100%;
     height: 100%;
-    overflow: scroll;
-} 
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: #e6e6e6; /* Background ring color */
+    stroke-width: 3;
+}
+
+.progress-ring-fg {
+    fill: none;
+    stroke: #28a745; /* Progress ring color */
+    stroke-width: 3;
+    stroke-linecap: round;
+    transform: rotate(0.25turn);
+    transform-origin: center;
+    transition: stroke-dashoffset 0.5s;
+}
+
+.metric-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.metric-label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Graphs Container */
+.graphs-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Full width */
+    height: 100%; /* Match height of other grid items */
+    text-align: center;
+}
+
+.graph-div {
+    width: 100%; /* Match width of container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 .graph-div-select {
-    margin-left: 20px;
-    overflow: scroll;
+    margin-bottom: 15px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-.generated-alerts-div {
-    width: 50%;
+.graph {
+    max-width: 100%; /* Responsive width */
+    height: auto;
 }
 
+/* Alerts Section */
 .generated-alerts-div ul {
-    list-style-type:none;
-}
-.generated-alerts-div li {
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    padding: 10px 20px;
-    white-space: nowrap;
-    width: 85%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: #007bff #f1f1f1;
-}
-.generated-alerts-div li:hover {
-    scale: 102%;
-    transition: 0.2s;
+    list-style-type: none;
+    padding: 0;
 }
 
-.explicable-container {
-    height: 50%;
-    width: 50%;
-    overflow: scroll;
+.generated-alerts-div li {
+    font-size: 14px;
+    margin-bottom: 5px;
 }
-.explicable-div {
-    padding: 20px;
-    overflow: scroll;
-}
-.explicable-div img {
+
+/* Explanation Section */
+.explicable-container .explicable-div {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    overflow: scroll;
-} 
+    width: 100%; /* Full width */
+    height: 100%; /* Match height of other grid items */
+}
+
+.explicable {
+    max-width: 100%; /* Responsive width */
+    height: auto;
+}
+
+/* Responsive Layout for Smaller Screens */
+@media screen and (max-width: 768px) {
+    .bottom-grid {
+        grid-template-columns: 1fr; /* Single column layout */
+    }
+}
+
+.dark-mode .metrics-container {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+.dark-mode .top-container {
+    background-color: #495057;
+}
+
+.dark-mode .generate-random-alerts-input{
+    background-color: #495057;
+    color: #ffffff;
+}
+.dark-mode .generate-random-alerts-btn {
+    background-color: #343a40;
+    color: white;
+}
+
+.dark-mode .generate-random-alerts-btn:hover {
+    background-color: #0056b3;
+}
+
+.dark-mode .grid-item {
+    background-color: #495057;
+}
+
+.dark-mode .grid-title {
+    color: #ffffff;
+}
+
+.dark-mode .progress-ring-bg {
+    stroke: #343a3f;
+}
+
+.dark-mode .progress-ring-fg {
+    stroke: #28a745;
+}
+
+.dark-mode .metric-value {
+    color: #ffffff;
+}
+
+.dark-mode .metric-label {
+    color: #ffffff;
+}
+
+.dark-mode .graph-div-select {
+    background-color: #495057;
+    color: #ffffff;
+}
+
+.dark-mode .generated-alerts-div li {
+    color: #ffffff;
+}
+
+.dark-mode .explicable {
+    background-color: #495057;
+    color: #ffffff;
+}
+
+.dark-mode .pp{
+    color: #ffffff;
+}
+
+.vertical-bar {
+    width: 1px;
+    height: 40px; /* Adjust the height as needed */
+    background-color: #ddd;
+    margin: 0 10px; /* Space around the bar */
+}
+
+.dark-mode .NoAlertsYet{
+    color: #ffffff;
+}

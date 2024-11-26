@@ -2,8 +2,71 @@ from src.logger import Logger
 from src.loaders.load_database import load_database
 from src.domain.alert import Alert
 from src.dto.alert_dto import AlertDto
+import random
 
 class AlertAdapter:
+
+    categories = {
+        "Código Malicioso": [
+            "Sistema Infetado",
+            "Distribuição de Malware",
+            "Servidor C2",
+            "Configuração de Malware"
+        ],
+        "Disponibilidade": [
+            "Negação de Serviço",
+            "Negação de Serviço Distribuída",
+            "Configuração incorreta",
+            "Sabotagem",
+            "Interrupção"
+        ],
+        "Recolha de Informação": [
+            "Scanning",
+            "Sniffing",
+            "Engenharia Social"
+        ],
+        "Intrusão": [
+            "Comprometimento de Conta Privilegiada",
+            "Comprometimento de Conta Não Privilegiada",
+            "Comprometimento de Aplicação",
+            "Comprometimento de Sistema",
+            "Arrombamento"
+        ],
+        "Tentativa de Intrusão": [
+            "Exploração de Vulnerabilidade",
+            "Tentativa de Login",
+            "Nova assinatura de ataque"
+        ],
+        "Segurança da Informação": [
+            "Acesso não autorizado",
+            "Modificação não autorizada",
+            "Perda de dados",
+            "Exfiltração de Informação"
+        ],
+        "Fraude": [
+            "Utilização indevida ou não autorizada de recursos",
+            "Direitos de autor",
+            "Utilização ilegítima de nome de terceiros",
+            "Phishing"
+        ],
+        "Conteúdo Abusivo": [
+            "SPAM",
+            "Discurso Nocivo",
+            "Exploração sexual de menores, racismo e apologia da violência"
+        ],
+        "Vulnerabilidade": [
+            "Criptografia fraca",
+            "Amplificador DDoS",
+            "Serviços acessíveis potencialmente indesejados",
+            "Revelação de informação",
+            "Sistema vulnerável"
+        ],
+        "Outro": [
+            "Sem tipo",
+            "Indeterminado"
+        ]
+    }
+
     def __init__(self)->None:
         self.db = load_database()
         self.db["alerts"].create_index("id",unique=True,background=True)
@@ -52,4 +115,8 @@ class AlertAdapter:
         return self.db["alerts"].count_documents({})
     
     async def ask_for_category(self):
-        return "DDoS"
+        return random.choice(list(self.categories.keys()))
+    
+    async def ask_for_subCategory(self, category):
+        return random.choice(self.categories[category]) if category in self.categories else "Indeterminado"
+    
