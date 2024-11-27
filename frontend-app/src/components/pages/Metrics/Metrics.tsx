@@ -25,24 +25,30 @@ const Metrics: React.FC = () => {
     const [alerts, setAlerts] = useState<Alert[]>([]);
 
     // Example data for different models
-    const modelsData: { [key: string]: { label: string; value: number }[] } = {
-        'Model 1': [
-            { label: 'F1 Score', value: 70 },
-            { label: 'Precision', value: 85 },
-            { label: 'Recall', value: 60 },
-            { label: 'Accuracy', value: 95 },
-        ],
-        'Model 2': [
+    const modelsData: { [key: string]: { label: string; value: number }[] } = {   
+        'XGBoost': [
             { label: 'F1 Score', value: 80 },
             { label: 'Precision', value: 88 },
             { label: 'Recall', value: 65 },
             { label: 'Accuracy', value: 92 },
         ],
-        'Model 3': [
+        'Random Forest': [
+            { label: 'F1 Score', value: 70 },
+            { label: 'Precision', value: 85 },
+            { label: 'Recall', value: 60 },
+            { label: 'Accuracy', value: 95 },
+        ],
+        'KNN': [
             { label: 'F1 Score', value: 75 },
             { label: 'Precision', value: 82 },
             { label: 'Recall', value: 70 },
             { label: 'Accuracy', value: 90 },
+        ],
+        'CNN + RNN': [
+            { label: 'F1 Score', value: 5 },
+            { label: 'Precision', value: 2 },
+            { label: 'Recall', value: 7 },
+            { label: 'Accuracy', value: 9 },
         ],
     };
 
@@ -130,8 +136,7 @@ const Metrics: React.FC = () => {
     
             // Call the API to generate alerts
             setProgress(30); // Update progress for API call
-            const response = await axios.post(`http://localhost:7000/alerts/random/${numAlerts}/${selectedModel}`);
-            
+            const response = await axios.post(`http://localhost:7000/alerts/random/${numAlerts}/${selectedModel.replace(/\s/g, '')}`);
             if (response.status !== 200) {
                 throw new Error(`API error: ${response.statusText}`);
             }
@@ -191,9 +196,10 @@ const Metrics: React.FC = () => {
                         value={selectedModel}
                         onChange={handleModelChange}
                     >
-                        <option value="Model 1">Model 1</option>
-                        <option value="Model 2">Model 2</option>
-                        <option value="Model 3">Model 3</option>
+                        <option value="XGBoost">XGBoost</option>
+                        <option value="Random Forest">Random Forest</option>
+                        <option value="KNN">KNN</option>
+                        <option value="CNN + RNN">CNN + RNN</option>
                     </select>
 
                     {/* Generate button */}
