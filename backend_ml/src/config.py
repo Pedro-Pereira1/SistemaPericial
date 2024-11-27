@@ -25,3 +25,14 @@ db_connection_string=os.getenv("DB_CONNECTION_STRING")
 abuse_ipdb_api_key=os.getenv("ABUSEIPDB_API_KEY")
 client = MongoClient(db_connection_string)
 client_db_name = "ShieldAI"
+
+model_categories = {
+    0: "Benign",
+    1: "Botnet",
+    2: "Bruteforce",
+    3: "DDoS",
+    4: "DoS",
+    5: "Infiltration",
+    6: "Portscan",
+    7: "Webattack"
+}
