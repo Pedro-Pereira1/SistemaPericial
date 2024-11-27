@@ -118,29 +118,51 @@ const Metrics: React.FC = () => {
         }
     };
 
-    // Handle generating random alerts
     const handleGenerateAlerts = async () => {
+        setAlerts([]); // Clear existing alerts
         setProgress(0); // Reset progress
         try {
-            // Simulate progress
-            for (let i = 1; i <= 100; i++) {
-                await new Promise((resolve) => setTimeout(resolve, 20)); // Simulate delay
+            // Simulate initial setup delay
+            for (let i = 1; i <= 30; i++) {
+                await new Promise((resolve) => setTimeout(resolve, 30)); // Shorter delay for setup
                 setProgress(i);
             }
+    
             // Call the API to generate alerts
-            const response = await axios.post('http://localhost:7000/alerts/random/' + numAlerts + '/' + selectedModel);
+            setProgress(30); // Update progress for API call
+            const response = await axios.post(`http://localhost:7000/alerts/random/${numAlerts}/${selectedModel}`);
+            
             if (response.status !== 200) {
-                throw new Error("Failed to generate alerts");
+                throw new Error(`API error: ${response.statusText}`);
             }
+    
+            // Simulate data processing progress
+            for (let i = 31; i <= 80; i++) {
+                await new Promise((resolve) => setTimeout(resolve, 50)); // Longer delay for processing
+                setProgress(i);
+            }
+    
+            // Fetch updated alerts
             const data: Alert[] = await UserService.getAlerts();
+            if (!data || !Array.isArray(data)) {
+                throw new Error('Unexpected response format from alert service');
+            }
+    
             setAlerts(data.slice(data.length - numAlerts));
+    
+            // Simulate final completion progress
+            for (let i = 81; i <= 100; i++) {
+                await new Promise((resolve) => setTimeout(resolve, 20)); // Finalizing
+                setProgress(i);
+            }
         } catch (error) {
             console.error('Error generating random alerts:', error);
-            window.alert(error);
+            setProgress(0); // Reset progress on error
         } finally {
-            setProgress(100); // Ensure progress reaches 100% at the end
+            setProgress(100); // Ensure progress bar reaches 100% in all cases
         }
     };
+    
 
     // Navigate to manual alert generation page
     const navigateToManualAlertPage = () => {
