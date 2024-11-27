@@ -1,11 +1,14 @@
 import joblib
+import xgboost as xgb
 
 class MachineLearningAdapter:
     def __init__(self)->None:
         self.base_model = joblib.load('src/ml/xgb_model.joblib')
     
     async def predict(self, model:str, random_line):
+        dtest = xgb.DMatrix(random_line)
         if not model:
-           return self.base_model.predict(random_line)
+            return self.base_model.get_booster().predict(dtest)        
         else:
-            raise NotImplementedError("This is not implemented yet")
+            model = joblib.load(f"src//ml//{model}.joblib")
+            return model.predict(random_line)
