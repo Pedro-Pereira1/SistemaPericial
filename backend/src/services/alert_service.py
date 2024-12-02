@@ -63,13 +63,12 @@ class AlertService :
         users = await self.user_service.get_all_users()
         alerts: list[Alert] = []
         for i in range(0, alert_nums):
-            category = await self.alert_adapter.ask_for_category()
+            prediction = await self.alert_adapter.ask_for_category()
             origin = random.choice(countries)
             user = random.choice(users)
-            subCategory = await self.alert_adapter.ask_for_subCategory(category)
             alert = await self.create_alert_with_date({
-                "category": category,
-                "subCategory": subCategory,
+                "category": prediction["category"],
+                "subCategory": prediction["subCategory"],
                 "origin": origin[1],
                 "assignedTo": user["email"],
                 "status":"Open"
