@@ -12,6 +12,8 @@ const AuthPage: React.FC = () => {
     phone: '',
     role: '',
     picture: '',
+    experience: '',
+    categories_preferences: []
   });
 
   const profilePictures = [
@@ -29,7 +31,6 @@ const AuthPage: React.FC = () => {
 
   const handleLogin = async () => {
     const user = await UserService.login(loginDetails.email, loginDetails.password);
-    console.log(user)
     if (user) {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('user', JSON.stringify(user));

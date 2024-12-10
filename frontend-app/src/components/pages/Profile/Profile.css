@@ -57,35 +57,35 @@ strong {
     justify-content: space-between;
 }
 
-.profile-container .edit-button, .logout-button {
-    padding: 10px 20px;
-    font-size: 16px;
+.profile-container .logout-button {
+    background-color: #dc3545;
+    display: inline-block;
+    padding: 10px;
+    font-size: 14px;
+    color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    color: #fff;
-    width: 45%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.3s;
+    margin-top: 20px;
+    text-align: center;
 }
 
-.profile-container .edit-button {
-    background-color: #007bff;
-}
-
-.profile-container .logout-button {
-    background-color: #dc3545;
-}
-
-.profile-container .edit-button:hover {
-    background-color: #0056b3;
-}
 
 .profile-container .logout-button:hover {
     background-color: #b21f2d;
+    transform: scale(1.05);
+}
+
+.profile-container .logout-button:active {
+    background-color: #b21f2d;
+    transform: scale(1);
 }
 
 
 /* Additional dark mode styles */
-body.dark-mode .profile-container {
+.dark-mode .profile-container {
     background: #333;
     color: #f1f1f1;
     box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
@@ -102,3 +102,148 @@ body.dark-mode .profile-container {
 .dark-mode strong {
     color: #f1f1f1;
 }
+
+.preferences-list {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0;
+}
+
+.preferences-list li {
+    list-style-type: none;
+    border: 1px solid rgb(92, 92, 92);
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.preferences-list li:hover {
+    transform: scale(1.02);
+}
+
+
+.remove-button {
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-weight: bold;
+    padding: 0 10px;
+    line-height: 1;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+    height: 20px;
+    width: 20px;
+}
+
+.remove-button img{
+    height: 20px;
+    width: 20px;
+}
+
+.remove-button:hover {
+    transform: scale(1.1);
+    color: #b21f2d;
+}
+
+/* Minimal design for select dropdown */
+.preference-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 10px center;  
+    background-size: 10px;
+}
+
+.preference-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+
+/* Minimal design for add button */
+.add-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.3s;
+    margin-top: 0;
+    text-align: center;
+}
+
+.add-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.add-button:active {
+    background-color: #004085;
+    transform: scale(1);
+}
+
+/* Styling the container for the select and button */
+.add-preference {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.add-preference select {
+    flex: 1; /* Make the select take up remaining space */
+}
+
+.add-preference button {
+    flex-shrink: 0; /* Ensure the button doesn't shrink */
+}
+
+/* Dark mode for select dropdown */
+.dark-mode .preferences-list li {
+    background-color: #333;
+    color: #f1f1f1;
+    border-color: #555;
+}
+
+.dark-mode .preferences-list li:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Dark mode for add button */
+.dark-mode .add-button {
+    background-color: #555;
+    color: #f1f1f1;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .add-button:hover {
+    background-color: #777;
+}
+
+.dark-mode .add-button:active {
+    background-color: #444;
+}
+
+

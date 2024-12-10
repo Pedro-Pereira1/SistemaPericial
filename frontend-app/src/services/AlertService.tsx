@@ -176,6 +176,16 @@ const AlertService = {
       console.error("Error processing alert:", error);
       throw error;
     }
+  },
+
+  getAllCategories: async ():Promise<string[]> => {
+    try {
+      const response = await axios.get(`${config.python}/category`)
+      return response.data
+    }catch(error) {
+      console.error("Error processing alert:", error);
+      throw error;
+    }
   }
 };
 

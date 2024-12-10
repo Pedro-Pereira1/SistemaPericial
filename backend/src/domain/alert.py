@@ -2,7 +2,8 @@ import uuid
 from datetime import datetime
 
 class Alert:
-    def __init__(self, category:str, subCategory:str, origin:str, assignedTo:str, status:str, last_case:int, start_date: str = None):
+    def __init__(self, category:str, subCategory:str, origin:str, assignedTo:str, status:str, 
+                 last_case:int, priority:float, start_date: str = None):
         self.id = uuid.uuid4()
         self.title = f'[Case#{last_case}] {category}: {subCategory}'
         self.category = category
@@ -14,6 +15,7 @@ class Alert:
         self.conclusionTime = ""
         self.description = "Automatically Generated hehe"
         self.resolution = []
+        self.priority = priority
     
     def to_dict(self):
         return {
@@ -27,7 +29,9 @@ class Alert:
             "creationTime": self.creationTime,
             "conclusionTime": self.conclusionTime,
             "description": self.description,
-            "resolution": self.resolution
+            "resolution": self.resolution,
+            "priority": self.priority
+
         }
 
     

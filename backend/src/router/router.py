@@ -9,6 +9,7 @@ from src.controllers.alert_controller import AlertController
 from src.dto.user_dto import UserDto
 from src.dto.user_login_dto import UserLoginDto
 from src.dto.alert_dto import AlertDto
+from src.dto.set_preferences_dto import SetPreferencesDto
 
 router = APIRouter()
 
@@ -69,7 +70,7 @@ class Router:
         alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
         return await alert_controller.find_alerts_by_user_id(id)
     
-    @router.get("/userById/{id}")
+    @router.get("/user/id/{id}")
     async def get_user_by_id(id:str):
         user_controller:UserController = loader.resolve(config.user_controller["name"])
         return await user_controller.find_by_id(id)
@@ -96,3 +97,13 @@ class Router:
     async def generate_random_alerts(alert_nums:int, model:str):
         alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
         return await alert_controller.generate_random_alerts(alert_nums, model)
+    
+    @router.get("/category")
+    async def get_all_categories():
+        user_controller:UserController = loader.resolve(config.user_controller["name"])
+        return await user_controller.get_all_categories()
+    
+    @router.put("/user/preferences")
+    async def update_user(dto:SetPreferencesDto):
+        user_controller:UserController = loader.resolve(config.user_controller["name"])
+        return await user_controller.update_user(dto["email"], dto["preferences"])

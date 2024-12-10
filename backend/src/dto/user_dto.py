@@ -1,4 +1,4 @@
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict, NotRequired
 
 class UserDto(TypedDict):
     name:str
@@ -7,3 +7,5 @@ class UserDto(TypedDict):
     phone:str
     role:str
     picture:str
+    experience_score:NotRequired[float]
+    categories_preferences:NotRequired[list[str]]

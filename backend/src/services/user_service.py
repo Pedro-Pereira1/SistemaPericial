@@ -4,6 +4,7 @@ from src import config
 from src.domain.user import User
 from src.dto.user_dto import UserDto
 from src.logger import Logger
+from src.domain.category import Category
 
 import hashlib
 import os
@@ -68,4 +69,24 @@ class UserService:
         return await self.user_adapter.delete_all()
     
     async def find_by_id(self, user_id:str):
-        return await self.user_adapter.find_by_id(user_id)
+        user = await self.user_adapter.find_by_id(user_id)
+        user.pop("_id")
+        return user
+    
+    async def get_all_categories(self):
+        return [category.value for category in Category]
+    
+    async def update_user(self, email:str, preferences:list[str]):
+        user_dict = await self.user_adapter.find_by_email(email)
+        user = User(
+            id=user_dict["id"],
+            name=user_dict["name"],
+            email=user_dict["email"],
+            password=user_dict["password"],
+            phone=user_dict["phone"],
+            role=user_dict["role"],
+            picture=user_dict["picture"],
+        )
+        user.set_salt(user_dict["salt"])
+        user.set_preferences(preferences)
+        await self.user_adapter.save(user)

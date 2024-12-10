@@ -10,6 +10,7 @@ interface Alert {
     conclusionTime: string;
     description: string;
     resolution: string[];
+    priority: string;
 }
 
 export default Alert;

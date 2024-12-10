@@ -11,7 +11,7 @@ class UserController:
     async def create_user(self, user_dto:UserDto):
         user = await self.user_service.create_user(user_dto)
         await self.user_service.save_user(user)
-        return user
+        return user.to_dict()
     
     async def get_all_users(self):
         return await self.user_service.get_all_users()
@@ -35,3 +35,9 @@ class UserController:
     
     async def find_by_id(self, user_id:str):
         return await self.user_service.find_by_id(user_id)
+
+    async def get_all_categories(self):
+        return await self.user_service.get_all_categories()
+    
+    async def update_user(self, email:str, preferences:list[str]):
+        return await self.user_service.update_user(email, preferences)

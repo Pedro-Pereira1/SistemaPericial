@@ -12,3 +12,4 @@ class AlertDto(TypedDict):
     conclusionTime:NotRequired[str]
     description:NotRequired[str]
     resolution:NotRequired[list[str]]
+    priority:str

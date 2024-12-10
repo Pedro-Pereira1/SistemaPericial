@@ -1,7 +1,7 @@
 import axios from "axios";
 import Alert from "../domain/Alert";
-import AlertDTO from "../domain/AlertDTO";
 import AlertCreationDTO from "../domain/AlertCreationDTO";
+import config from "../config";
 
 // services/UserService.ts
 export type User = {
@@ -12,6 +12,8 @@ export type User = {
   phone: string;
   role: string;
   picture: string;
+  experience: string;
+  categories_preferences: string[];
 };
   
   class UserService {
@@ -59,7 +61,7 @@ export type User = {
 
     async getUserById(id: string): Promise<User> {
       try {
-        const response = await axios.get('http://localhost:7000/userById/' + id)
+        const response = await axios.get('http://localhost:7000/user/id/' + id)
         const user: User = response.data;
         return user;
       } catch (error) {
@@ -84,7 +86,7 @@ export type User = {
           resolution: newAlert.resolution
         }
 
-        const response = await axios.put('http://localhost:7000/updateAlert/' + alertId, AlertDTO)
+        await axios.put('http://localhost:7000/updateAlert/' + alertId, AlertDTO)
         return;
       } catch (error) {
         console.error("Error posting history:", error);
@@ -122,7 +124,20 @@ export type User = {
         return response.data;
       } catch (error) {
         console.error("Error posting history:", error);
-        throw error; // Rethrow the error to be handled by the caller
+        throw error;
+      }
+    }
+
+    async updateUser(email:string, preferences:string[]) {
+      try {
+        const response = await axios.put(`${config.python}/user/preferences`, {
+          email: email,
+          preferences: preferences
+        })
+        return response.data;
+      } catch (error) {
+        console.error("Error posting history:", error);
+        throw error;
       }
     }
 

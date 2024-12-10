@@ -1,4 +1,7 @@
 import uuid
+from src.domain.category import Category
+from uuid import UUID
+
 class User:
     '''
     Constructor
@@ -10,8 +13,10 @@ class User:
     @param picture - the picture as a string
     '''
     def __init__(self, name: str, email:str, password:str,
-        phone:str, role:str, picture:str):
-        self.id = uuid.uuid4()
+        phone:str, role:str, picture:str, experience_score:str = 0, 
+        categories_preferencess:list[Category] = [], id:str = str(uuid.uuid4())
+    ):
+        self.id = id
         self.name = name
         self.email = email
         self.password = password
@@ -19,17 +24,21 @@ class User:
         self.role = role
         self.picture = picture
         self.salt = ""
+        self.experience = experience_score
+        self.categories_preferences = categories_preferencess
     
     def to_dict(self):
         return {
-            "id": str(self.id),
+            "id": self.id,
             "name": self.name,  
             "email": self.email,
             "password":self.password,
             "phone":self.phone,
             "role":self.role,
             "picture":self.picture,
-            "salt":self.salt
+            "salt":self.salt,
+            "experience_score": self.experience,
+            "categories_preferences": [category.value for category in self.categories_preferences]
         }
     
     def set_salt(self, salt:str):
@@ -37,3 +46,8 @@ class User:
 
     def get_salt(self):
         return self.salt
+    
+    def set_preferences(self, preferences:list[str]):
+        self.categories_preferences = [
+            Category[preference.upper()] for preference in preferences if preference.upper() in Category.__members__
+        ]

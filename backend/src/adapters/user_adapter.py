@@ -10,7 +10,8 @@ class UserAdapter:
     async def save(self, user:User):
         Logger.print_info("Saving the user: " + user.name)
         user_dict = user.to_dict()
-        self.db["users"].insert_one(user_dict)
+        print(user_dict)
+        self.db["users"].find_one_and_replace(filter={"email": user_dict["email"]}, replacement=user_dict, upsert=True)
         return user
     
     async def find_all(self) -> list:
