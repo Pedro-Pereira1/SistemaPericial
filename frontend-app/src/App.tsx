@@ -23,6 +23,7 @@ import AlertsToResolve from './components/pages/AlertsToResolve/AlertsToResolve'
 import AllAlertsPage from './components/pages/Alerts/AllAlertsPage';
 import AlertPage from './components/pages/Alert/Alert';
 import Metrics from './components/pages/Metrics/Metrics';
+import UserManager from './components/pages/userManager/UserManager';
 
 const App: React.FC = () => {
   const [isSidebarClosed, setSidebarClosed] = useState(false);
@@ -83,6 +84,7 @@ const App: React.FC = () => {
                 <>
                   <li><Link to="/alert-generator"><i className='bx bxs-show'></i><span className="link_name">Alert Generator</span></Link></li>
                   <li><Link to="/all-alerts"><i className='bx bxs-data'></i><span className="link_name">All Alerts</span></Link></li>
+                  <li><Link to="/user-manager"><i className='bx bxs-user-account'></i><span className="link_name">User Manager</span></Link></li>
                 </>
               ) : (
                 <li><Link to="/my-alerts"><i className='bx bx-alarm-exclamation'></i><span className="link_name">My Alerts</span></Link></li>
@@ -151,6 +153,7 @@ const App: React.FC = () => {
                 <Route path="/manual-alerts" element={<AlertGenerator/>} />
                 <Route path="/all-alerts" element={<AllAlertsPage />} />
                 <Route path="/my-alerts" element={<AlertsToResolve />} />
+                <Route path="/user-manager" element={<UserManager />} />
                 <Route path="/alerts/multiple-login-failures" element={<AlertPage_MultipleLoginFailuresForAUserAccount expert_system={expertSystem}/>} />
                 <Route path="/alerts/changes-made-to-the-firewall" element={<AlertPage_CMF expert_system={expertSystem}/>} />
                 <Route path="/alerts/simultaneous-login-activity" element={<AlertPage_SLA expert_system={expertSystem}/>} />
