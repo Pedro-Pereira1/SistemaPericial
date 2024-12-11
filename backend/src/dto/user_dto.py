@@ -1,6 +1,7 @@
 from typing_extensions import TypedDict, NotRequired
 
 class UserDto(TypedDict):
+    id:NotRequired[str]
     name:str
     email:str
     password:str

@@ -39,5 +39,8 @@ class UserController:
     async def get_all_categories(self):
         return await self.user_service.get_all_categories()
     
-    async def update_user(self, email:str, preferences:list[str]):
-        return await self.user_service.update_user(email, preferences)
+    async def update_user_preferences(self, email:str, preferences:list[str]):
+        return await self.user_service.update_user_preferences(email, preferences)
+    
+    async def update_user(self, user:UserDto):
+        return await self.user_service.update_user(user)

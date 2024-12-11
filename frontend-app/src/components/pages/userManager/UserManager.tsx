@@ -1,16 +1,8 @@
-// UserManager.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './UserManager.css';
-
-interface User {
-  id: string;
-  name: string;
-  picture: string;
-  experience_score: number;
-  role: string,
-  email: string
-}
+import Slider from '@mui/material/Slider';
+import UserService, { User } from '../../../services/UserService';
 
 const UserManager: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -46,16 +38,16 @@ const UserManager: React.FC = () => {
     setScores({ ...scores, [id]: value });
   };
 
-  const handleSaveUser = async (id: string, email: string) => {
-    setSaving({ ...saving, [id]: true });
+  const handleSaveUser = async (user: User) => {
+    setSaving({ ...saving, [user.id]: true });
     try {
-      const updatedUser = { experience_score: scores[id] };
-      //await axios.put(`/api/users/${id}`, updatedUser); // Replace with your actual API endpoint
-      console.log(`Saved score for user ${email}:`, scores[id]);
+      user.experience_score = scores[user.id]
+      const updatedUser = await UserService.updateUser(user)
+      console.log(`Saved score for user ${user.email}:`, scores[user.id]);
     } catch (err) {
-      console.error(`Failed to save score for user ${id}:`, err);
+      console.error(`Failed to save score for user ${user.id}:`, err);
     } finally {
-      setSaving({ ...saving, [id]: false });
+      setSaving({ ...saving, [user.id]: false });
     }
   };
 
@@ -73,24 +65,20 @@ const UserManager: React.FC = () => {
               <p className="user-email">{user.email}</p>
               <p className="user-role">{user.role}</p>
               <div className="score-selector">
-                <button
-                  onClick={() => handleScoreChange(user.id, Math.max(0, scores[user.id] - 1))}
-                  className="arrow-button"
-                  disabled={saving[user.id]}
-                >
-                  -
-                </button>
-                <span>{scores[user.id]}</span>
-                <button
-                  onClick={() => handleScoreChange(user.id, Math.min(10, scores[user.id] + 1))}
-                  className="arrow-button"
-                  disabled={saving[user.id]}
-                >
-                  +
-                </button>
+                <Slider
+                  size="small"
+                  value={scores[user.id]} // Bind to the score state
+                  min={0} // Define the minimum value
+                  max={100} // Define the maximum value
+                  aria-label="Experience Score"
+                  valueLabelDisplay="auto"
+                  onChange={(event, newValue) =>
+                    handleScoreChange(user.id, newValue as number)
+                  }
+                />
               </div>
               <button
-                onClick={() => handleSaveUser(user.id,user.email)}
+                onClick={() => handleSaveUser(user)}
                 className="save-button"
                 disabled={saving[user.id]}
               >

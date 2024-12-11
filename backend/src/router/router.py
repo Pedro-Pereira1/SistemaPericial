@@ -104,6 +104,11 @@ class Router:
         return await user_controller.get_all_categories()
     
     @router.put("/user/preferences")
-    async def update_user(dto:SetPreferencesDto):
+    async def update_user_preferences(dto:SetPreferencesDto):
         user_controller:UserController = loader.resolve(config.user_controller["name"])
-        return await user_controller.update_user(dto["email"], dto["preferences"])
+        return await user_controller.update_user_preferences(dto["email"], dto["preferences"])
+    
+    @router.put("/user")
+    async def update_user(dto:UserDto):
+        user_controller:UserController = loader.resolve(config.user_controller["name"])
+        return await user_controller.update_user(dto)

@@ -14,9 +14,8 @@ class User:
     '''
     def __init__(self, name: str, email:str, password:str,
         phone:str, role:str, picture:str, experience_score:str = 0, 
-        categories_preferencess:list[Category] = [], id:str = str(uuid.uuid4())
-    ):
-        self.id = id
+        categories_preferencess:list[Category] = [], id:str = None):
+        self.id = str(uuid.uuid4()) if not id else id
         self.name = name
         self.email = email
         self.password = password

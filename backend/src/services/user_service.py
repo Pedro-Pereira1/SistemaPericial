@@ -76,7 +76,7 @@ class UserService:
     async def get_all_categories(self):
         return [category.value for category in Category]
     
-    async def update_user(self, email:str, preferences:list[str]):
+    async def update_user_preferences(self, email:str, preferences:list[str]):
         user_dict = await self.user_adapter.find_by_email(email)
         user = User(
             id=user_dict["id"],
@@ -90,3 +90,30 @@ class UserService:
         user.set_salt(user_dict["salt"])
         user.set_preferences(preferences)
         await self.user_adapter.save(user)
+
+    async def update_user(self, dto:UserDto) -> dict:
+        # Because of the password we have to get all the user data from the database
+        print(dto)
+        user_dict:dict = await self.user_adapter.find_by_id(dto["id"])
+
+        # Validate the user existance
+        if not user_dict:
+            raise FileNotFoundError("This user does not exist.")
+        
+        user = User(
+            id=dto["id"],
+            name=dto["name"],
+            email=dto["email"],
+            phone=dto["phone"],
+            password=user_dict["password"],
+            role=dto["role"],
+            picture=dto["picture"],
+            experience_score=dto["experience_score"],
+            categories_preferencess=dto["categories_preferences"]
+        )
+        
+        # Set the falt that came from the database
+        user.set_salt(user_dict["salt"])
+
+        user = await self.user_adapter.save(user)
+        return user.to_dict()

@@ -12,7 +12,7 @@ export type User = {
   phone: string;
   role: string;
   picture: string;
-  experience: string;
+  experience_score: number;
   categories_preferences: string[];
 };
   
@@ -128,12 +128,24 @@ export type User = {
       }
     }
 
-    async updateUser(email:string, preferences:string[]) {
+    async updateUserPreferences(email:string, preferences:string[]) {
       try {
         const response = await axios.put(`${config.python}/user/preferences`, {
           email: email,
           preferences: preferences
         })
+        return response.data;
+      } catch (error) {
+        console.error("Error posting history:", error);
+        throw error;
+      }
+    }
+
+    async updateUser(user:User) {
+      
+      try {
+        console.log(user)
+        const response = await axios.put(`${config.python}/user`, user)
         return response.data;
       } catch (error) {
         console.error("Error posting history:", error);

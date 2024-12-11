@@ -39,7 +39,7 @@ const Profile: React.FC = () => {
         if (!user) return;
         try {
             const updatedUser = { ...user, categories_preferences: preferences };
-            await UserService.updateUser(updatedUser.email, preferences);
+            await UserService.updateUserPreferences(updatedUser.email, preferences);
             setUser(updatedUser);
             localStorage.setItem('user', JSON.stringify(updatedUser));
             alert('Profile saved successfully!');

@@ -31,7 +31,6 @@ class Alert:
             "description": self.description,
             "resolution": self.resolution,
             "priority": self.priority
-
         }
 
     
