@@ -69,3 +69,5 @@ db_connection_string=os.getenv("DB_CONNECTION_STRING")
 abuse_ipdb_api_key=os.getenv("ABUSEIPDB_API_KEY")
 client = MongoClient(db_connection_string)
 client_db_name = "ShieldAI"
+
+backend_url="http://localhost:7000"

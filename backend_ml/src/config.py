@@ -61,3 +61,5 @@ model_categories = {
     31: {"category": "Webattack", "subCategory": "XSS"},
     32: {"category": "Webattack", "subCategory": "Bruteforce"}
 }
+
+backend_url="http://localhost:7000"

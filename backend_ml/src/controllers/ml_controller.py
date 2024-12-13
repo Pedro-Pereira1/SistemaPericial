@@ -8,3 +8,6 @@ class MachineLearningController:
 
     async def predict(self, model:str):
         return await self.ml_service.predict(model)
+    
+    async def genetic(self):
+        return await self.ml_service.genetic_algorithm()

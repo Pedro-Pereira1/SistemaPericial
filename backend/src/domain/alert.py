@@ -3,8 +3,8 @@ from datetime import datetime
 
 class Alert:
     def __init__(self, category:str, subCategory:str, origin:str, assignedTo:str, status:str, 
-                 last_case:int, priority:float, start_date: str = None):
-        self.id = uuid.uuid4()
+                 last_case:int, priority:float, start_date: str = None, id:str = None):
+        self.id = str(uuid.uuid4()) if not id else id
         self.title = f'[Case#{last_case}] {category}: {subCategory}'
         self.category = category
         self.subCategory = subCategory
@@ -36,3 +36,5 @@ class Alert:
     
     def change_status(self, status:str):
         self.status = status
+    def assign(self, email:str):
+        self.assignedTo = email

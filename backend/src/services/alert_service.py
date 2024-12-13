@@ -7,6 +7,9 @@ from src.dto.alert_dto import AlertDto
 import random
 from src.constants import countries
 from src import utils
+import httpx
+from src.domain.user import User
+import asyncio
 
 
 
@@ -21,7 +24,7 @@ class AlertService :
         if not user:
             raise ModuleNotFoundError(f"You cannot assign this alert to the user: {alert_dto["assignedTo"]}")
         alert = Alert(alert_dto["category"], alert_dto["subCategory"], alert_dto["origin"], 
-                      alert_dto["assignedTo"], alert_dto["status"], last_case)
+                        '', alert_dto["status"], last_case, alert_dto["priority"])
         return alert
     
     async def create_alert_with_date(self, alert_dto:AlertDto):
@@ -30,8 +33,7 @@ class AlertService :
         random_date = await utils.random_full_date_last_month()
         if not user:
             raise ModuleNotFoundError(f"You cannot assign this alert to the user: {alert_dto["assignedTo"]}")
-        alert = Alert(alert_dto["category"], alert_dto["subCategory"], alert_dto["origin"], 
-                      alert_dto["assignedTo"], alert_dto["status"], last_case, random_date)
+        alert = Alert(alert_dto["category"], alert_dto["subCategory"], alert_dto["origin"], '', alert_dto["status"], last_case, random.randint(1,5), random_date)
         return alert
 
     async def get_all_alerts(self):
@@ -59,10 +61,11 @@ class AlertService :
     async def num_rows(self):
         return await self.alert_adapter.num_rows()
     
-    async def generate_random_alerts(self, alert_nums,model):
+    async def generate_random_alerts(self, alert_nums, model):
         users = await self.user_service.get_all_users()
         alerts: list[Alert] = []
-        for i in range(0, alert_nums):
+
+        async def create_and_save_alert():
             prediction = await self.alert_adapter.ask_for_category()
             origin = random.choice(countries)
             user = random.choice(users)
@@ -71,8 +74,44 @@ class AlertService :
                 "subCategory": prediction["subCategory"],
                 "origin": origin[1],
                 "assignedTo": user["email"],
-                "status":"Open"
+                "status": "Open"
             })
             await self.save_alert(alert)
-            alerts.append(alert)
+            return alert
+
+        # Run all alert creation tasks concurrently
+        alert_tasks = [create_and_save_alert() for _ in range(alert_nums)]
+        alerts = await asyncio.gather(*alert_tasks)
         return alerts
+
+    
+    async def genetic_results(self):
+        async with httpx.AsyncClient() as client:
+            response = await client.get("http://localhost:6500/genetic")
+        if response.status_code == 200:
+            return response.json()
+        raise Exception(f"Error fetching genetic results: {response.status_code}")
+        
+    async def assign_alerts_by_user(self, results: list):
+        counter = await self.num_rows()
+        async def assign_task(result):
+            user_dict =  await self.user_service.find_by_id(result[1])
+            alert_dict = await self.alert_adapter.find_by_id(result[0])
+            alert: Alert = Alert(
+                alert_dict["category"],
+                alert_dict["subCategory"],
+                alert_dict["origin"],
+                user_dict["email"],
+                alert_dict["status"],
+                counter+1,
+                alert_dict["priority"],
+                alert_dict["creationTime"],
+                alert_dict["id"]
+            )
+            print(alert.to_dict())
+            await self.alert_adapter.save(alert)
+
+        # Run all assignments concurrently
+        tasks = [assign_task(result) for result in results]
+        await asyncio.gather(*tasks)
+

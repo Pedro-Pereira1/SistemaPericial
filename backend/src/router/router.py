@@ -10,6 +10,7 @@ from src.dto.user_dto import UserDto
 from src.dto.user_login_dto import UserLoginDto
 from src.dto.alert_dto import AlertDto
 from src.dto.set_preferences_dto import SetPreferencesDto
+import asyncio
 
 router = APIRouter()
 
@@ -91,7 +92,11 @@ class Router:
         alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
         return await alert_controller.get_alert_by_id(alertId)
 
-
+    @router.get("/alerts")
+    async def get_all_alerts():
+        alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
+        return await alert_controller.get_all_alerts()
+    
     #axios.post('http://localhost:7000/alerts/random/' + numAlerts,selectedModel);
     @router.post("/alerts/random/{alert_nums}/{model}")
     async def generate_random_alerts(alert_nums:int, model:str):

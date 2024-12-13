@@ -44,5 +44,9 @@ class AlertController:
         return await self.service.find_by_id(alertId)
     
     async def generate_random_alerts(self, alert_nums:int, model:str):
-        return await self.service.generate_random_alerts(alert_nums,model)
+        alerts = await self.service.generate_random_alerts(alert_nums,model)
+        print("SENDING REQUEST")
+        genetic_results = await self.service.genetic_results()
+        return await self.service.assign_alerts_by_user(genetic_results)
+
         

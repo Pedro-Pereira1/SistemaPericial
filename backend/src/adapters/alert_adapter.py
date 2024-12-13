@@ -75,7 +75,7 @@ class AlertAdapter:
     async def save(self, alert:Alert):
         Logger.print_info("Saving Alert")
         alert_dict = alert.to_dict()
-        self.db["alerts"].insert_one(alert_dict)
+        self.db["alerts"].find_one_and_replace(filter={"id":alert_dict["id"]}, replacement=alert_dict, upsert=True)
         return alert
     
     async def find_all(self) -> list:
