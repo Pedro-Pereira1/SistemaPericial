@@ -44,3 +44,6 @@ class UserController:
     
     async def update_user(self, user:UserDto):
         return await self.user_service.update_user(user)
+    
+    async def find_user_to_work(self):
+        return await self.user_service.find_user_to_work()

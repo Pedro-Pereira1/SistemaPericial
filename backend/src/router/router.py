@@ -117,3 +117,8 @@ class Router:
     async def update_user(dto:UserDto):
         user_controller:UserController = loader.resolve(config.user_controller["name"])
         return await user_controller.update_user(dto)
+    
+    @router.get("/user/work")
+    async def find_user_to_work():
+        user_controller:UserController = loader.resolve(config.user_controller["name"])
+        return await user_controller.find_user_to_work()

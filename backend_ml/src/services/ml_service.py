@@ -42,9 +42,9 @@ class MachineLearningService:
         return value
     
     async def genetic_algorithm(self):
-        alerts:list[Alert] = [Alert(alert["id"], alert["priority"], alert["origin"], alert["creationTime"]) for alert in await self.get_all_alerts()]
+        alerts:list[Alert] = [Alert(alert["id"], alert["priority"], alert["origin"], alert["creationTime"], alert["category"]) for alert in await self.get_all_alerts()]
         users:list[User] = [User(user["id"], user["experience_score"], user["categories_preferences"]) for user in await self.get_all_users()]
-        alerts = genetic_algorithm(alerts, users, 10, 2)
+        alerts = genetic_algorithm(alerts, users, 10000, 2)
         return alerts
 
     async def get_all_alerts(self) -> list[dict]:
@@ -54,7 +54,7 @@ class MachineLearningService:
         return None
     
     async def get_all_users(self) -> list[dict]:
-        response = requests.get(f"{config.backend_url}/user")
+        response = requests.get(f"{config.backend_url}/user/work")
         if response.status_code == 200:
             return response.json()
         return None

@@ -33,4 +33,15 @@ class UserAdapter:
     
     async def find_by_id(self, user_id:str):
         return self.db["users"].find_one({"id":user_id})
+    
+    async def find_user_to_work(self) -> list:
+        cursor = self.db["users"].find({"role": {"$ne": "SOC Manager"}})
+
+        documents = []
+        for document in cursor:
+            document.pop("_id") 
+            documents.append(document)
+
+        return documents
+        
 

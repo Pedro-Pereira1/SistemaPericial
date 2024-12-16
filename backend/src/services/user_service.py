@@ -109,11 +109,14 @@ class UserService:
             role=dto["role"],
             picture=dto["picture"],
             experience_score=dto["experience_score"],
-            categories_preferencess=dto["categories_preferences"]
         )
         
         # Set the falt that came from the database
         user.set_salt(user_dict["salt"])
+        user.set_preferences(dto["categories_preferences"])
 
         user = await self.user_adapter.save(user)
         return user.to_dict()
+    
+    async def find_user_to_work(self):
+        return await self.user_adapter.find_user_to_work()
