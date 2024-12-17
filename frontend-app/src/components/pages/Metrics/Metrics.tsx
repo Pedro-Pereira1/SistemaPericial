@@ -13,36 +13,30 @@ import {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Metrics: React.FC = () => {
-    const [selectedModel, setSelectedModel] = useState<string>('Model 1');
+    const [selectedModel, setSelectedModel] = useState<string>('XGBoost');
     const [numAlerts, setNumAlerts] = useState<number>(1);
-    const [metrics, setMetrics] = useState([
-        { label: 'F1 Score', value: 70 },
-        { label: 'Precision', value: 85 },
-        { label: 'Recall', value: 60 },
-        { label: 'Accuracy', value: 95 },
-    ]);
     const [progress, setProgress] = useState<number>(0); // State for progress
     const [alerts, setAlerts] = useState<Alert[]>([]);
 
     // Example data for different models
     const modelsData: { [key: string]: { label: string; value: number }[] } = {   
         'XGBoost': [
-            { label: 'F1 Score', value: 80 },
-            { label: 'Precision', value: 88 },
-            { label: 'Recall', value: 65 },
-            { label: 'Accuracy', value: 92 },
+            { label: 'F1 Score', value: 98.51 },
+            { label: 'Precision', value: 98.57 },
+            { label: 'Recall', value: 98.93 },
+            { label: 'Accuracy', value: 98.93 },
         ],
         'Random Forest': [
-            { label: 'F1 Score', value: 70 },
-            { label: 'Precision', value: 85 },
-            { label: 'Recall', value: 60 },
-            { label: 'Accuracy', value: 95 },
+            { label: 'F1 Score', value: 98.37 },
+            { label: 'Precision', value: 98.13 },
+            { label: 'Recall', value: 98.67 },
+            { label: 'Accuracy', value: 98.67 },
         ],
-        'KNN': [
-            { label: 'F1 Score', value: 75 },
-            { label: 'Precision', value: 82 },
-            { label: 'Recall', value: 70 },
-            { label: 'Accuracy', value: 90 },
+        'LGBM': [
+            { label: 'F1 Score', value: 95 },
+            { label: 'Precision', value: 95.06 },
+            { label: 'Recall', value: 94.96 },
+            { label: 'Accuracy', value: 94.96 },
         ],
         'CNN + RNN': [
             { label: 'F1 Score', value: 5 },
@@ -52,6 +46,7 @@ const Metrics: React.FC = () => {
         ],
     };
 
+    const [metrics, setMetrics] = useState(modelsData['XGBoost']);
     const darkMode = JSON.parse(localStorage.getItem('darkMode') || '{}');
     const [selectedGraph, setSelectedGraph] = useState<'Category' | 'AssignedUser' | 'Origin'>('Category');
 
@@ -198,7 +193,7 @@ const Metrics: React.FC = () => {
                     >
                         <option value="XGBoost">XGBoost</option>
                         <option value="Random Forest">Random Forest</option>
-                        <option value="KNN">KNN</option>
+                        <option value="LGBM">LGBM</option>
                         <option value="CNN + RNN">CNN + RNN</option>
                     </select>
 
