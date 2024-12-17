@@ -50,7 +50,7 @@ def fitness(individual: dict[str, List[str]], alerts: List[Alert], users: List[U
                 score -= (estimated_time - time_limit) * 2  # Penalty for time overrun
 
             # Penalize alerts being processed out of order
-            if alert.priority < previous_priority:  # A higher-priority alert is scheduled after a lower-priority one
+            if alert.priority < previous_priority:  
                 score -= 50 * (previous_priority - alert.priority)  # Penalty based on priority difference
 
             # Reward for matching user preferences
@@ -59,47 +59,49 @@ def fitness(individual: dict[str, List[str]], alerts: List[Alert], users: List[U
 
             previous_priority = alert.priority  # Update the last processed priority
 
-    # Penalize workloads exceeding 8 hours (480 minutes)
-    for user_id, workload in user_workload.items():
-        if workload > 480:
-            print("Someone overworked")
-            score -= (workload - 480) * 5  # Severe penalty for overwork
+        # Penalize workloads exceeding 8 hours (480 minutes)
+        for user_id, workload in user_workload.items():
+            if workload > 480:
+                score -= (workload - 480) * 5  # Severe penalty for overwork
 
-    # Calculate average workload for balancing
-    total_workload = sum(user_workload.values())
-    avg_workload = total_workload / len(users)
+        # Calculate average workload for balancing
+        total_workload = sum(user_workload.values())
+        avg_workload = total_workload / len(users)
 
-    # Penalize for workload imbalance
-    for user_id, workload in user_workload.items():
-        deviation = abs(workload - avg_workload)
-        score -= deviation * 2  # Penalty proportional to deviation from average
+        # Penalize workload imbalance
+        for user_id, workload in user_workload.items():
+            deviation = abs(workload - avg_workload)
+            score -= deviation  # Stronger penalty for deviations from average
 
     return score
 
 def select_parents(population: List[List[Tuple[str, str]]], fitnesses: List[float]) -> List[List[Tuple[str, str]]]:
-    total_fitness = sum(fitnesses)
-    probabilities = [f / total_fitness for f in fitnesses]
-    return random.choices(population, probabilities, k=2)
+    selected = random.sample(list(zip(population, fitnesses)), k=2)
+    selected.sort(key=lambda x: x[1], reverse=True)
+    return selected[0][0], selected[1][0]
 
-def crossover(parent1: dict[str, List[str]], parent2: dict[str, List[str]]) -> dict[str, List[str]]:
+def crossover(parent1: dict[str, List[str]], parent2: dict[str, List[str]], alerts: List[Alert], users: List[User]) -> dict[str, List[str]]:
     child = {user_id: [] for user_id in parent1.keys()}
-    alerts_in_child = set()
+    user_workload = {user_id: 0 for user_id in users}
 
-    # Assign alerts from parent1
-    for user_id, alerts in parent1.items():
-        for alert_id in alerts:
-            if alert_id not in alerts_in_child:
-                child[user_id].append(alert_id)
-                alerts_in_child.add(alert_id)
+    # Combine all alerts from both parents
+    all_alerts = set(alert for alerts in parent1.values() for alert in alerts)
+    all_alerts.update(alert for alerts in parent2.values() for alert in alerts)
+    all_alerts = list(all_alerts)
+    random.shuffle(all_alerts)
 
-    # Assign remaining alerts from parent2
-    for user_id, alerts in parent2.items():
-        for alert_id in alerts:
-            if alert_id not in alerts_in_child:
-                child[user_id].append(alert_id)
-                alerts_in_child.add(alert_id)
+    # Assign alerts based on workload
+    for alert_id in all_alerts:
+        # Find the user with the lowest workload
+        selected_user = min(users, key=lambda u: user_workload[u])
+        child[selected_user.id].append(alert_id)
+        alert = next(alert for alert in alerts if alert.id == alert_id)
+        estimated_time = (1 / (0.5 * alert.priority) * 60) / (1 + (selected_user.experience_score / 100))
+        user_workload[selected_user] += estimated_time
 
     return child
+
+
 
 
 def mutate(individual: dict[str, List[str]], alerts: List[Alert], users: List[User], mutation_rate: float = 0.1) -> dict[str, List[str]]:
@@ -137,46 +139,39 @@ def redistribute_workload(individual: dict[str, List[str]], alerts: List[Alert],
         for alert_id in alert_ids:
             alert = next(alert for alert in alerts if alert.id == alert_id)
             user = next(user for user in users if user.id == user_id)
-            estimated_time = ((1/(0.5*alert.priority) * 60) / (1  + (user.experience_score / 100)))
+            estimated_time = (1 / (0.5 * alert.priority) * 60) / (1 + (user.experience_score / 100))
             user_workload[user_id] += estimated_time
 
-    # Redistribute alerts
+    # Redistribute alerts based on workloads
     for user_id, alert_ids in individual.items():
         for alert_id in alert_ids:
             alert = next(alert for alert in alerts if alert.id == alert_id)
-            estimated_time = (1/(0.5*alert.priority) * 60) / (1  + (next(user for user in users if user.id == user_id).experience_score / 100))
+            estimated_time = (1 / (0.5 * alert.priority) * 60) / (
+                1 + (next(user for user in users if user.id == user_id).experience_score / 100)
+            )
 
-            # Find an eligible user
-            eligible_users = [
-                u for u in users if user_workload[u.id] + estimated_time <= 480
-            ]
-
-            if eligible_users:
-                selected_user = random.choice(eligible_users)
-                redistributed_individual[selected_user.id].append(alert_id)
-                user_workload[selected_user.id] += estimated_time
-            else:
-                # Fallback: Keep the alert with the original user
-                redistributed_individual[user_id].append(alert_id)
+            # Find the user with the lowest workload who can handle the alert
+            selected_user = min(users, key=lambda u: user_workload[u.id])
+            redistributed_individual[selected_user.id].append(alert_id)
+            user_workload[selected_user.id] += estimated_time
 
     return redistributed_individual
 
 
 def genetic_algorithm(alerts: List[Alert], users: List[User], generations: int, population_size: int):
     population = generate_initial_population(alerts, users, population_size)
-    
     best_population = None
     best_fitness_score = -float('inf')  # Initialize to negative infinity
 
     for generation in range(generations):
         fitnesses = [fitness(ind, alerts, users) for ind in population]
-        print(f"Generation {generation}:")
+        #print(f"Generation {generation}:")
         
         # Track the best individual in the current generation
         best_individual_in_generation = max(fitnesses)
         best_individual_in_generation_idx = fitnesses.index(best_individual_in_generation)
         
-        print(f"Best individual in generation {generation} with fitness score: {best_individual_in_generation}")
+        #print(f"Best individual in generation {generation} with fitness score: {best_individual_in_generation}")
         
         # Update best population if current generation's best individual is better than the previous best
         if best_individual_in_generation > best_fitness_score:
@@ -184,33 +179,30 @@ def genetic_algorithm(alerts: List[Alert], users: List[User], generations: int, 
             best_population = population[best_individual_in_generation_idx]
 
         # Print fitness scores for all individuals in the population
-        for i, fit in enumerate(fitnesses):
-            print(f"Individual {i} fitness score: {fit}")
+        #for i, fit in enumerate(fitnesses):
+            #print(f"Individual {i} fitness score: {fit}")
         
         new_population = []
         for _ in range(len(population) // 2):
             parent1, parent2 = select_parents(population, fitnesses)
-            child1 = crossover(parent1, parent2)
-            child2 = crossover(parent2, parent1)
+            child1 = crossover(parent1, parent2, alerts, users)
+            child2 = crossover(parent2, parent1, alerts, users)
 
             # Mutation
             child1 = mutate(child1, alerts, users)
             child2 = mutate(child2, alerts, users)
 
             # Redistribute workloads
-            #child1 = redistribute_workload(child1, alerts, users)
-            #child2 = redistribute_workload(child2, alerts, users)
+            child1 = redistribute_workload(child1, alerts, users)
+            child2 = redistribute_workload(child2, alerts, users)
             new_population.extend([child1, child2])
         
         population = new_population
-
     # Final evaluation
-    fitnesses = [fitness(ind, alerts, users) for ind in population]
-    best_individual = population[fitnesses.index(max(fitnesses))]
-
+    print(f"Best Individual: ", best_population)
     # Compute workloads for output
-    user_workload = {user_id: 0 for user_id in best_individual.keys()}
-    for user_id, alert_ids in best_individual.items():
+    user_workload = {user_id: 0 for user_id in best_population.keys()}
+    for user_id, alert_ids in best_population.items():
         for alert_id in alert_ids:
             alert = next(alert for alert in alerts if alert.id == alert_id)
             user = next(user for user in users if user.id == user_id)
