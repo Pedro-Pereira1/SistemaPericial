@@ -16,6 +16,23 @@ const AlertsToResolve: React.FC = () => {
         fetchAlerts();
     }, [user.email]);
 
+    const getPriorityColor = (priority: string) => {
+        const num = Number(priority);
+        switch (num) {
+          case 1:
+            return { color: "red", label: "1 - Max" };
+          case 2:
+            return { color: "orange", label: "2 - High" };
+          case 3:
+            return { color: "#FFD700", label: "3 - Medium" };
+          case 4:
+            return { color: "green", label: "4 - Low" };
+          case 5:
+            return { color: "blue", label: "5 - Minimal" };
+          default:
+            return { color: "gray", label: "Unknown Priority" };
+        }
+      };
     
 
     return (
@@ -30,6 +47,7 @@ const AlertsToResolve: React.FC = () => {
                             <th>Title</th>
                             <th>Category</th>
                             <th>Sub-Category</th>
+                            <th>Priority</th>
                             <th>Origin</th>
                             <th>Creation Time</th>
                             <th>Conclusion Time</th>
@@ -49,6 +67,23 @@ const AlertsToResolve: React.FC = () => {
                                     }</td>
                                 <td>{alert.category}</td>
                                 <td>{alert.subCategory}</td>
+                                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                  <div
+                                    className="priority-div"
+                                    style={{
+                                        backgroundColor: getPriorityColor(alert.priority).color,
+                                        padding: "5px 12px",
+                                        borderRadius: "20px",
+                                        display: "inline-block",
+                                        color: "white",
+                                        whiteSpace: "nowrap",
+                                        minWidth: "111px", // Ensure all backgrounds have the same size
+                                        textAlign: "center",
+                                    }}
+                                  >
+                                    {getPriorityColor(alert.priority).label}
+                                  </div>
+                                </td>
                                 <td>{alert.origin}</td>
                                 <td>{new Date(alert.creationTime).toLocaleString()}</td>
                                 <td>
