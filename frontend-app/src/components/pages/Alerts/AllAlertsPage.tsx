@@ -21,6 +21,7 @@ interface AlertWithUser {
     conclusionTime: string;
     description: string;
     resolution: string[];
+    priority: string;
 }
 
 const AllAlertsPage: React.FC = () => {
@@ -47,6 +48,25 @@ const AllAlertsPage: React.FC = () => {
         };
         fetchData();
     }, []);
+
+    const getPriorityColor = (priority: string) => {
+        const num = Number(priority);
+        switch (num) {
+          case 1:
+            return { color: "red", label: "1 - Max" };
+          case 2:
+            return { color: "orange", label: "2 - High" };
+          case 3:
+            return { color: "#FFD700", label: "3 - Medium" };
+          case 4:
+            return { color: "green", label: "4 - Low" };
+          case 5:
+            return { color: "blue", label: "5 - Minimal" };
+          default:
+            return { color: "gray", label: "Unknown Priority" };
+        }
+      };
+      
 
     const handleUserChange = async (alertId: string, newUserName: string) => {
         const updatedUser = users.find((user) => user.name === newUserName);
@@ -82,6 +102,7 @@ const AllAlertsPage: React.FC = () => {
                 conclusionTime: currentAlert.conclusionTime,
                 description: currentAlert.description,
                 resolution: currentAlert.resolution,
+                priority: currentAlert.priority,
             };
 
             try {
@@ -118,6 +139,7 @@ const AllAlertsPage: React.FC = () => {
                             <th>Title</th>
                             <th>Category</th>
                             <th>Sub-Category</th>
+                            <th>Priority</th>
                             <th>Origin</th>
                             <th>Assigned To</th>
                             <th>Status</th>
@@ -129,6 +151,24 @@ const AllAlertsPage: React.FC = () => {
                                 <td>{alert.title}</td>
                                 <td>{alert.category}</td>
                                 <td>{alert.subCategory}</td>
+                                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                  <div
+                                    className="priority-div"
+                                    style={{
+                                        backgroundColor: getPriorityColor(alert.priority).color,
+                                        padding: "5px 12px",
+                                        borderRadius: "20px",
+                                        display: "inline-block",
+                                        color: "white",
+                                        whiteSpace: "nowrap",
+                                        minWidth: "111px", // Ensure all backgrounds have the same size
+                                        textAlign: "center",
+                                    }}
+                                  >
+                                    {getPriorityColor(alert.priority).label}
+                                  </div>
+                                </td>
+
                                 <td>{alert.origin}</td>
                                 <td>
                                     <select
