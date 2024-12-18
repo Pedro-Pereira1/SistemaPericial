@@ -11,3 +11,6 @@ class MachineLearningController:
     
     async def genetic(self):
         return await self.ml_service.genetic_algorithm()
+    
+    async def pso(self):
+            return await self.ml_service.pso()

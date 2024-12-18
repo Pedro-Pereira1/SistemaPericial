@@ -9,7 +9,7 @@ def generate_initial_population(alerts: List[Alert], users: List[User], populati
     for _ in range(population_size):
         individual = {user.id: [] for user in users}
         alerts_copy = alerts[:]
-        random.shuffle(alerts_copy)  # Shuffle alerts for randomness
+        random.shuffle(alerts_copy)
 
         for alert in alerts_copy:
             assigned_user = random.choice(users).id
