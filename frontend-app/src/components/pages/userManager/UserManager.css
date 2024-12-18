@@ -3,6 +3,7 @@
     font-family: Arial, sans-serif;
     padding: 20px;
     max-width: 800px;
+    min-width: 95%;
     margin: 0 auto;
     background-color: #f9f9f9;
     border-radius: 8px;
@@ -64,4 +65,38 @@
   .arrow-button:hover {
     background-color: #e0e0e0;
   }
+  
+
+  .dark-mode .user-manager {
+    background-color: #333;
+    color: #fff;
+  }
+
+  .dark-mode .user-card {
+    background: #444;
+    border: 1px solid #222;
+  }
+
+  .dark-mode .user-name {
+    color: #fff;
+  }
+
+  .dark-mode .arrow-button {
+    background-color: #555;
+    border: 1px solid #333;
+    color: #fff;
+  }
+
+  .dark-mode .arrow-button:hover {
+    background-color: #666;
+  }
+
+  .dark-mode .user-email {
+    color: #fff;
+  }
+
+  .dark-mode .user-role {
+    color: #fff;
+  }
+
   
