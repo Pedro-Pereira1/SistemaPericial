@@ -11,19 +11,20 @@ from src.domain.alert import Alert
 from src.domain.user import User
 from src.domain.genetic_algorithm import genetic_algorithm
 
-
 class MachineLearningService:
     def __init__(self):
         self.ml_adapter:MachineLearningAdapter = loader.loader.resolve(config.ml_adapter["name"])
         self.dataset = self.import_dataset()
     async def predict(self, model:str):
-        random_line = await self.import_random_line()
-        result = await self.ml_adapter.predict(model, random_line)
-        Logger.print_info(result)
-        random_line_dict = random_line.iloc[0].to_dict()   
-        random_line_dict = {key: self._to_serializable(value) for key, value in random_line_dict.items()}
-        print(result)
-        random_line_dict["prediction"] = config.model_categories[result[0]]
+        category:str = "Benign"
+        while(category == "Benign"):
+            random_line = await self.import_random_line()
+            result = await self.ml_adapter.predict(model, random_line)
+            Logger.print_info(result)
+            random_line_dict = random_line.iloc[0].to_dict()   
+            random_line_dict = {key: self._to_serializable(value) for key, value in random_line_dict.items()}
+            random_line_dict["prediction"] = config.model_categories[result[0]]
+            category = random_line_dict["prediction"]["category"]
         return random_line_dict
 
     def import_dataset(self):
@@ -32,7 +33,8 @@ class MachineLearningService:
 
     async def import_random_line(self):
         random_index = random.randint(0, len(self.dataset) - 1)
-        return self.dataset.iloc[[random_index]]    
+        return self.dataset.iloc[[random_index]] 
+       
     @staticmethod
     def _to_serializable(value):
         if isinstance(value, (np.integer, np.floating)):
@@ -44,7 +46,7 @@ class MachineLearningService:
     async def genetic_algorithm(self):
         alerts:list[Alert] = [Alert(alert["id"], alert["priority"], alert["origin"], alert["creationTime"], alert["category"]) for alert in await self.get_all_alerts()]
         users:list[User] = [User(user["id"], user["experience_score"], user["categories_preferences"]) for user in await self.get_all_users()]
-        alerts = genetic_algorithm(alerts, users, 10000, 10)
+        alerts = genetic_algorithm(alerts, users, len(alerts)*1000, 10)
         return alerts
 
     async def get_all_alerts(self) -> list[dict]:
