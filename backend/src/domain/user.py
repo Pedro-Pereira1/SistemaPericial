@@ -1,6 +1,5 @@
 import uuid
 from src.domain.category import Category
-from uuid import UUID
 
 class User:
     '''

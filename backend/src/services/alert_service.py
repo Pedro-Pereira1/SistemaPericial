@@ -86,32 +86,48 @@ class AlertService :
 
     
     async def genetic_results(self):
-        async with httpx.AsyncClient() as client:
+        timeout = httpx.Timeout(120.0)  # Set the timeout to 10 seconds (adjust as needed)
+        async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.get("http://localhost:6500/genetic")
         if response.status_code == 200:
             return response.json()
         raise Exception(f"Error fetching genetic results: {response.status_code}")
         
-    async def assign_alerts_by_user(self, results: list):
-        counter = await self.num_rows()
-        async def assign_task(result):
-            user_dict =  await self.user_service.find_by_id(result[1])
-            alert_dict = await self.alert_adapter.find_by_id(result[0])
-            alert: Alert = Alert(
-                alert_dict["category"],
-                alert_dict["subCategory"],
-                alert_dict["origin"],
-                user_dict["email"],
-                alert_dict["status"],
-                counter+1,
-                alert_dict["priority"],
-                alert_dict["creationTime"],
-                alert_dict["id"]
-            )
-            print(alert.to_dict())
-            await self.alert_adapter.save(alert)
+    async def assign_alerts_by_user(self, assignments: dict):
+        """
+        Assign alerts to users based on the given assignments.
 
-        # Run all assignments concurrently
-        tasks = [assign_task(result) for result in results]
+        :param assignments: A dictionary where keys are user IDs and values are lists of alert IDs.
+        """
+        counter = await self.num_rows()
+
+        async def assign_task(user_id, alert_id):
+            # Fetch user and alert details
+            user_dict = await self.user_service.find_by_id(user_id)
+            alert_dict = await self.alert_adapter.find_by_id(alert_id)
+
+            # Create a new Alert object
+            alert = Alert(
+                category=alert_dict["category"],
+                subCategory=alert_dict["subCategory"],
+                origin=alert_dict["origin"],
+                assignedTo=user_dict["email"],
+                status=alert_dict["status"],
+                last_case=counter + 1,
+                priority=alert_dict["priority"],
+                start_date=alert_dict["creationTime"],
+                id=alert_dict["id"]
+            )
+
+            print(alert.to_dict())  # Print the alert for verification
+            await self.alert_adapter.save(alert)  # Save the alert
+
+        # Gather all tasks based on assignments
+        tasks = []
+        for user_id, alert_ids in assignments["assignments"].items():
+            for alert_id in alert_ids:
+                tasks.append(assign_task(user_id, alert_id))
+
+        # Run all tasks concurrently
         await asyncio.gather(*tasks)
 
