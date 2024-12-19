@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 interface AlertWithUser {
     id: string;
-    title:string;
+    title: string;
     category: string;
     subCategory: string;
     origin: string;
@@ -24,9 +24,15 @@ interface AlertWithUser {
     priority: string;
 }
 
+type SortConfig = {
+    key: keyof AlertWithUser;
+    direction: 'asc' | 'desc';
+};
+
 const AllAlertsPage: React.FC = () => {
     const [alerts, setAlerts] = useState<AlertWithUser[]>([]);
     const [users, setUsers] = useState<User[]>([]);
+    const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
 
     useEffect(() => {
         // Fetch all users and aggregate alerts
@@ -52,21 +58,20 @@ const AllAlertsPage: React.FC = () => {
     const getPriorityColor = (priority: string) => {
         const num = Number(priority);
         switch (num) {
-          case 1:
-            return { color: "red", label: "1 - Max" };
-          case 2:
-            return { color: "orange", label: "2 - High" };
-          case 3:
-            return { color: "#FFD700", label: "3 - Medium" };
-          case 4:
-            return { color: "green", label: "4 - Low" };
-          case 5:
-            return { color: "blue", label: "5 - Minimal" };
-          default:
-            return { color: "gray", label: "Unknown Priority" };
+            case 1:
+                return { color: 'red', label: '1 - Max' };
+            case 2:
+                return { color: 'orange', label: '2 - High' };
+            case 3:
+                return { color: '#FFD700', label: '3 - Medium' };
+            case 4:
+                return { color: 'green', label: '4 - Low' };
+            case 5:
+                return { color: 'blue', label: '5 - Minimal' };
+            default:
+                return { color: 'gray', label: 'Unknown Priority' };
         }
-      };
-      
+    };
 
     const handleUserChange = async (alertId: string, newUserName: string) => {
         const updatedUser = users.find((user) => user.name === newUserName);
@@ -85,14 +90,14 @@ const AllAlertsPage: React.FC = () => {
             const currentAlert = alerts.find((alert) => alert.id === alertId);
 
             if (!currentAlert) {
-                console.error("Alert not found in state.");
+                console.error('Alert not found in state.');
                 return;
             }
 
             // Prepare the updated alert payload
             const updatedAlert: Alert = {
                 id: alertId,
-                title:currentAlert.title,
+                title: currentAlert.title,
                 category: currentAlert.category,
                 subCategory: currentAlert.subCategory,
                 origin: currentAlert.origin,
@@ -108,9 +113,9 @@ const AllAlertsPage: React.FC = () => {
             try {
                 // Send the updated alert to the backend
                 await AlertService.updateAlert(updatedAlert);
-                console.log("Alert updated successfully:", updatedAlert);
+                console.log('Alert updated successfully:', updatedAlert);
             } catch (error) {
-                console.error("Failed to update alert:", error);
+                console.error('Failed to update alert:', error);
 
                 // Optionally, revert the state on failure
                 setAlerts((prevAlerts) =>
@@ -128,6 +133,21 @@ const AllAlertsPage: React.FC = () => {
         }
     };
 
+    const sortData = (key: keyof AlertWithUser) => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig?.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const sortedAlerts = [...alerts].sort((a, b) => {
+        if (!sortConfig) return 0;
+        const { key, direction } = sortConfig;
+        const order = direction === 'asc' ? 1 : -1;
+        return a[key] > b[key] ? order : a[key] < b[key] ? -order : 0;
+    });
+
     return (
         <div className="all-alerts-container">
             {alerts.length === 0 ? (
@@ -136,39 +156,52 @@ const AllAlertsPage: React.FC = () => {
                 <table className="alerts-table">
                     <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Category</th>
-                            <th>Sub-Category</th>
-                            <th>Priority</th>
-                            <th>Origin</th>
-                            <th>Assigned To</th>
-                            <th>Status</th>
+                            <th onClick={() => sortData('title')}>
+                                Title {sortConfig?.key === 'title' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                            </th>
+                            <th onClick={() => sortData('category')}>
+                                Category {sortConfig?.key === 'category' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                            </th>
+                            <th onClick={() => sortData('subCategory')}>
+                                Sub-Category {sortConfig?.key === 'subCategory' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                            </th>
+                            <th onClick={() => sortData('priority')}>
+                                Priority {sortConfig?.key === 'priority' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                            </th>
+                            <th onClick={() => sortData('origin')}>
+                                Origin {sortConfig?.key === 'origin' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                            </th>
+                            <th onClick={() => sortData('userName')}>
+                                Assigned To {sortConfig?.key === 'userName' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                            </th>
+                            <th onClick={() => sortData('status')}>
+                                Status {sortConfig?.key === 'status' && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {alerts.map((alert) => (
+                        {sortedAlerts.map((alert) => (
                             <tr key={alert.id}>
                                 <td>{alert.title}</td>
                                 <td>{alert.category}</td>
                                 <td>{alert.subCategory}</td>
-                                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                                  <div
-                                    className="priority-div"
-                                    style={{
-                                        backgroundColor: getPriorityColor(alert.priority).color,
-                                        padding: "5px 12px",
-                                        borderRadius: "20px",
-                                        display: "inline-block",
-                                        color: "white",
-                                        whiteSpace: "nowrap",
-                                        minWidth: "111px", // Ensure all backgrounds have the same size
-                                        textAlign: "center",
-                                    }}
-                                  >
-                                    {getPriorityColor(alert.priority).label}
-                                  </div>
+                                <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                    <div
+                                        className="priority-div"
+                                        style={{
+                                            backgroundColor: getPriorityColor(alert.priority).color,
+                                            padding: '5px 12px',
+                                            borderRadius: '20px',
+                                            display: 'inline-block',
+                                            color: 'white',
+                                            whiteSpace: 'nowrap',
+                                            minWidth: '111px',
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                        {getPriorityColor(alert.priority).label}
+                                    </div>
                                 </td>
-
                                 <td>{alert.origin}</td>
                                 <td>
                                     <select
