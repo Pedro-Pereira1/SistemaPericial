@@ -4,7 +4,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+backend_ml/src/ml/data/test.parquet
 # C extensions
 *.so
 
