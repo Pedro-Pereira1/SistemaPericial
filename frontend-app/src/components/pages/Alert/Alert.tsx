@@ -41,65 +41,41 @@ const AlertPage: React.FC<AlertPageProps> = () => {
     ]
 
     const categories = {
-        "Código Malicioso": [
-            "Sistema Infetado",
-            "Distribuição de Malware",
-            "Servidor C2",
-            "Configuração de Malware"
+        Benign: ["Undetermined"],
+        Botnet: ["Undetermined"],
+        Bruteforce: ["FTP", "SSH"],
+        DDoS: [
+            "Undetermined", 
+            "DNS", 
+            "Ddossim", 
+            "HOIC", 
+            "LDAP", 
+            "LOIC-HTTP", 
+            "MSSQL", 
+            "NTP", 
+            "NetBIOS", 
+            "SNMP", 
+            "Slowloris", 
+            "Syn", 
+            "TFTP", 
+            "UDP", 
+            "UDPLag"
         ],
-        "Disponibilidade": [
-            "Negação de Serviço",
-            "Negação de Serviço Distribuída",
-            "Configuração incorreta",
-            "Sabotagem",
-            "Interrupção"
+        DoS: [
+            "Goldeneye", 
+            "Heartbleed", 
+            "Hulk", 
+            "Rudy", 
+            "Slowbody", 
+            "Slowheaders", 
+            "Slowhttptest", 
+            "Slowloris", 
+            "Slowread"
         ],
-        "Recolha de Informação": [
-            "Scanning",
-            "Sniffing",
-            "Engenharia Social"
-        ],
-        "Intrusão": [
-            "Comprometimento de Conta Privilegiada",
-            "Comprometimento de Conta Não Privilegiada",
-            "Comprometimento de Aplicação",
-            "Comprometimento de Sistema",
-            "Arrombamento"
-        ],
-        "Tentativa de Intrusão": [
-            "Exploração de Vulnerabilidade",
-            "Tentativa de Login",
-            "Nova assinatura de ataque"
-        ],
-        "Segurança da Informação": [
-            "Acesso não autorizado",
-            "Modificação não autorizada",
-            "Perda de dados",
-            "Exfiltração de Informação"
-        ],
-        "Fraude": [
-            "Utilização indevida ou não autorizada de recursos",
-            "Direitos de autor",
-            "Utilização ilegítima de nome de terceiros",
-            "Phishing"
-        ],
-        "Conteúdo Abusivo": [
-            "SPAM",
-            "Discurso Nocivo",
-            "Exploração sexual de menores, racismo e apologia da violência"
-        ],
-        "Vulnerabilidade": [
-            "Criptografia fraca",
-            "Amplificador DDoS",
-            "Serviços acessíveis potencialmente indesejados",
-            "Revelação de informação",
-            "Sistema vulnerável"
-        ],
-        "Outro": [
-            "Sem tipo",
-            "Indeterminado"
-        ]
-    } as const;
+        Infiltration: ["Undetermined"],
+        Portscan: ["Undetermined"],
+        Webattack: ["SQLi", "XSS", "Bruteforce"]
+    } as const;    
     type Category = keyof typeof categories;
 
     const [selectedCategory, setSelectedCategory] = useState<Category | undefined>();
@@ -205,7 +181,7 @@ const AlertPage: React.FC<AlertPageProps> = () => {
                     <strong>Created At:</strong><br/> {alert.creationTime || 'Not Available'}
                 </div>
                 <div className="alert-item">
-                    <strong>Conclusion Time:</strong><br/> {alert.conclusionTime || 'Not Available'}
+                    <strong>Conclusion Time:</strong><br/> {alert.conclusionTime || 'Not Available/Not Concluded'}
                 </div>
             </div>
 
