@@ -27,11 +27,11 @@ client = MongoClient(db_connection_string)
 client_db_name = "ShieldAI"
 
 model_categories = {
-    0: {"category": "Benign", "subCategory": "Indeterminado"},
-    1: {"category": "Botnet", "subCategory": "Indeterminado"},
+    0: {"category": "Benign", "subCategory": "Undetermined"},
+    1: {"category": "Botnet", "subCategory": "Undetermined"},
     2: {"category": "Bruteforce", "subCategory": "FTP"},
     3: {"category": "Bruteforce", "subCategory": "SSH"},
-    4: {"category": "DDoS", "subCategory": "Indeterminado"},
+    4: {"category": "DDoS", "subCategory": "Undetermined"},
     5: {"category": "DDoS", "subCategory": "DNS"},
     6: {"category": "DDoS", "subCategory": "Ddossim"},
     7: {"category": "DDoS", "subCategory": "HOIC"},
@@ -55,8 +55,8 @@ model_categories = {
     25: {"category": "DoS", "subCategory": "Slowhttptest"},
     26: {"category": "DoS", "subCategory": "Slowloris"},
     27: {"category": "DoS", "subCategory": "Slowread"},
-    28: {"category": "Infiltration", "subCategory": "Indeterminado"},
-    29: {"category": "Portscan", "subCategory": "Indeterminado"},
+    28: {"category": "Infiltration", "subCategory": "Undetermined"},
+    29: {"category": "Portscan", "subCategory": "Undetermined"},
     30: {"category": "Webattack", "subCategory": "SQLi"},
     31: {"category": "Webattack", "subCategory": "XSS"},
     32: {"category": "Webattack", "subCategory": "Bruteforce"}
