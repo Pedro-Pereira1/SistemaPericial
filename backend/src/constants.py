@@ -230,3 +230,37 @@ countries = [
     ('ZM', 'Zambia'),
     ('ZW', 'Zimbabwe')
 ]
+
+
+clients = [
+    ('CLI001', 'Acme Corporation'),
+    ('CLI002', 'Tech Innovators Inc.'),
+    ('CLI003', 'Global Financial Services'),
+    ('CLI004', 'HealthSecure Systems'),
+    ('CLI005', 'RetailGuard Ltd.'),
+    ('CLI006', 'EduNet Solutions'),
+    ('CLI007', 'Energy Watch Co.'),
+    ('CLI008', 'CloudShield Technologies'),
+    ('CLI009', 'LogiSecure Warehousing'),
+    ('CLI010', 'TravelSafe Agency'),
+    ('CLI011', 'PharmaShield LLC'),
+    ('CLI012', 'Media Protect Group'),
+    ('CLI013', 'SmartHome Security'),
+    ('CLI014', 'CyberArmor Corp.'),
+    ('CLI015', 'NextGen Data Services'),
+    ('CLI016', 'GreenTech Monitoring'),
+    ('CLI017', 'InfraSecure Partners'),
+    ('CLI018', 'AI Sentinel Inc.'),
+    ('CLI019', 'LegalTrust Solutions'),
+    ('CLI020', 'GovSecure Agencies'),
+    ('CLI021', 'BlueSky Protection'),
+    ('CLI022', 'BankSecure Holdings'),
+    ('CLI023', 'TelecomGuard Networks'),
+    ('CLI024', 'Digital Vault Systems'),
+    ('CLI025', 'FinTech Shield'),
+    ('CLI026', 'RealSecure Properties'),
+    ('CLI027', 'BioTech Security'),
+    ('CLI028', 'SafeTransit Logistics'),
+    ('CLI029', 'SocialLink Cyber Defense'),
+    ('CLI030', 'SecureTrade Enterprises'),
+]

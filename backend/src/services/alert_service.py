@@ -5,7 +5,7 @@ from src.services.user_service import UserService
 from src.domain.alert import Alert
 from src.dto.alert_dto import AlertDto
 import random
-from src.constants import countries
+from src.constants import clients
 from src import utils
 import httpx
 from src.domain.user import User
@@ -67,7 +67,7 @@ class AlertService :
 
         async def create_and_save_alert():
             prediction = await self.alert_adapter.ask_for_category()
-            origin = random.choice(countries)
+            origin = random.choice(clients)
             user = random.choice(users)
             alert = await self.create_alert_with_date({
                 "category": prediction["category"],
