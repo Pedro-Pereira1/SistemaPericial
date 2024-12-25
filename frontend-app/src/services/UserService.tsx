@@ -75,6 +75,7 @@ export type User = {
       try {
         const AlertDTO = {
           id: newAlert.id,
+          title: newAlert.title,
           category: newAlert.category,
           subCategory: newAlert.subCategory,
           origin: newAlert.origin,
@@ -83,7 +84,8 @@ export type User = {
           creationTime: newAlert.creationTime,
           conclusionTime: newAlert.conclusionTime,
           description: newAlert.description,
-          resolution: newAlert.resolution
+          resolution: newAlert.resolution,
+          priority: newAlert.priority
         }
 
         await axios.put('http://localhost:7000/updateAlert/' + alertId, AlertDTO)
