@@ -10,6 +10,7 @@ import AlertPage_SLA from './components/pages/CyberMentor/AlertPage_SLA';
 import AlertPage_NUA from './components/pages/CyberMentor/AlertPage_NUA';
 import AlertPage_UDC from './components/pages/CyberMentor/AlertPage_UDC';
 import AlertPage_PS from './components/pages/CyberMentor/AlertPage_PS';
+import AlertPageDDoS from './components/pages/CyberMentor/AlertPage_DDoS';
 import History from './components/pages/History/History';
 import Settings from './components/pages/Settings/Settings';
 import Profile from './components/pages/Profile/Profile';
@@ -57,6 +58,7 @@ const App: React.FC = () => {
     { name: 'New User Account', path: '/alerts/new-user-account' },
     { name: 'User data has been changed', path: '/alerts/user-data-has-been-changed' },
     { name: 'Port Scan', path: '/alerts/port-scan' },
+    { name  : 'DDoS', path: '/alerts/DDoS' }
   ];
 
   const filteredCategories = alertCategories.filter((category) =>
@@ -160,6 +162,7 @@ const App: React.FC = () => {
                 <Route path="/alerts/new-user-account" element={<AlertPage_NUA expert_system={expertSystem}/>} />
                 <Route path="/alerts/user-data-has-been-changed" element={<AlertPage_UDC expert_system={expertSystem}/>} />
                 <Route path="/alerts/port-scan" element={<AlertPage_PS expert_system={expertSystem}/>} />
+                <Route path="/alerts/DDoS" element={<AlertPageDDoS expert_system={expertSystem}/>} />
                 <Route path="/history" element={<History />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/profile" element={<Profile />} />

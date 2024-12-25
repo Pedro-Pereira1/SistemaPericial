@@ -37,6 +37,10 @@ const AlertPage: React.FC<AlertPageProps> = () => {
         {
             name: "Exploração de Vulnerabilidade",
             path: "/alerts/port-scan"
+        },
+        {
+            name: "DDoS",
+            path: "/alerts/DDoS"
         }
     ]
 
@@ -127,7 +131,7 @@ const AlertPage: React.FC<AlertPageProps> = () => {
     };
 
     const handleResolveAlert = async () => {
-        const category = availableCategories.find(cat => cat.name === alert.subCategory);
+        const category = availableCategories.find(cat => cat.name === alert.category);
         if (!category) {
             window.alert("Not supported yet!");
         } else {
