@@ -29,6 +29,9 @@ public class Conclusion {
     public static final String CREATE_GEO_POLICY = "Create a geo-blocking policy to block traffic from the identified country.";
 
 
+    public static final String ESCALATE_SECURITY_TEAM = "Escalate the alert to the security team for further investigation and remediation.";
+
+    public static final String AWAIT_INSTRUCTIONS = "Await further instructions from the security team.";
 
 
     private String description;

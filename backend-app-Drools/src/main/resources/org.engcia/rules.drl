@@ -9,6 +9,7 @@ import org.engcia.model.EvidencesMLF
 import org.engcia.model.EvidencesCMF
 import org.engcia.model.EvidencesUDC
 import org.engcia.model.EvidencesPS
+import org.engcia.model.EvidencesDDoS
 import java.util.Arrays
 import org.engcia.model.Conclusion
 import java.util.ArrayList
@@ -1372,6 +1373,134 @@ then
 end
 
 //================================================================================================
+// DDoS Detection and Mitigation
+
+rule "Start Analysis for Potential DDoS Attack"
+when
+    $input: EvidencesDDoS(alertId == "DDoS", trafficSpike == "null", legitimateSource == "null", abnormalPattern == "null", mitigationEnabled == "null", contactISP == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nHas there been a sudden and unusual spike in traffic?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "trafficSpike",
+                                             "Detecting a sudden and unusual spike in traffic can indicate a potential DDoS attack, as attackers often flood servers with requests to overwhelm resources.");
+    insert(output);
+end
+
+rule "Traffic spike detected, check for legitimate sources"
+when
+    $input: EvidencesDDoS(alertId == "DDoS", trafficSpike == "yes", legitimateSource == "null", abnormalPattern == "null", mitigationEnabled == "null", contactISP == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nCan the traffic be explained by legitimate sources (e.g., marketing campaigns, seasonal demand)?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "legitimateSource",
+                                             "It is important to determine if the traffic increase is due to legitimate reasons like marketing campaigns, scheduled updates, or natural user demand rather than malicious activity.");
+    insert(output);
+end
+
+rule "No traffic spike, check for other anomalies"
+when
+    $input: EvidencesDDoS(alertId == "DDoS", trafficSpike == "no", legitimateSource == "null", abnormalPattern == "null", mitigationEnabled == "null", contactISP == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nAre there other signs of abnormal traffic patterns (e.g., high error rates, unusual request distribution)?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "abnormalPattern",
+                                             "Analyzing traffic for unusual patterns like high error rates or uneven distribution of requests can help detect stealthier forms of DDoS attacks.");
+    insert(output);
+end
+
+rule "Traffic spike explained by legitimate sources, classify as false positive"
+when
+    $input: EvidencesDDoS(alertId == "DDoS", trafficSpike == "yes", legitimateSource == "yes", abnormalPattern == "null", mitigationEnabled == "null", contactISP == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "The traffic spike is explained by legitimate sources, thus it can be classified as a false positive.");
+    insert(output);
+end
+
+rule "Abnormal traffic pattern detected, enable mitigation measures"
+when
+    $input: EvidencesDDoS(alertId == "DDoS", trafficSpike == "yes", legitimateSource == "no", abnormalPattern == "yes", mitigationEnabled == "null", contactISP == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nEnable DDoS mitigation measures (rate limiting, filtering, etc.)?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "mitigationEnabled",
+                                             "Enabling DDoS mitigation measures can reduce the impact of an ongoing attack by filtering malicious traffic and preserving resources for legitimate users.");
+    insert(output);
+end
+
+rule "Mitigation enabled, consider contacting ISP"
+when
+    $input: EvidencesDDoS(alertId == "DDoS", trafficSpike == "yes", legitimateSource == "no", abnormalPattern == "yes", mitigationEnabled == "yes", contactISP == "null")
+then
+    AlertResponse output = new AlertResponse("question",
+                                             new Question("multiple-choice",
+                                                          "\nShould the ISP be contacted for further assistance?",
+                                                          Arrays.asList("Yes", "No")),
+                                             null,
+                                             $input,
+                                             "contactISP",
+                                             "Contacting the ISP can provide additional support in mitigating the attack, such as upstream filtering or null-routing malicious traffic.");
+    insert(output);
+end
+
+rule "Mitigation not enabled, escalate to security team"
+when
+    $input: EvidencesDDoS(alertId == "DDoS", trafficSpike == "yes", legitimateSource == "no", abnormalPattern == "yes", mitigationEnabled == "no", contactISP == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.ESCALATE_SECURITY_TEAM),
+                                             $input,
+                                             "conclusion",
+                                             "Since mitigation measures were not enabled, escalate to the security team for further analysis and action.");
+    insert(output);
+end
+
+rule "ISP contacted, await further instructions"
+when
+    $input: EvidencesDDoS(alertId == "DDoS", trafficSpike == "yes", legitimateSource == "no", abnormalPattern == "yes", mitigationEnabled == "yes", contactISP == "yes")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.AWAIT_INSTRUCTIONS),
+                                             $input,
+                                             "conclusion",
+                                             "The ISP has been contacted; await further instructions to coordinate the response.");
+    insert(output);
+end
+
+rule "No abnormal traffic patterns, classify as false positive"
+when
+    $input: EvidencesDDoS(alertId == "DDoS", trafficSpike == "no", legitimateSource == "null", abnormalPattern == "no", mitigationEnabled == "null", contactISP == "null")
+then
+    AlertResponse output = new AlertResponse("conclusion",
+                                             null,
+                                             new Conclusion(Conclusion.CLASSIFY_FP),
+                                             $input,
+                                             "conclusion",
+                                             "Since no abnormal patterns or unusual traffic spikes were detected, classify this as a false positive.");
+    insert(output);
+end
 
 
 rule "Default: Unknown response or invalid step"

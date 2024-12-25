@@ -65,6 +65,10 @@ public class AlertController {
                 EvidencesPS inputps = mapper.convertValue(alertContext.get("input"), EvidencesPS.class);
                 response = alertService.runEngine(inputps);
                 break;
+            case "DDoS":
+                EvidencesDDoS inputDDoS = mapper.convertValue(alertContext.get("input"), EvidencesDDoS.class);
+                response = alertService.runEngine(inputDDoS);
+                break;
         }
         return ResponseEntity.ok(response);
     }
@@ -154,6 +158,15 @@ public class AlertController {
                     response = alertService.runEngine(inputps);
                 }
                 break;
+            case "DDoS":
+                EvidencesDDoS inputDDoS = mapper.convertValue(alertContext.get("evidences"), EvidencesDDoS.class);
+                for (String answer : possibleAnswers){
+                    Class<?> clazz = inputDDoS.getClass();
+                    Field field = clazz.getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                    field.set(inputDDoS, answer.toLowerCase());
+                    response = alertService.runEngine(inputDDoS);
+                }
         }
 
         List<String> why = alertService.why(possibleAnswers);
