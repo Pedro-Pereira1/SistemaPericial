@@ -64,24 +64,19 @@ class AlertService :
     async def generate_random_alerts(self, alert_nums, model):
         users = await self.user_service.get_all_users()
         alerts: list[Alert] = []
-
-        async def create_and_save_alert():
-            prediction = await self.alert_adapter.ask_for_category(model)
+        predictions = await self.alert_adapter.ask_for_categories(model, alert_nums)
+        for i in range(alert_nums):
             origin = random.choice(clients)
             user = random.choice(users)
             alert = await self.create_alert_with_date({
-                "category": prediction["category"],
-                "subCategory": prediction["subCategory"],
+                "category": predictions[i],
+                "subCategory": "Undetermined",
                 "origin": origin[1],
                 "assignedTo": user["email"],
                 "status": "Open"
             })
             await self.save_alert(alert)
-            return alert
-
-        # Run all alert creation tasks concurrently
-        alert_tasks = [create_and_save_alert() for _ in range(alert_nums)]
-        alerts = await asyncio.gather(*alert_tasks)
+            alerts.append(alert)
         return alerts
 
     

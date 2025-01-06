@@ -62,7 +62,7 @@ const Metrics: React.FC = () => {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let value = parseInt(event.target.value);
         if (value < 1) value = 1;
-        if (value > 100) value = 100;
+        if (value > 1000) value = 1000;
         setNumAlerts(value);
     };
 

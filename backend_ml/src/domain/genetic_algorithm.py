@@ -43,7 +43,7 @@ def fitness(individual: dict[str, List[str]], alerts: List[Alert], users: List[U
                 score -= 50 * (previous_priority - alert.priority)
             
             previous_priority = alert.priority
-            score += 1/alert.priority * (user.experience_score/5)
+            score += (1/alert.priority * (user.experience_score/5))
     # Additional debugging of user workloads
     for user_id, workload in user_workload.items():
         if workload > 480:

@@ -9,6 +9,9 @@ class MachineLearningController:
     async def predict(self, model:str):
         return await self.ml_service.predict(model)
     
+    async def predict_a_lot(self, model:str, num:int):
+        return await self.ml_service.predict_a_lot(model, num)
+    
     async def genetic(self):
         return await self.ml_service.genetic_algorithm()
     

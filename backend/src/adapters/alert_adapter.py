@@ -123,7 +123,12 @@ class AlertAdapter:
             return requests.get(url).json()["prediction"]
         except Exception as e:
             return f"Could not categorize the alert: {str(e)}"
-
+        
+    async def ask_for_categories(self, model:str, number:int):
+        try:
+            return [content for content in requests.get(f"http://localhost:6500/predict-a-lot/{model}/{number}").json()]
+        except:
+            return "Could not categorize the alert"
     
     async def ask_for_subCategory(self, category):
         return random.choice(self.categories[category]) if category in self.categories else "Indeterminado"
