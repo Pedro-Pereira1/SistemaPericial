@@ -208,7 +208,7 @@ def genetic_algorithm(alerts: List[Alert], users: List[User], generations: int, 
 
         # Print only the best individual
         best_individual, best_fitness = sorted_population[0]
-        #print(f"  Best individual: Fitness = {best_fitness}")
+        print(f"  Best individual: Fitness = {best_fitness}")
 
         # Select the next generation
         population = select_next_generation(population, fitnesses, population_size)

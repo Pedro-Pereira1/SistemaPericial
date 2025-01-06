@@ -13,32 +13,32 @@ import {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Metrics: React.FC = () => {
-    const [selectedModel, setSelectedModel] = useState<string>('xgboost');
+    const [selectedModel, setSelectedModel] = useState<string>('XGBoost');
     const [numAlerts, setNumAlerts] = useState<number>(1);
     const [progress, setProgress] = useState<number>(0); // State for progress
     const [alerts, setAlerts] = useState<Alert[]>([]);
 
     // Example data for different models
     const modelsData: { [key: string]: { label: string; value: number }[] } = {   
-        'xgboost': [
+        'XGBoost': [
             { label: 'F1 Score', value: 98.51 },
             { label: 'Precision', value: 98.57 },
             { label: 'Recall', value: 98.93 },
             { label: 'Accuracy', value: 98.93 },
         ],
-        'random_forest': [
+        'Random Forest': [
             { label: 'F1 Score', value: 98.37 },
             { label: 'Precision', value: 98.13 },
             { label: 'Recall', value: 98.67 },
             { label: 'Accuracy', value: 98.67 },
         ],
-        'lightgbm': [
+        'LGBM': [
             { label: 'F1 Score', value: 95 },
             { label: 'Precision', value: 95.06 },
             { label: 'Recall', value: 94.96 },
             { label: 'Accuracy', value: 94.96 },
         ],
-        'cnn_rnn': [
+        'CNN + RNN': [
             { label: 'F1 Score', value: 5 },
             { label: 'Precision', value: 2 },
             { label: 'Recall', value: 7 },
@@ -46,7 +46,7 @@ const Metrics: React.FC = () => {
         ],
     };
 
-    const [metrics, setMetrics] = useState(modelsData['xgboost']);
+    const [metrics, setMetrics] = useState(modelsData['XGBoost']);
     const darkMode = JSON.parse(localStorage.getItem('darkMode') || '{}');
     const [selectedGraph, setSelectedGraph] = useState<'Category' | 'AssignedUser' | 'Origin'>('Category');
 
@@ -191,10 +191,10 @@ const Metrics: React.FC = () => {
                         value={selectedModel}
                         onChange={handleModelChange}
                     >
-                        <option value="xgboost">XGBoost</option>
-                        <option value="random_forest">Random Forest</option>
-                        <option value="lightgbm">LGBM</option>
-                        <option value="cnn_rnn">CNN + RNN</option>
+                        <option value="XGBoost">XGBoost</option>
+                        <option value="Random Forest">Random Forest</option>
+                        <option value="LGBM">LGBM</option>
+                        <option value="CNN + RNN">CNN + RNN</option>
                     </select>
 
                     {/* Generate button */}

@@ -164,4 +164,3 @@ cython_debug/
 
 .vscode
 cic-collection.parquet
-backend_ml/src/ml/random_forest.joblib
