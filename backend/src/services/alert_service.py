@@ -66,7 +66,7 @@ class AlertService :
         alerts: list[Alert] = []
 
         async def create_and_save_alert():
-            prediction = await self.alert_adapter.ask_for_category()
+            prediction = await self.alert_adapter.ask_for_category(model)
             origin = random.choice(clients)
             user = random.choice(users)
             alert = await self.create_alert_with_date({

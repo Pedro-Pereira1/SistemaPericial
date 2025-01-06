@@ -115,11 +115,15 @@ class AlertAdapter:
     async def num_rows(self):
         return self.db["alerts"].count_documents({})
     
-    async def ask_for_category(self):
+    import requests
+
+    async def ask_for_category(self, model: str):
         try:
-            return requests.get("http://localhost:6500/predict/").json()["prediction"]
-        except:
-            return "Could not categorize the alert"
+            url = f"http://localhost:6500/predict/{model}"
+            return requests.get(url).json()["prediction"]
+        except Exception as e:
+            return f"Could not categorize the alert: {str(e)}"
+
     
     async def ask_for_subCategory(self, category):
         return random.choice(self.categories[category]) if category in self.categories else "Indeterminado"
