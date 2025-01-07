@@ -12,11 +12,20 @@ import {
 } from 'chart.js';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+const modelNames: { [key: string]: string } = {
+    'xgboost': 'XGBoost',
+    'random_forest': 'Random Forest',
+    'lightgbm': 'LGBM',
+    'cnn_rnn': 'CNN + RNN'
+};
+
 const Metrics: React.FC = () => {
     const [selectedModel, setSelectedModel] = useState<string>('xgboost');
     const [numAlerts, setNumAlerts] = useState<number>(1);
     const [progress, setProgress] = useState<number>(0); // State for progress
     const [alerts, setAlerts] = useState<Alert[]>([]);
+    const [selectedAlgorithm, setSelectedAlgorithm] = useState<'genetic' | 'pso'>('genetic');
+
 
     // Example data for different models
     const modelsData: { [key: string]: { label: string; value: number }[] } = {   
@@ -131,7 +140,7 @@ const Metrics: React.FC = () => {
     
             // Call the API to generate alerts
             setProgress(30); // Update progress for API call
-            const response = await axios.post(`http://localhost:7000/alerts/random/${numAlerts}/${selectedModel.replace(/\s/g, '')}`);
+            const response = await axios.post(`http://localhost:7000/alerts/random/${numAlerts}/${selectedModel.replace(/\s/g, '')}/${selectedAlgorithm.replace(/\s/g, '')}`);
             if (response.status !== 200) {
                 throw new Error(`API error: ${response.statusText}`);
             }
@@ -197,6 +206,14 @@ const Metrics: React.FC = () => {
                         <option value="cnn_rnn">CNN + RNN</option>
                     </select>
 
+                    <select
+                        value={selectedAlgorithm}
+                        onChange={(e) => setSelectedAlgorithm(e.target.value as 'genetic' | 'pso')}
+                    >
+                        <option value="genetic">Genetic Algorithm</option>
+                        <option value="pso">Particle swarm optimization</option>
+                    </select>
+
                     {/* Generate button */}
                     <button
                         className="generate-random-alerts-btn"
@@ -235,7 +252,7 @@ const Metrics: React.FC = () => {
                         >
                             {Object.keys(modelsData).map((model, index) => (
                                 <option key={index} value={model}>
-                                    {model}
+                                    {modelNames[model]}
                                 </option>
                             ))}
                         </select>

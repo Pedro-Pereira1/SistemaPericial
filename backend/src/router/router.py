@@ -98,10 +98,10 @@ class Router:
         return await alert_controller.get_all_alerts()
     
     #axios.post('http://localhost:7000/alerts/random/' + numAlerts,selectedModel);
-    @router.post("/alerts/random/{alert_nums}/{model}")
-    async def generate_random_alerts(alert_nums:int, model:str):
+    @router.post("/alerts/random/{alert_nums}/{model}/{algorithm}")
+    async def generate_random_alerts(alert_nums:int, model:str, algorithm:str):
         alert_controller:AlertController = loader.resolve(config.alert_controller["name"])
-        return await alert_controller.generate_random_alerts(alert_nums, model)
+        return await alert_controller.generate_random_alerts(alert_nums, model, algorithm)
     
     @router.get("/category")
     async def get_all_categories():
