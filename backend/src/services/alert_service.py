@@ -83,7 +83,7 @@ class AlertService :
     async def genetic_results(self):
         timeout = httpx.Timeout(120.0)  # Set the timeout to 10 seconds (adjust as needed)
         async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.get("http://localhost:6500/genetic")
+            response = await client.get("http://localhost:6500/pso")
         if response.status_code == 200:
             return response.json()
         raise Exception(f"Error fetching genetic results: {response.status_code}")

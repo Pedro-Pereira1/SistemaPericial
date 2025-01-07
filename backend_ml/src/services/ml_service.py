@@ -10,6 +10,7 @@ import requests
 from src.domain.alert import Alert
 from src.domain.user import User
 from src.domain.genetic_algorithm import genetic_algorithm
+from src.domain.pso import particle_swarm_optimization
 
 class MachineLearningService:
     def __init__(self):
@@ -80,3 +81,9 @@ class MachineLearningService:
         if response.status_code == 200:
             return response.json()
         return None
+    
+    async def pso(self):
+        alerts:list[Alert] = [Alert(alert["id"], alert["priority"], alert["origin"], alert["creationTime"], alert["category"]) for alert in await self.get_all_alerts()]
+        users:list[User] = [User(user["id"], user["experience_score"], user["categories_preferences"]) for user in await self.get_all_users()]
+        alerts = particle_swarm_optimization(alerts, users, 200, 30)
+        return alerts
