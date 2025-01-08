@@ -260,7 +260,8 @@ def genetic_algorithm(alerts: List[Alert], users: List[User], generations: int, 
 
     return {
         "assignments": best_population,
-        "workloads": user_workload
+        "workloads": user_workload,
+        "best_fitness":best_fitness_score
     }
 
 

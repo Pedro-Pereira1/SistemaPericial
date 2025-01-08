@@ -115,8 +115,13 @@ class AlertService :
                 id=alert_dict["id"]
             )
 
-            print(alert.to_dict())  # Print the alert for verification
-            await self.alert_adapter.save(alert)  # Save the alert
+            await self.alert_adapter.save(alert)
+
+            return {
+                "user":user_dict["name"],
+                "alert":alert.id,
+                "estimate_time":(1 / (0.5 * alert.priority) * 60) / (1 + (user_dict["experience_score"] / 100))
+            }
 
         # Gather all tasks based on assignments
         tasks = []
@@ -125,6 +130,6 @@ class AlertService :
                 tasks.append(assign_task(user_id, alert_id))
 
         # Run all tasks concurrently
-        await asyncio.gather(*tasks)
-        return {"data": assignments}
+        tasks = await asyncio.gather(*tasks)
+        return {"data": assignments, "tasks":tasks}
 

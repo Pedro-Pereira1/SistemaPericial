@@ -85,5 +85,7 @@ class MachineLearningService:
     async def pso(self):
         alerts:list[Alert] = [Alert(alert["id"], alert["priority"], alert["origin"], alert["creationTime"], alert["category"]) for alert in await self.get_all_alerts()]
         users:list[User] = [User(user["id"], user["experience_score"], user["categories_preferences"]) for user in await self.get_all_users()]
-        alerts = particle_swarm_optimization(alerts, users, 200, 30)
+        generations = len(alerts)*len(users)
+        if(generations < 200): generations = 200
+        alerts = particle_swarm_optimization(alerts, users, len(alerts)*len(users), 30)
         return alerts
