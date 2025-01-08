@@ -3,14 +3,18 @@ import './Metrics.css';
 import axios from 'axios';
 import UserService from '../../../services/UserService';
 import Alert from '../../../domain/Alert';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
     ArcElement,
     Tooltip,
     Legend,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
 } from 'chart.js';
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 const modelNames: { [key: string]: string } = {
     'xgboost': 'XGBoost',
@@ -25,6 +29,15 @@ const Metrics: React.FC = () => {
     const [progress, setProgress] = useState<number>(0); // State for progress
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [selectedAlgorithm, setSelectedAlgorithm] = useState<'genetic' | 'pso'>('genetic');
+    const [workPlan, setWorkPlan] = useState<{ 
+        bestFitness: number | null, 
+        assignments: Record<string, string[]>, 
+        workloads: Record<string, number> 
+    }>({
+        bestFitness: null,
+        assignments: {},
+        workloads: {}
+    });
 
 
     // Example data for different models
@@ -128,6 +141,26 @@ const Metrics: React.FC = () => {
         }
     };
 
+    const getWorkPlanChartData = () => {
+        if (!workPlan || Object.keys(workPlan.workloads).length === 0) {
+            return {
+                labels: [],
+                datasets: []
+            };
+        }
+    
+        return {
+            labels: Object.keys(workPlan.workloads),
+            datasets: [{
+                label: 'Workload',
+                data: Object.values(workPlan.workloads),
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        };
+    };
+
     const handleGenerateAlerts = async () => {
         setAlerts([]); // Clear existing alerts
         setProgress(0); // Reset progress
@@ -160,6 +193,14 @@ const Metrics: React.FC = () => {
     
             setAlerts(data.slice(data.length - numAlerts));
     
+            if (response.data && response.data.data) {
+                setWorkPlan({
+                    bestFitness: response.data.data.best_fitness,
+                    assignments: response.data.data.assignments,
+                    workloads: response.data.data.workloads
+                });
+            }
+
             // Simulate final completion progress
             for (let i = 81; i <= 100; i++) {
                 await new Promise((resolve) => setTimeout(resolve, 20)); // Finalizing
@@ -310,10 +351,47 @@ const Metrics: React.FC = () => {
                 )}
                 </div>
             </div>
+            
             <div className="middle-container">
-            <h3 className="grid-title">Work Plan</h3>
-        
+        <h3 className="grid-title">Work Plan</h3>
+        {workPlan.bestFitness !== null ? (
+            <div>
+                <div className="workplan-chart">
+                    <Bar
+                        data={getWorkPlanChartData()}
+                        options={{
+                            indexAxis: 'y',
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    stacked: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Workload'
+                                    }
+                                },
+                                y: {
+                                    stacked: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Workers'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }}
+                    />
+                </div>
             </div>
+        ) : (
+            <p className='NoWorkPlanYet'>No work plan available. Generate alerts to see the plan.</p>
+        )}
+    </div>
+
             <div className="bottom-grid">
                 {/* Other Sections (Graphs, Alerts, etc.) */}
                 <div className="grid-item graphs-container">
