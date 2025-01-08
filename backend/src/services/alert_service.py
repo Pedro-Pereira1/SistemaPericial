@@ -126,4 +126,5 @@ class AlertService :
 
         # Run all tasks concurrently
         await asyncio.gather(*tasks)
+        return {"data": assignments}
 

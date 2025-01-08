@@ -142,6 +142,7 @@ const Metrics: React.FC = () => {
             setProgress(30); // Update progress for API call
             const response = await axios.post(`http://localhost:7000/alerts/random/${numAlerts}/${selectedModel.replace(/\s/g, '')}/${selectedAlgorithm.replace(/\s/g, '')}`);
             if (response.status !== 200) {
+                window.alert('Error generating random alerts');
                 throw new Error(`API error: ${response.statusText}`);
             }
     
