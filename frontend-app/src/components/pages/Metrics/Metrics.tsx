@@ -309,7 +309,12 @@ const Metrics: React.FC = () => {
                     </ul>
                 )}
                 </div>
-
+            </div>
+            <div className="middle-container">
+            <h3 className="grid-title">Work Plan</h3>
+        
+            </div>
+            <div className="bottom-grid">
                 {/* Other Sections (Graphs, Alerts, etc.) */}
                 <div className="grid-item graphs-container">
                     <h3 className="grid-title">Graphs</h3>
