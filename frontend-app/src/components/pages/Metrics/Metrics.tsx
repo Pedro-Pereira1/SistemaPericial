@@ -32,11 +32,13 @@ const Metrics: React.FC = () => {
     const [workPlan, setWorkPlan] = useState<{ 
         bestFitness: number | null, 
         assignments: Record<string, string[]>, 
-        workloads: Record<string, number> 
+        workloads: Record<string, number>,
+        tasks: { user: string; alert: string; estimate_time: number }[] 
     }>({
         bestFitness: null,
         assignments: {},
-        workloads: {}
+        workloads: {},
+        tasks: []
     });
 
 
@@ -197,7 +199,8 @@ const Metrics: React.FC = () => {
                 setWorkPlan({
                     bestFitness: response.data.data.best_fitness,
                     assignments: response.data.data.assignments,
-                    workloads: response.data.data.workloads
+                    workloads: response.data.data.workloads,
+                    tasks: response.data.data.tasks
                 });
             }
 
