@@ -23,6 +23,14 @@ const modelNames: { [key: string]: string } = {
     'cnn_rnn': 'CNN + RNN'
 };
 
+
+  
+  type OrganizedUser = {
+    user: string;
+    estimate_time: number;
+    alerts: { alert: string; estimate_time: number }[];
+  };
+
 const Metrics: React.FC = () => {
     const [selectedModel, setSelectedModel] = useState<string>('xgboost');
     const [numAlerts, setNumAlerts] = useState<number>(1);
@@ -145,23 +153,53 @@ const Metrics: React.FC = () => {
 
     const getWorkPlanChartData = () => {
         if (!workPlan || Object.keys(workPlan.workloads).length === 0) {
-            return {
-                labels: [],
-                datasets: []
-            };
+          return {
+            labels: [],
+            datasets: []
+          };
         }
-    
+            
+        // Organize tasks into users and alerts
+        const organizedTasks = organizeTasks(workPlan.tasks);
+      
+        // Get user names
+        const userNames = organizedTasks.map((user) => user.user);
+      
+        // Create an array of datasets, one dataset for each alert per user
+        const datasets = organizedTasks.map((user) => {
+          const alertData = user.alerts.map(alert => alert.estimate_time);
+      
+          return {
+            label: user.user,  // Label dataset by the user
+            data: alertData,
+            backgroundColor: alertData.map(() => 'rgba(255, 99, 132, 1)'), 
+            borderColor: alertData.map(() => 'rgba(255, 99, 132, 1)'),
+            borderWidth: 1
+          };
+        });
+      
         return {
-            labels: Object.keys(workPlan.workloads),
-            datasets: [{
-                label: 'Workload',
-                data: Object.values(workPlan.workloads),
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
+          labels: userNames,  // Labels for users
+          datasets: datasets
         };
-    };
+      };
+      
+
+
+    function organizeTasks(tasks: { user: string; alert: string; estimate_time: number }[] ): OrganizedUser[] {
+        const userMap = new Map<string, OrganizedUser>();
+      
+        for (const task of tasks) {
+          if (!userMap.has(task.user)) {
+            userMap.set(task.user, { user: task.user, estimate_time: 0, alerts: [] });
+          }
+          const userEntry = userMap.get(task.user)!;
+          userEntry.estimate_time += task.estimate_time;
+          userEntry.alerts.push({ alert: task.alert, estimate_time: task.estimate_time });
+        }
+      
+        return Array.from(userMap.values());
+    }
 
     const handleGenerateAlerts = async () => {
         setAlerts([]); // Clear existing alerts
@@ -200,7 +238,7 @@ const Metrics: React.FC = () => {
                     bestFitness: response.data.data.best_fitness,
                     assignments: response.data.data.assignments,
                     workloads: response.data.data.workloads,
-                    tasks: response.data.data.tasks
+                    tasks: response.data.tasks
                 });
             }
 
@@ -356,44 +394,54 @@ const Metrics: React.FC = () => {
             </div>
             
             <div className="middle-container">
-        <h3 className="grid-title">Work Plan</h3>
-        {workPlan.bestFitness !== null ? (
-            <div>
-                <div className="workplan-chart">
+                <h3 className="grid-title">Work Plan</h3>
+                {workPlan.bestFitness !== null ? (
+                <div>
+                    <div className="workplan-chart">
                     <Bar
                         data={getWorkPlanChartData()}
                         options={{
-                            indexAxis: 'y',
-                            responsive: true,
-                            scales: {
-                                x: {
-                                    stacked: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Workload'
-                                    }
-                                },
-                                y: {
-                                    stacked: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Workers'
-                                    }
-                                }
+                          indexAxis: 'y', // Horizontal bar chart
+                          responsive: true,
+                          scales: {
+                            x: {
+                              stacked: true, // Enable stacking on the x-axis
+                              title: {
+                                display: true,
+                                text: 'Estimate Time (hours)' // Show the total time for alerts
+                              }
                             },
-                            plugins: {
-                                legend: {
-                                    display: false
-                                }
+                            y: {
+                              stacked: true, // Enable stacking on the y-axis for each user
+                              title: {
+                                display: true,
+                                text: 'Users' // Show the names of users
+                              }
                             }
+                          },
+                          plugins: {
+                            legend: {
+                              display: true, // Display legend
+                              position: 'top',
+                            },
+                            tooltip: {
+                              callbacks: {
+                                label: function (context) {
+                                  const label = context.dataset.label || '';
+                                  const value = context.raw;
+                                  return `${label} Alert: ${value} hours`; // Tooltip for each alert part
+                                }
+                              }
+                            }
+                          }
                         }}
                     />
-                </div>
+                    </div>
+                    </div>
+                ) : (
+                    <p className='NoWorkPlanYet'>No work plan available. Generate alerts to see the plan.</p>
+                )}
             </div>
-        ) : (
-            <p className='NoWorkPlanYet'>No work plan available. Generate alerts to see the plan.</p>
-        )}
-    </div>
 
             <div className="bottom-grid">
                 {/* Other Sections (Graphs, Alerts, etc.) */}
