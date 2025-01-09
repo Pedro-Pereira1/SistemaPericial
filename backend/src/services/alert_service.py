@@ -119,7 +119,7 @@ class AlertService :
 
             return {
                 "user":user_dict["name"],
-                "alert":alert.id,
+                "alert":alert.to_dict(),
                 "estimate_time":(1 / (0.5 * alert.priority) * 60) / (1 + (user_dict["experience_score"] / 100))
             }
 
