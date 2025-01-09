@@ -14,6 +14,7 @@ import {
     BarElement,
     Title,
 } from 'chart.js';
+import { json } from 'react-router-dom';
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 const modelNames: { [key: string]: string } = {
@@ -28,7 +29,7 @@ const modelNames: { [key: string]: string } = {
   type OrganizedUser = {
     user: string;
     estimate_time: number;
-    alerts: { alert: string; estimate_time: number }[];
+    alerts: { alert: Alert; estimate_time: number }[];
   };
 
 const Metrics: React.FC = () => {
@@ -41,7 +42,7 @@ const Metrics: React.FC = () => {
         bestFitness: number | null, 
         assignments: Record<string, string[]>, 
         workloads: Record<string, number>,
-        tasks: { user: string; alert: string; estimate_time: number }[] 
+        tasks: { user: string; alert: Alert; estimate_time: number }[] 
     }>({
         bestFitness: null,
         assignments: {},
@@ -169,21 +170,21 @@ const Metrics: React.FC = () => {
 
         // Assign colors to different alerts
         const alertColors: Record<string, string> = {};
-        alertNames.forEach((alert, index) => {
-            alertColors[alert] = `hsl(${(index * 137) % 360}, 70%, 60%)`; // Generate distinct colors
+        alertNames.forEach((alert) => {
+            alertColors[alert.id] = getPriorityColor(alert.priority).color;
         });
 
         // Create stacked datasets, one per alert category
         const datasets = alertNames.map((alert) => {
             return {
-                label: alert,
+                label: alert.title,
                 data: organizedTasks.map((user) => {
                     // Sum estimate time for this alert type per user
                     return user.alerts
                         .filter((userAlert) => userAlert.alert === alert)
                         .reduce((sum, userAlert) => sum + userAlert.estimate_time, 0);
                 }),
-                backgroundColor: alertColors[alert],
+                backgroundColor: alertColors[alert.id],
                 borderWidth: 1
             };
         });
@@ -194,8 +195,39 @@ const Metrics: React.FC = () => {
         };
     };
 
+    const getPriorityColor = (priority: string) => {
+        const num = Number(priority);
+        switch (num) {
+            case 1:
+                return { color: 'red', label: '1 - Max' };
+            case 2:
+                return { color: 'orange', label: '2 - High' };
+            case 3:
+                return { color: '#FFD700', label: '3 - Medium' };
+            case 4:
+                return { color: 'green', label: '4 - Low' };
+            case 5:
+                return { color: 'blue', label: '5 - Minimal' };
+            default:
+                return { color: 'gray', label: 'Unknown Priority' };
+        }
+    };
+
+    const getPriorityFromColor = (color: string) => {
+        const priorityMap: { [key: string]: { priority: number; label: string } } = {
+            red: { priority: 1, label: '1 - Max' },
+            orange: { priority: 2, label: '2 - High' },
+            '#FFD700': { priority: 3, label: '3 - Medium' },
+            green: { priority: 4, label: '4 - Low' },
+            blue: { priority: 5, label: '5 - Minimal' },
+            gray: { priority: 0, label: 'Unknown Priority' }
+        };
+    
+        return priorityMap[color] || { priority: 0, label: 'Unknown Priority' };
+    };
+    
       
-    function organizeTasks(tasks: { user: string; alert: string; estimate_time: number }[] ): OrganizedUser[] {
+    function organizeTasks(tasks: { user: string; alert: Alert; estimate_time: number }[] ): OrganizedUser[] {
         const userMap = new Map<string, OrganizedUser>();
       
         for (const task of tasks) {
@@ -436,7 +468,9 @@ const Metrics: React.FC = () => {
                                     tooltip: {
                                         callbacks: {
                                             label: function (context) {
-                                                return `Alert ${context.dataset.label} | Estimate time: ${context.raw} minutes`;
+                                                const backgroundColor = typeof context.dataset.backgroundColor === 'string' ? context.dataset.backgroundColor : 'gray';
+                                            
+                                                return `Alert ${context.dataset.label} | Estimate time: ${context.raw} minutes | Priority: ${getPriorityFromColor(backgroundColor).label}`;
                                             }
                                         }
                                     }
