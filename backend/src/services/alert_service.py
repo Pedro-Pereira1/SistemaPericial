@@ -95,13 +95,11 @@ class AlertService :
 
         :param assignments: A dictionary where keys are user IDs and values are lists of alert IDs.
         """
-        counter = await self.num_rows()
-
         async def assign_task(user_id, alert_id):
             # Fetch user and alert details
             user_dict = await self.user_service.find_by_id(user_id)
             alert_dict = await self.alert_adapter.find_by_id(alert_id)
-
+            print(alert_dict)
             # Create a new Alert object
             alert = Alert(
                 category=alert_dict["category"],
@@ -109,10 +107,10 @@ class AlertService :
                 origin=alert_dict["origin"],
                 assignedTo=user_dict["email"],
                 status=alert_dict["status"],
-                last_case=counter + 1,
+                last_case=alert_dict["number"],
                 priority=alert_dict["priority"],
                 start_date=alert_dict["creationTime"],
-                id=alert_dict["id"]
+                id=alert_dict["id"],
             )
 
             await self.alert_adapter.save(alert)
