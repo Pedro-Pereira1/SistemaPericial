@@ -316,7 +316,7 @@ const handleWhyNotExplanation = async () => {
 
 return (
   <div className="container">
-    <h1>Changes made to the firewall - #{alertId}</h1>
+    <h1>Distributed Denial-of-Service - #{alertId}</h1>
     <div className="message-list">
       {messages.map((message, index) => (
         <div

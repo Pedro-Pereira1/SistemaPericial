@@ -14,6 +14,7 @@ interface Alert {
     conclusionTime: string;
     description: string;
     resolution: string[];
+    title: string;
 }
 
 const History: React.FC = () => {
@@ -88,7 +89,7 @@ const History: React.FC = () => {
                 {historyItems.map(item => (
                     <li key={item.id} className="history-item">
                         <div className="history-header">
-                            <span>{item.subCategory}</span>
+                            <span>{item.title}</span>
                             <span className="timestamp">
                                 {new Date(item.creationTime).toLocaleString()} - {new Date(item.conclusionTime).toLocaleString()}
                             </span>
