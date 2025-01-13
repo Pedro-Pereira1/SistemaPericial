@@ -72,10 +72,10 @@ const Metrics: React.FC = () => {
             { label: 'Accuracy', value: 94.96 },
         ],
         'cnn_rnn': [
-            { label: 'F1 Score', value: 5 },
-            { label: 'Precision', value: 2 },
-            { label: 'Recall', value: 7 },
-            { label: 'Accuracy', value: 9 },
+            { label: 'F1 Score', value: 90.9 },
+            { label: 'Precision', value: 90.7 },
+            { label: 'Recall', value: 91.97 },
+            { label: 'Accuracy', value: 91.97 },
         ],
     };
 
