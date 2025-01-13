@@ -22,6 +22,11 @@ class Router:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
     
+    @router.get("/predict-a-lot/{model}/{num}")
+    async def predict_default(model:str,num:int):
+        ml_controller:MachineLearningController = loader.resolve(config.ml_controller["name"]) 
+        return await ml_controller.predict_a_lot(model, num) 
+    
     @router.get("/genetic")
     async def genetic():
         try:
@@ -29,3 +34,8 @@ class Router:
             return await ml_controller.genetic()
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
+        
+    @router.get("/pso")
+    async def pso():
+        ml_controller: MachineLearningController = loader.resolve(config.ml_controller["name"])
+        return await ml_controller.pso()

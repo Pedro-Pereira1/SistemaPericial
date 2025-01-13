@@ -3,20 +3,53 @@ import './Metrics.css';
 import axios from 'axios';
 import UserService from '../../../services/UserService';
 import Alert from '../../../domain/Alert';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
     ArcElement,
     Tooltip,
     Legend,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
 } from 'chart.js';
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { json } from 'react-router-dom';
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
+
+const modelNames: { [key: string]: string } = {
+    'xgboost': 'XGBoost',
+    'random_forest': 'Random Forest',
+    'lightgbm': 'LGBM',
+    'cnn_rnn': 'CNN + RNN'
+};
+
+
+  
+  type OrganizedUser = {
+    user: string;
+    estimate_time: number;
+    alerts: { alert: Alert; estimate_time: number }[];
+  };
 
 const Metrics: React.FC = () => {
     const [selectedModel, setSelectedModel] = useState<string>('xgboost');
     const [numAlerts, setNumAlerts] = useState<number>(1);
     const [progress, setProgress] = useState<number>(0); // State for progress
     const [alerts, setAlerts] = useState<Alert[]>([]);
+    const [selectedAlgorithm, setSelectedAlgorithm] = useState<'genetic' | 'pso'>('genetic');
+    const [workPlan, setWorkPlan] = useState<{ 
+        bestFitness: number | null, 
+        assignments: Record<string, string[]>, 
+        workloads: Record<string, number>,
+        tasks: { user: string; alert: Alert; estimate_time: number }[] 
+    }>({
+        bestFitness: null,
+        assignments: {},
+        workloads: {},
+        tasks: []
+    });
+
 
     // Example data for different models
     const modelsData: { [key: string]: { label: string; value: number }[] } = {   
@@ -62,7 +95,7 @@ const Metrics: React.FC = () => {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let value = parseInt(event.target.value);
         if (value < 1) value = 1;
-        if (value > 100) value = 100;
+        if (value > 1000) value = 1000;
         setNumAlerts(value);
     };
 
@@ -119,6 +152,96 @@ const Metrics: React.FC = () => {
         }
     };
 
+    const getWorkPlanChartData = () => {
+        if (!workPlan || workPlan.tasks.length === 0) {
+            return {
+                labels: [],
+                datasets: []
+            };
+        }
+
+        // Organize alerts per user
+        const organizedTasks = organizeTasks(workPlan.tasks);
+        console.log(organizedTasks);
+        const userNames = organizedTasks.map((user) => user.user);
+
+        // Extract unique alert names for each user
+        const alertNames = Array.from(new Set(workPlan.tasks.map((task) => task.alert)));
+
+        // Assign colors to different alerts
+        const alertColors: Record<string, string> = {};
+        alertNames.forEach((alert) => {
+            alertColors[alert.id] = getPriorityColor(alert.priority).color;
+        });
+
+        // Create stacked datasets, one per alert category
+        const datasets = alertNames.map((alert) => {
+            return {
+                label: alert.title,
+                data: organizedTasks.map((user) => {
+                    // Sum estimate time for this alert type per user
+                    return user.alerts
+                        .filter((userAlert) => userAlert.alert === alert)
+                        .reduce((sum, userAlert) => sum + userAlert.estimate_time, 0);
+                }),
+                backgroundColor: alertColors[alert.id],
+                borderWidth: 1
+            };
+        });
+
+        return {
+            labels: userNames,
+            datasets: datasets
+        };
+    };
+
+    const getPriorityColor = (priority: string) => {
+        const num = Number(priority);
+        switch (num) {
+            case 1:
+                return { color: 'red', label: '1 - Max' };
+            case 2:
+                return { color: 'orange', label: '2 - High' };
+            case 3:
+                return { color: '#FFD700', label: '3 - Medium' };
+            case 4:
+                return { color: 'green', label: '4 - Low' };
+            case 5:
+                return { color: 'blue', label: '5 - Minimal' };
+            default:
+                return { color: 'gray', label: 'Unknown Priority' };
+        }
+    };
+
+    const getPriorityFromColor = (color: string) => {
+        const priorityMap: { [key: string]: { priority: number; label: string } } = {
+            red: { priority: 1, label: '1 - Max' },
+            orange: { priority: 2, label: '2 - High' },
+            '#FFD700': { priority: 3, label: '3 - Medium' },
+            green: { priority: 4, label: '4 - Low' },
+            blue: { priority: 5, label: '5 - Minimal' },
+            gray: { priority: 0, label: 'Unknown Priority' }
+        };
+    
+        return priorityMap[color] || { priority: 0, label: 'Unknown Priority' };
+    };
+    
+      
+    function organizeTasks(tasks: { user: string; alert: Alert; estimate_time: number }[] ): OrganizedUser[] {
+        const userMap = new Map<string, OrganizedUser>();
+      
+        for (const task of tasks) {
+          if (!userMap.has(task.user)) {
+            userMap.set(task.user, { user: task.user, estimate_time: 0, alerts: [] });
+          }
+          const userEntry = userMap.get(task.user)!;
+          userEntry.estimate_time += task.estimate_time;
+          userEntry.alerts.push({ alert: task.alert, estimate_time: task.estimate_time });
+        }
+      
+        return Array.from(userMap.values());
+    }
+
     const handleGenerateAlerts = async () => {
         setAlerts([]); // Clear existing alerts
         setProgress(0); // Reset progress
@@ -131,8 +254,9 @@ const Metrics: React.FC = () => {
     
             // Call the API to generate alerts
             setProgress(30); // Update progress for API call
-            const response = await axios.post(`http://localhost:7000/alerts/random/${numAlerts}/${selectedModel.replace(/\s/g, '')}`);
+            const response = await axios.post(`http://localhost:7000/alerts/random/${numAlerts}/${selectedModel.replace(/\s/g, '')}/${selectedAlgorithm.replace(/\s/g, '')}`);
             if (response.status !== 200) {
+                window.alert('Error generating random alerts');
                 throw new Error(`API error: ${response.statusText}`);
             }
     
@@ -150,6 +274,15 @@ const Metrics: React.FC = () => {
     
             setAlerts(data.slice(data.length - numAlerts));
     
+            if (response.data && response.data.data) {
+                setWorkPlan({
+                    bestFitness: response.data.data.best_fitness,
+                    assignments: response.data.data.assignments,
+                    workloads: response.data.data.workloads,
+                    tasks: response.data.tasks
+                });
+            }
+
             // Simulate final completion progress
             for (let i = 81; i <= 100; i++) {
                 await new Promise((resolve) => setTimeout(resolve, 20)); // Finalizing
@@ -197,6 +330,14 @@ const Metrics: React.FC = () => {
                         <option value="cnn_rnn">CNN + RNN</option>
                     </select>
 
+                    <select
+                        value={selectedAlgorithm}
+                        onChange={(e) => setSelectedAlgorithm(e.target.value as 'genetic' | 'pso')}
+                    >
+                        <option value="genetic">Genetic Algorithm</option>
+                        <option value="pso">Particle swarm optimization</option>
+                    </select>
+
                     {/* Generate button */}
                     <button
                         className="generate-random-alerts-btn"
@@ -235,7 +376,7 @@ const Metrics: React.FC = () => {
                         >
                             {Object.keys(modelsData).map((model, index) => (
                                 <option key={index} value={model}>
-                                    {model}
+                                    {modelNames[model]}
                                 </option>
                             ))}
                         </select>
@@ -291,7 +432,59 @@ const Metrics: React.FC = () => {
                     </ul>
                 )}
                 </div>
+            </div>
+            
+            <div className="middle-container">
+                <h3 className="grid-title">Work Plan</h3>
+                {workPlan.bestFitness !== null ? (
+                <div>
+                    <div className="workplan-chart">
+                        <Bar
+                            data={getWorkPlanChartData()}
+                            options={{
+                                indexAxis: 'y', // Horizontal bar chart
+                                responsive: true,
+                                scales: {
+                                    x: {
+                                        stacked: true, // Stacking on X-axis (time)
+                                        title: {
+                                            display: true,
+                                            text: 'Estimate Time (minutes)'
+                                        }
+                                    },
+                                    y: {
+                                        stacked: true, // Stacking users
+                                        title: {
+                                            display: true,
+                                            text: 'Users'
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top',
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                const backgroundColor = typeof context.dataset.backgroundColor === 'string' ? context.dataset.backgroundColor : 'gray';
+                                            
+                                                return `Alert ${context.dataset.label} | Estimate time: ${context.raw} minutes | Priority: ${getPriorityFromColor(backgroundColor).label}`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }}
+                        />
+                    </div>
+                </div>
+                ) : (
+                    <p className='NoWorkPlanYet'>No work plan available. Generate alerts to see the plan.</p>
+                )}
+            </div>
 
+            <div className="bottom-grid">
                 {/* Other Sections (Graphs, Alerts, etc.) */}
                 <div className="grid-item graphs-container">
                     <h3 className="grid-title">Graphs</h3>

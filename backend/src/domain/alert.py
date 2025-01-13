@@ -16,6 +16,7 @@ class Alert:
         self.description = "Automatically Generated hehe"
         self.resolution = []
         self.priority = priority
+        self.number = last_case
     
     def to_dict(self):
         return {
@@ -30,7 +31,8 @@ class Alert:
             "conclusionTime": self.conclusionTime,
             "description": self.description,
             "resolution": self.resolution,
-            "priority": self.priority
+            "priority": self.priority,
+            "number":self.number
         }
 
     
