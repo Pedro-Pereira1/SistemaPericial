@@ -33,6 +33,36 @@ const modelNames: { [key: string]: string } = {
   };
 
 const Metrics: React.FC = () => {
+    const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+    const [selectedExplanationModel, setSelectedExplanationModel] = useState<string>('xgboost');
+
+    const explanationImages: { [key: string]: { src: string; name: string; description: string }[] } = {
+        'xgboost': [
+            { src: '/images/profile1.png', name: 'Image 1', description: 'Description 1' },
+            { src: '/images/profile2.png', name: 'Image 2', description: 'Description 2' },
+        ],
+        'random_forest': [
+            { src: '/images/profile3.png', name: 'Image 3', description: 'Description 3' },
+            { src: '/images/profile4.png', name: 'Image 4', description: 'Description 4' },
+        ],
+        'lightgbm': [
+            { src: '/images/profile5.png', name: 'Image 5', description: 'Description 5' },
+            { src: '/images/profile6.png', name: 'Image 6', description: 'Description 6' },
+        ],
+        'cnn_rnn': [
+            { src: '/images/profile7.png', name: 'Image 7', description: 'Description 7' },
+            { src: '/images/profile8.png', name: 'Image 8', description: 'Description 8' },
+        ],
+    };
+
+    const handlePrevImage = () => {
+        setCurrentImageIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+    };
+
+    const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) => Math.min(prevIndex + 1, explanationImages[selectedExplanationModel].length - 1));
+    };
+    
     const [selectedModel, setSelectedModel] = useState<string>('xgboost');
     const [numAlerts, setNumAlerts] = useState<number>(1);
     const [progress, setProgress] = useState<number>(0); // State for progress
@@ -89,6 +119,8 @@ const Metrics: React.FC = () => {
         const model = event.target.value;
         setSelectedModel(model);
         setMetrics(modelsData[model]);
+        setSelectedExplanationModel(model);
+        setCurrentImageIndex(0);
     };
 
     // Handle input change for number of alerts
@@ -527,17 +559,58 @@ const Metrics: React.FC = () => {
                 </div>
 
                 <div className="grid-item explicable-container">
-                    <h3 className="grid-title">Explanation</h3>
-                    <div className="explicable-div">
-                        <img
-                            className="explicable"
-                            src="/images/pie_graph_exampls.svg"
-                            alt="Pie Chart Explanation"
-                        />
+            <h3 className="grid-title">Explanation</h3>
+            
+            {/* Model Selection Dropdown */}
+            <div className="explicable-model-selector">
+                <div className="explicable-model-select-section">
+                <label htmlFor="explicable-model-select">Select Model: </label>
+                <select
+                    id="explicable-model-select"
+                    value={selectedModel}
+                    onChange={handleModelChange}
+                >
+                    {Object.keys(modelsData).map((model, index) => (
+                        <option key={index} value={model}>
+                            {modelNames[model]}
+                        </option>
+                    ))}
+                </select>
+                </div>
+
+                <div className="explicable-model-select-section2">
+                <button 
+                    className="explicable-arrow left-arrow" 
+                    onClick={handlePrevImage}
+                    disabled={currentImageIndex === 0}
+                >
+                    &#9664;
+                </button>
+
+                <div className="explicable-image-container">
+                    <img
+                        className="explicable"
+                        src={explanationImages[selectedExplanationModel][currentImageIndex].src}
+                        alt={explanationImages[selectedExplanationModel][currentImageIndex].name}
+                    />
+                    <div className="explicable-legend">
+                        <strong>{explanationImages[selectedExplanationModel][currentImageIndex].name}</strong>
+                        <p>{explanationImages[selectedExplanationModel][currentImageIndex].description}</p>
                     </div>
                 </div>
+
+                <button 
+                    className="explicable-arrow right-arrow" 
+                    onClick={handleNextImage}
+                    disabled={currentImageIndex === explanationImages[selectedExplanationModel].length - 1}
+                >
+                    &#9654;
+                </button>
+                </div>
+            </div>
             </div>
         </div>
+    </div>
     );
 };
 

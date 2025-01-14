@@ -200,15 +200,6 @@
     border-bottom: 1px solid #ddd; /* Adjust horizontal bar color for dark mode */
 }
 
-/* Explanation Section */
-.explicable-container .explicable-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%; /* Full width */
-    height: 100%; /* Match height of other grid items */
-}
-
 .explicable {
     max-width: 100%; /* Responsive width */
     height: auto;
@@ -330,4 +321,148 @@
 
 .dark-mode .PiePey{
     color: #ddd;
+}
+
+.explicable-model-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.explicable-model-select-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Style the label and select dropdown */
+.explicable-model-selector label {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.explicable-model-selector select {
+    padding: 5px;
+    font-size: 14px;
+    max-width: 180px;
+}
+
+.explicable-model-select-section2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 70%;
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+
+/* Title and Description Positioned Above Image */
+.explicable-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.explicable-description {
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Image and Navigation Layout */
+.explicable-carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 20px;
+    position: relative;
+}
+
+/* Image Container */
+.explicable-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 100%;
+}
+
+/* Explanation Image */
+.explicable {
+    max-width: 80%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation Arrows */
+.explicable-arrow {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #007bff;
+    transition: color 0.2s ease-in-out;
+
+}
+
+.explicable-arrow:hover {
+    color: #0056b3;
+}
+
+.explicable-arrow:disabled {
+    color: #ccc;
+    cursor: default;
+}
+
+/* Dark Mode Styling */
+.dark-mode .explicable-model-selector select {
+    background-color: #495057;
+    color: #ffffff;
+}
+
+.dark-mode .explicable-title {
+    color: #ddd;
+}
+
+.dark-mode .explicable-description {
+    color: #bbb;
+}
+
+.dark-mode .explicable {
+    background-color: #495057;
+}
+
+.dark-mode .explicable-arrow {
+    color: #ddd;
+}
+
+.dark-mode .explicable-arrow:hover {
+    color: #fff;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    .explicable {
+        max-width: 100%;
+    }
+
+    .explicable-carousel {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .explicable-arrow {
+        font-size: 20px;
+    }
 }
