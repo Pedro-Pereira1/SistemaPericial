@@ -49,7 +49,7 @@ class MachineLearningService:
         return random_lines_dict
 
     def import_dataset(self):
-        df = pd.read_parquet("src\\ml\\data\\cic-collection-balanced.parquet")
+        df = pd.read_parquet("src/ml/data/cic-collection-balanced.parquet")
         return df.drop(['Label', 'ClassLabel'], axis=1)
 
     async def import_random_line(self):
