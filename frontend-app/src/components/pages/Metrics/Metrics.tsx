@@ -112,6 +112,10 @@ const Metrics: React.FC = () => {
     const [metrics, setMetrics] = useState(modelsData['xgboost']);
     const darkMode = JSON.parse(localStorage.getItem('darkMode') || '{}');
     const [selectedGraph, setSelectedGraph] = useState<'Category' | 'AssignedUser' | 'Origin'>('Category');
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const toggleFullscreen = () => {
+        setIsFullscreen(!isFullscreen);
+    };
 
 
     // Handle model selection change
@@ -592,7 +596,20 @@ const Metrics: React.FC = () => {
                         className="explicable"
                         src={explanationImages[selectedExplanationModel][currentImageIndex].src}
                         alt={explanationImages[selectedExplanationModel][currentImageIndex].name}
+                        onClick={toggleFullscreen}
                     />
+                    {/* Hide description in fullscreen mode */}
+                    {isFullscreen && (
+                        <div className="fullscreen-overlay" onClick={toggleFullscreen}>
+                            <div className="fullscreen-image-container">
+                                <img
+                                    className="explicable"
+                                    src={explanationImages[selectedExplanationModel][currentImageIndex].src}
+                                    alt={explanationImages[selectedExplanationModel][currentImageIndex].name}
+                                />
+                            </div>
+                        </div>
+                    )}
                     <div className="explicable-legend">
                         <strong>{explanationImages[selectedExplanationModel][currentImageIndex].name}</strong>
                         <p className='explicable-description'>{explanationImages[selectedExplanationModel][currentImageIndex].description}</p>
