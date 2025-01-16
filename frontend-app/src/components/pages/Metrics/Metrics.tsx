@@ -38,7 +38,7 @@ const Metrics: React.FC = () => {
 
     const explanationImages: { [key: string]: { src: string; name: string; description: string }[] } = {
         'xgboost': [
-            { src: '/images/profile1.png', name: 'Image 1', description: 'Description 1' },
+            { src: '/images/shap_xgb.png', name: 'Interaction Value Plot for Network Traffic Features', description: 'This SHAP interaction plot visualizes the interaction effects between different network traffic features on a machine learning model\'s predictions. The x-axis represents SHAP interaction values, indicating how feature interactions impact the model\'s output. Each dot represents a data point, with colors distinguishing feature interactions (e.g., red and blue indicating different contributions). The y-axis lists key network traffic features such as "Flow Duration," "Fwd Packet Length Mean," and "Total Backward Packets," providing insights into their importance and interactions in predictive decision-making.' },
             { src: '/images/profile2.png', name: 'Image 2', description: 'Description 2' },
         ],
         'random_forest': [
@@ -112,6 +112,10 @@ const Metrics: React.FC = () => {
     const [metrics, setMetrics] = useState(modelsData['xgboost']);
     const darkMode = JSON.parse(localStorage.getItem('darkMode') || '{}');
     const [selectedGraph, setSelectedGraph] = useState<'Category' | 'AssignedUser' | 'Origin'>('Category');
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const toggleFullscreen = () => {
+        setIsFullscreen(!isFullscreen);
+    };
 
 
     // Handle model selection change
@@ -592,10 +596,23 @@ const Metrics: React.FC = () => {
                         className="explicable"
                         src={explanationImages[selectedExplanationModel][currentImageIndex].src}
                         alt={explanationImages[selectedExplanationModel][currentImageIndex].name}
+                        onClick={toggleFullscreen}
                     />
+                    {/* Hide description in fullscreen mode */}
+                    {isFullscreen && (
+                        <div className="fullscreen-overlay" onClick={toggleFullscreen}>
+                            <div className="fullscreen-image-container">
+                                <img
+                                    className="explicable"
+                                    src={explanationImages[selectedExplanationModel][currentImageIndex].src}
+                                    alt={explanationImages[selectedExplanationModel][currentImageIndex].name}
+                                />
+                            </div>
+                        </div>
+                    )}
                     <div className="explicable-legend">
                         <strong>{explanationImages[selectedExplanationModel][currentImageIndex].name}</strong>
-                        <p>{explanationImages[selectedExplanationModel][currentImageIndex].description}</p>
+                        <p className='explicable-description'>{explanationImages[selectedExplanationModel][currentImageIndex].description}</p>
                     </div>
                 </div>
 
