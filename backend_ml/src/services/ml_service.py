@@ -67,7 +67,10 @@ class MachineLearningService:
     async def genetic_algorithm(self):
         alerts:list[Alert] = [Alert(alert["id"], alert["priority"], alert["origin"], alert["creationTime"], alert["category"]) for alert in await self.get_all_alerts()]
         users:list[User] = [User(user["id"], user["experience_score"], user["categories_preferences"]) for user in await self.get_all_users()]
+        starting_time:time = time.time()
         alerts = genetic_algorithm(alerts, users, int(len(alerts)*100), 10)
+        ending_time:time = time.time()
+        alerts["time"] = ending_time - starting_time
         return alerts
 
     async def get_all_alerts(self) -> list[dict]:
@@ -87,5 +90,8 @@ class MachineLearningService:
         users:list[User] = [User(user["id"], user["experience_score"], user["categories_preferences"]) for user in await self.get_all_users()]
         generations = len(alerts)*len(users)
         if(generations < 200): generations = 200
+        starting_time:time = time.time()
         alerts = particle_swarm_optimization(alerts, users, len(alerts)*len(users), 30)
+        ending_time:time = time.time()
+        alerts["time"] = ending_time - starting_time
         return alerts
