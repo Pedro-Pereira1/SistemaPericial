@@ -39,19 +39,19 @@ const Metrics: React.FC = () => {
     const explanationImages: { [key: string]: { src: string; name: string; description: string }[] } = {
         'xgboost': [
             { src: '/images/shap_xgb.png', name: 'Interaction Value Plot for Network Traffic Features', description: 'The SHAP interaction summary plot reveals that certain network traffic features, such as Flow Duration, Forward and Backward Packet Lengths, and Total Packet Counts, have a significant and varying impact on the XGBoost model\'s predictions for intrusion detection. Features with a wide distribution of SHAP values strongly influence classification, while others with clustered values near zero contribute less. The presence of distinct red and blue clusters suggests notable feature interactions, which help differentiate between normal and malicious traffic. This insight allows security analysts to focus on the most influential attributes for improving cybersecurity threat detection.' },
-            { src: '/images/profile2.png', name: 'Image 2', description: 'Description 2' },
+            { src: '/images/not_available.jpg', name: 'Not Available', description: 'Image Not Available' },
         ],
         'random_forest': [
-            { src: '/images/profile3.png', name: 'Image 3', description: 'Description 3' },
-            { src: '/images/profile4.png', name: 'Image 4', description: 'Description 4' },
+            { src: '/images/not_available.jpg', name: 'Not Available', description: 'Image Not Available' },
+            { src: '/images/not_available.jpg', name: 'Not Available', description: 'Image Not Available' },
         ],
         'lightgbm': [
-            { src: '/images/profile5.png', name: 'Image 5', description: 'Description 5' },
-            { src: '/images/profile6.png', name: 'Image 6', description: 'Description 6' },
+            { src: '/images/not_available.jpg', name: 'Not Available', description: 'Image Not Available' },
+            { src: '/images/not_available.jpg', name: 'Not Available', description: 'Image Not Available' },
         ],
         'cnn_rnn': [
-            { src: '/images/profile7.png', name: 'Image 7', description: 'Description 7' },
-            { src: '/images/profile8.png', name: 'Image 8', description: 'Description 8' },
+            { src: '/images/not_available.jpg', name: 'Not Available', description: 'Image Not Available' },
+            { src: '/images/not_available.jpg', name: 'Not Available', description: 'Image Not Available' },
         ],
     };
 
@@ -114,7 +114,9 @@ const Metrics: React.FC = () => {
     const [selectedGraph, setSelectedGraph] = useState<'Category' | 'AssignedUser' | 'Origin'>('Category');
     const [isFullscreen, setIsFullscreen] = useState(false);
     const toggleFullscreen = () => {
-        setIsFullscreen(!isFullscreen);
+        if(explanationImages[selectedExplanationModel][currentImageIndex].src !== '/images/not_available.jpg'){
+            setIsFullscreen(!isFullscreen);
+        }
     };
 
 
