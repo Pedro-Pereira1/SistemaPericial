@@ -127,6 +127,7 @@ const Metrics: React.FC = () => {
         setMetrics(modelsData[model]);
         setSelectedExplanationModel(model);
         setCurrentImageIndex(0);
+        setIsFullscreen(false);
     };
 
     // Handle input change for number of alerts
