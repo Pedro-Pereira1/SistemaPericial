@@ -489,3 +489,13 @@
     max-width: 90%;
     max-height: 90%;
 }
+
+.fullscreen-image-container img.small-image {
+    max-width: 60%;
+    max-height: 90%;
+}
+
+.fullscreen-image-container img.large-image {
+    max-width: 90%;
+    max-height: 90%;
+}
