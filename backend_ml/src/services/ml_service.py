@@ -91,7 +91,7 @@ class MachineLearningService:
         generations = len(alerts)*len(users)
         if(generations < 200): generations = 200
         starting_time:time = time.time()
-        alerts = particle_swarm_optimization(alerts, users, len(alerts)*len(users), 30)
+        alerts = particle_swarm_optimization(alerts, users, 30, len(alerts)*len(users))
         ending_time:time = time.time()
         alerts["time"] = ending_time - starting_time
         return alerts
