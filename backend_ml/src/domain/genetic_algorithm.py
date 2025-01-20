@@ -44,10 +44,10 @@ def fitness(individual: dict[str, List[str]], alerts: List[Alert], users: List[U
             
             previous_priority = alert.priority
             score += (1/alert.priority * (user.experience_score/5))
-    # Additional debugging of user workloads
+
     for user_id, workload in user_workload.items():
         if workload > 480:
-            score -= (workload - 480) * 5  # Penalty for overwork
+            score -= (workload - 480) * 5
 
     total_workload = sum(user_workload.values())
     avg_workload = total_workload / len(users)
@@ -55,7 +55,7 @@ def fitness(individual: dict[str, List[str]], alerts: List[Alert], users: List[U
         deviation = abs(workload - avg_workload)
         score -= deviation
 
-    #print(f"Fitness score for individual: {score}")  # Debugging line
+    #print(f"Fitness score for individual: {score}")
     return score
 
 def select_parents(population: List[List[Tuple[str, str]]], fitnesses: List[float]) -> List[List[Tuple[str, str]]]:
@@ -67,15 +67,12 @@ def crossover(parent1: dict[str, List[str]], parent2: dict[str, List[str]], aler
     child = {user_id: [] for user_id in parent1.keys()}
     user_workload = {user_id: 0 for user_id in users}
 
-    # Combine all alerts from both parents
     all_alerts = set(alert for alerts in parent1.values() for alert in alerts)
     all_alerts.update(alert for alerts in parent2.values() for alert in alerts)
     all_alerts = list(all_alerts)
     random.shuffle(all_alerts)
 
-    # Assign alerts based on workload
     for alert_id in all_alerts:
-        # Find the user with the lowest workload
         selected_user = min(users, key=lambda u: user_workload[u])
         child[selected_user.id].append(alert_id)
         alert = next(alert for alert in alerts if alert.id == alert_id)
@@ -89,13 +86,12 @@ def crossover(parent1: dict[str, List[str]], parent2: dict[str, List[str]], aler
 
 def mutate(individual: dict[str, List[str]], alerts: List[Alert], users: List[User], mutation_rate: float = 0.1) -> dict[str, List[str]]:
     if random.random() < mutation_rate:
-        # Select a random alert and its current user
         user_id = random.choice(list(individual.keys()))
         if not individual[user_id]:
-            return individual  # Skip if user has no alerts
+            return individual
 
         alert_id = random.choice(individual[user_id])
-        individual[user_id].remove(alert_id)  # Remove alert from the current user
+        individual[user_id].remove(alert_id)
 
         eligible_users = [
             u for u in users
@@ -124,7 +120,6 @@ def redistribute_workload(individual: dict[str, List[str]], alerts: List[Alert],
             estimated_time = (1 / (0.5 * alert.priority) * 60) / (1 + (user.experience_score / 100))
             user_workload[user_id] += estimated_time
 
-    # Redistribute alerts based on workloads
     for user_id, alert_ids in individual.items():
         for alert_id in alert_ids:
             alert = next(alert for alert in alerts if alert.id == alert_id)
@@ -132,7 +127,6 @@ def redistribute_workload(individual: dict[str, List[str]], alerts: List[Alert],
                 1 + (next(user for user in users if user.id == user_id).experience_score / 100)
             )
 
-            # Find the user with the lowest workload who can handle the alert
             selected_user = min(users, key=lambda u: user_workload[u.id])
             redistributed_individual[selected_user.id].append(alert_id)
             user_workload[selected_user.id] += estimated_time
@@ -159,7 +153,6 @@ def select_next_generation(
     Returns:
         The next generation of individuals.
     """
-    # Sort population by fitness (descending) and retain the top individuals for elitism
     sorted_population = sorted(zip(population, fitnesses), key=lambda x: x[1], reverse=True)
     top_individuals = [ind for ind, _ in sorted_population[:elitism_count]]
 
@@ -167,34 +160,27 @@ def select_next_generation(
     remaining_population = [ind for ind, _ in sorted_population[elitism_count:]]
     remaining_fitnesses = fitnesses[elitism_count:]
 
-    # Perform roulette-wheel selection for the rest of the population without repetition
     selected_parents = []
     total_fitness = sum(remaining_fitnesses)
 
     for _ in range(population_size - elitism_count):
-        # Recalculate probabilities for the remaining population
         probabilities = [fit / total_fitness for fit in remaining_fitnesses]
         selected_index = random.choices(range(len(remaining_population)), weights=probabilities, k=1)[0]
         
-        # Add selected individual and remove them from the pool
         selected_parents.append(remaining_population.pop(selected_index))
         removed_fitness = remaining_fitnesses.pop(selected_index)
         total_fitness -= removed_fitness
 
-    # Combine top individuals and selected parents
     next_generation = top_individuals + selected_parents
 
-    # Ensure population size remains consistent (should already be correct)
     return next_generation[:population_size]
 
 
 
 def genetic_algorithm(alerts: List[Alert], users: List[User], generations: int, population_size: int):
-    # Generate initial population
     population = generate_initial_population(alerts, users, population_size)
 
     for generation in range(generations):
-        # Evaluate fitness for the current population
         fitnesses = [fitness(ind, alerts, users) for ind in population]
 
         # Log current generation
@@ -206,7 +192,6 @@ def genetic_algorithm(alerts: List[Alert], users: List[User], generations: int, 
             reverse=True
         )
 
-        # Print only the best individual
         best_individual, best_fitness = sorted_population[0]
         #print(f"  Best individual: Fitness = {best_fitness}")
 

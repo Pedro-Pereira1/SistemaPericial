@@ -5,19 +5,18 @@ from src.domain.alert import Alert
 from src.domain.user import User
 
 # PSO Parameters
-c1 = 1.5  # Cognitive coefficient
-c2 = 1.5  # Social coefficient
-w = 0.7   # Inertia weight
+c1 = 1.5
+c2 = 1.5
+w = 0.7
 
 def particle_swarm_optimization(alerts: List[Alert], users: List[User], swarm_size: int, generations: int):
     num_alerts = len(alerts)
     num_users = len(users)
     
-    # Initialize particles
     particles = [
         {
-            "position": [random.choice(range(num_users)) for _ in range(num_alerts)],  # Assign random users to alerts
-            "velocity": [0 for _ in range(num_alerts)],  # Velocity initialized to 0
+            "position": [random.choice(range(num_users)) for _ in range(num_alerts)],
+            "velocity": [0 for _ in range(num_alerts)],
             "best_position": None,
             "best_fitness": float("-inf")
         }
@@ -52,7 +51,7 @@ def particle_swarm_optimization(alerts: List[Alert], users: List[User], swarm_si
                 social = c2 * random.random() * (global_best_position[i] - particle["position"][i])
                 particle["velocity"][i] = inertia + cognitive + social
 
-            # Update position (ensure valid user indices)
+            # Update position
             particle["position"] = [
                 int((particle["position"][i] + particle["velocity"][i]) % num_users)
                 for i in range(num_alerts)
@@ -63,15 +62,12 @@ def particle_swarm_optimization(alerts: List[Alert], users: List[User], swarm_si
             unique_alerts = set(alert_to_user.keys())
             particle["position"] = [alert_to_user[alert] for alert in sorted(unique_alerts)]
 
-            # Evaluate fitness
             fitness_score = evaluate_fitness(particle["position"])
 
-            # Update personal best
             if fitness_score > particle["best_fitness"]:
                 particle["best_position"] = particle["position"][:]
                 particle["best_fitness"] = fitness_score
 
-            # Update global best
             if fitness_score > global_best_fitness:
                 global_best_position = particle["position"][:]
                 global_best_fitness = fitness_score
@@ -90,7 +86,6 @@ def particle_swarm_optimization(alerts: List[Alert], users: List[User], swarm_si
             estimated_time = (1 / (0.5 * alert.priority) * 60) / (1 + (user.experience_score / 100))
             user_workload[user_id] += estimated_time
 
-    # Print workloads for debugging
     print("\nFinal workloads per user:")
     for user_id, workload in user_workload.items():
         print(f"User {user_id}: {workload:.2f} minutes")
